@@ -1,0 +1,9 @@
+{
+  "scope": "actual workbench sqlite CLI backup and restore to fresh files",
+  "integrity": "ok",
+  "records": 20,
+  "backup_file": "backup-1be377de77664908a02cfbb3153e0d63.sqlite3",
+  "restore_file": "restored-de2f105154e44e39abf0a1326bd00034.sqlite3",
+  "overwrite": false,
+  "erp_write": false
+}

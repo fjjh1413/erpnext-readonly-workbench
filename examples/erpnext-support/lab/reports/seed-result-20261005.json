@@ -1,0 +1,74 @@
+{
+  "site": "frontend",
+  "company": "Holmes Isolated Lab",
+  "warehouse": "Dispatch - HL",
+  "restricted_warehouse": "Restricted - HL",
+  "erpnext_version": "15.85.1",
+  "frappe_version": "15.87.0",
+  "documents": {
+    "normal": {
+      "name": "MAT-DN-2026-00001",
+      "line_name": "88avusekpn",
+      "item_code": "LAB-NORMAL",
+      "warehouse": "Dispatch - HL",
+      "docstatus": 1,
+      "posting_date": "2026-10-05",
+      "posting_time": "10:00:00"
+    },
+    "shortage": {
+      "name": "MAT-DN-2026-00002",
+      "line_name": "88t3p9gmjk",
+      "item_code": "LAB-SHORTAGE",
+      "warehouse": "Dispatch - HL",
+      "docstatus": 0,
+      "posting_date": "2026-10-05",
+      "posting_time": "10:00:00"
+    },
+    "historical": {
+      "name": "MAT-DN-2026-00003",
+      "line_name": "8956aj3r2k",
+      "item_code": "LAB-HISTORICAL",
+      "warehouse": "Dispatch - HL",
+      "docstatus": 0,
+      "posting_date": "2026-10-04",
+      "posting_time": "10:00:00"
+    },
+    "draft": {
+      "name": "MAT-DN-2026-00004",
+      "line_name": "89g7ccvt54",
+      "item_code": "LAB-NORMAL",
+      "warehouse": "Dispatch - HL",
+      "docstatus": 0,
+      "posting_date": "2026-10-05",
+      "posting_time": "10:00:00"
+    }
+  },
+  "sales_orders": {
+    "normal": "SAL-ORD-2026-00001",
+    "shortage": "SAL-ORD-2026-00002",
+    "historical": "SAL-ORD-2026-00003",
+    "draft": "SAL-ORD-2026-00004"
+  },
+  "receipts": {
+    "normal": "MAT-STE-2026-00001",
+    "historical": "MAT-STE-2026-00002"
+  },
+  "actual_submit_errors": {
+    "shortage": "NegativeStockError",
+    "historical": "NegativeStockError"
+  },
+  "balances": {
+    "normal": {
+      "current": 18.0,
+      "at_yesterday_10": 20.0
+    },
+    "shortage": {
+      "current": 0.0,
+      "at_yesterday_10": 0.0
+    },
+    "historical": {
+      "current": 10.0,
+      "at_yesterday_10": 0.0
+    }
+  }
+}

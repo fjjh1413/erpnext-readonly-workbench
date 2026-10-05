@@ -1,0 +1,3967 @@
+{
+  "layer": "C real isolated Docker faults + actual ERP/collector/original Tool.invoke",
+  "model": "not_called",
+  "erpnext_version": "15.85.1",
+  "frappe_version": "15.87.0",
+  "project": "holmes-erp-07dff38559e8",
+  "observations": [
+    {
+      "scenario": "healthy",
+      "result": {
+        "schema_version": "erpnext-support/v1",
+        "classification": "normal",
+        "status": "business_complete",
+        "mode": "rules_degraded",
+        "facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00001 docstatus=1，状态=To Bill，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E007"
+            ]
+          },
+          {
+            "text": "发货单已提交，且每条库存明细存在对应未取消的出库流水；这是 ERP 过账复核，仍需人工确认实际发货与工单关闭。",
+            "evidence_ids": [
+              "E007",
+              "E004"
+            ]
+          },
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 running，健康检查为 healthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "causes": [],
+        "evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_2f5c965db88a48889969965cc307a8df",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:28:58.456222Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 0.3590841293334961
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_febabf59937e4502916ddcba408f35d4",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:29:01.316585Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "running",
+                  "health": "healthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                }
+              },
+              "application_logs": "2026-10-05T16:18:32.333505372Z \n2026-10-05T16:18:32.333514074Z Traceback (most recent call last):\n2026-10-05T16:18:32.333789234Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333827042Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333839245Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333849347Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333860149Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.333869551Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333878953Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.333889456Z     raise frappe.PermissionError\n2026-10-05T16:18:32.333898958Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.333908460Z \n2026-10-05T16:18:32.333917662Z Traceback (most recent call last):\n2026-10-05T16:18:32.333927064Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333937166Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333946568Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333955970Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333966672Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334060093Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334090499Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334101102Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334110304Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334119806Z \n2026-10-05T16:18:32.334132208Z Traceback (most recent call last):\n2026-10-05T16:18:32.334142010Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334152213Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334161715Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334236231Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334275939Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334287842Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334297544Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334320349Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334329951Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334339753Z \n2026-10-05T16:18:32.334348855Z Traceback (most recent call last):\n2026-10-05T16:18:32.334358257Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334368360Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334378062Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334387464Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334425772Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334440275Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334459879Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334470182Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334479684Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334489186Z \n2026-10-05T16:18:50.529554649Z [2026-10-05 16:18:50 +0000] [1] [INFO] Starting gunicorn 23.0.0\n2026-10-05T16:18:50.532584134Z [2026-10-05 16:18:50 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)\n2026-10-05T16:18:50.532917698Z [2026-10-05 16:18:50 +0000] [1] [INFO] Using worker: gthread\n2026-10-05T16:18:50.630585552Z [2026-10-05 16:18:50 +0000] [8] [INFO] Booting worker with pid: 8\n2026-10-05T16:18:50.701487039Z [2026-10-05 16:18:50 +0000] [7] [INFO] Booting worker with pid: 7\n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 3.0261197090148926
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_6119b65fcd884886bd1fdb48af5fa3a9",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:29:01.921481Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.3048276901245117
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_036b2f0f85064c6bbef239ff661bfc52",
+            "tool_name": "erp_stock_evidence",
+            "status": "success",
+            "source": "holmes_readonly.api.stock_evidence",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL"
+            },
+            "collected_at": "2026-10-05T16:29:02.710409Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL",
+              "posting_date": "2026-10-05",
+              "posting_time": "10:00:00",
+              "posting_qty": 18.0,
+              "current_qty": 18.0,
+              "authority": "erpnext.stock.utils.get_stock_balance",
+              "current_as_of": "2026-10-06 00:29:02.571937",
+              "allow_negative_stock": false,
+              "item": {
+                "name": "LAB-NORMAL",
+                "is_stock_item": 1,
+                "disabled": 0,
+                "has_batch_no": 0,
+                "has_serial_no": 0,
+                "stock_uom": "Nos",
+                "allow_negative_stock": 0,
+                "inspection_required_before_delivery": 0
+              },
+              "warehouse_info": {
+                "name": "Dispatch - HL",
+                "company": "Holmes Isolated Lab",
+                "disabled": 0,
+                "is_group": 0
+              },
+              "required_stock_qty": 2.0,
+              "delivery_note_docstatus": 1,
+              "is_return": 0,
+              "snapshot_consistent": true,
+              "ledger": [
+                {
+                  "name": "16f50a0430",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-05",
+                  "posting_time": "10:00:00",
+                  "posting_datetime": "2026-10-05 10:00:00",
+                  "actual_qty": -2.0,
+                  "qty_after_transaction": 18.0,
+                  "voucher_type": "Delivery Note",
+                  "voucher_no": "MAT-DN-2026-00001",
+                  "voucher_detail_no": "88avusekpn",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:34.849917",
+                  "modified": "2026-10-05 23:33:34.895264"
+                },
+                {
+                  "name": "26a087e171",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-03",
+                  "posting_time": "9:00:00",
+                  "posting_datetime": "2026-10-03 09:00:00",
+                  "actual_qty": 20.0,
+                  "qty_after_transaction": 20.0,
+                  "voucher_type": "Stock Entry",
+                  "voucher_no": "MAT-STE-2026-00001",
+                  "voucher_detail_no": "86l7ggcpbv",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:29.369971",
+                  "modified": "2026-10-05 23:33:29.680589"
+                }
+              ],
+              "ledger_truncated": false
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.7756648063659668
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_bc3b2460f2014cf0ae9a4090b7d6741b",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:29:03.013959Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "line": {
+                "name": "88avusekpn",
+                "idx": 1,
+                "item_code": "LAB-NORMAL",
+                "warehouse": "Dispatch - HL",
+                "qty": 2.0,
+                "stock_qty": 2.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00001",
+                "so_detail": "87mjdoobl0",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 0.2745802402496338
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_8f5d382feda6415aa128257d3b40111e",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:29:03.246291Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 0.21491575241088867
+          },
+          {
+            "id": "E007",
+            "tool_call_id": "tool_ff171f9b959a4739919f2d71d3728e33",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:29:03.515548Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.26439404487609863
+          }
+        ],
+        "missing": [
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。"
+        ],
+        "limits": [
+          "operator_submit_permission_unknown",
+          "runtime_health_not_available",
+          "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+          "运行日志按时间窗口采集，尚未证明与指定发货单相关。",
+          "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+          "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。",
+          "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。",
+          "诊断保持 ERP 只读，人工处理与关闭工单由授权人员完成。",
+          "API 可用不证明数据库、Redis、容器或物理发货完成；独立运行状态已采集，其业务相关性仍需验证。",
+          "未匹配经人工审核且满足版本条件的已知缺陷案例，不推断当前版本存在历史缺陷。",
+          "模型未配置、未授权或未完成；当前仅返回实际采证与经过验证的规则结果，未完成完整模型Agent诊断。"
+        ],
+        "manual_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ],
+        "verification": [
+          "人工处理后重新读取同一发货单、库存权威结果和对应未取消的出库流水。",
+          "API 恢复或单据状态变化不能证明旧候选原因成立；对照原错误与业务结果，由售后人员人工确认关闭。"
+        ],
+        "tool_calls": [
+          {
+            "tool_call_id": "tool_2f5c965db88a48889969965cc307a8df",
+            "tool_name": "erp_capabilities",
+            "description": "erp_capabilities",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "holmes_readonly.api.capabilities",
+                "query": {},
+                "collected_at": "2026-10-05T16:28:58.456222Z",
+                "business_at": null,
+                "payload": {
+                  "erpnext_version": "15.85.1",
+                  "frappe_version": "15.87.0",
+                  "version_supported": true,
+                  "installed_apps": [
+                    {
+                      "name": "frappe",
+                      "version": "15.87.0"
+                    },
+                    {
+                      "name": "erpnext",
+                      "version": "15.85.1"
+                    },
+                    {
+                      "name": "holmes_readonly",
+                      "version": "0.1.0"
+                    }
+                  ],
+                  "read_permissions": {
+                    "Delivery Note": true,
+                    "Sales Order": true,
+                    "Item": true,
+                    "Warehouse": true,
+                    "Bin": true,
+                    "Stock Ledger Entry": true,
+                    "Stock Reservation Entry": true,
+                    "Batch": true,
+                    "Serial and Batch Bundle": true,
+                    "Error Log": true
+                  },
+                  "site_timezone": "Asia/Shanghai",
+                  "operator_submit_permission": "unknown",
+                  "runtime_health": "not_configured"
+                },
+                "limitations": [
+                  "operator_submit_permission_unknown",
+                  "runtime_health_not_available"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (capabilities; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.3590841293334961
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_febabf59937e4502916ddcba408f35d4",
+            "tool_name": "erp_runtime_health",
+            "description": "erp_runtime_health",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "local-restricted-erp-collector",
+                "query": {
+                  "project": "holmes-erp-07dff38559e8",
+                  "services": [
+                    "frontend",
+                    "backend",
+                    "db",
+                    "redis-queue",
+                    "redis-cache"
+                  ],
+                  "log_tail": 50,
+                  "log_window_seconds": 900
+                },
+                "collected_at": "2026-10-05T16:29:01.316585Z",
+                "business_at": null,
+                "payload": {
+                  "services": {
+                    "frontend": {
+                      "category": "application",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "backend": {
+                      "category": "application",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "db": {
+                      "category": "database",
+                      "state": "running",
+                      "health": "healthy",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "redis-queue": {
+                      "category": "redis",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "PONG"
+                    },
+                    "redis-cache": {
+                      "category": "redis",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "PONG"
+                    }
+                  },
+                  "application_logs": "2026-10-05T16:18:32.333505372Z \n2026-10-05T16:18:32.333514074Z Traceback (most recent call last):\n2026-10-05T16:18:32.333789234Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333827042Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333839245Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333849347Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333860149Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.333869551Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333878953Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.333889456Z     raise frappe.PermissionError\n2026-10-05T16:18:32.333898958Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.333908460Z \n2026-10-05T16:18:32.333917662Z Traceback (most recent call last):\n2026-10-05T16:18:32.333927064Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333937166Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333946568Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333955970Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333966672Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334060093Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334090499Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334101102Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334110304Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334119806Z \n2026-10-05T16:18:32.334132208Z Traceback (most recent call last):\n2026-10-05T16:18:32.334142010Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334152213Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334161715Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334236231Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334275939Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334287842Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334297544Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334320349Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334329951Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334339753Z \n2026-10-05T16:18:32.334348855Z Traceback (most recent call last):\n2026-10-05T16:18:32.334358257Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334368360Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334378062Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334387464Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334425772Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334440275Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334459879Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334470182Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334479684Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334489186Z \n2026-10-05T16:18:50.529554649Z [2026-10-05 16:18:50 +0000] [1] [INFO] Starting gunicorn 23.0.0\n2026-10-05T16:18:50.532584134Z [2026-10-05 16:18:50 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)\n2026-10-05T16:18:50.532917698Z [2026-10-05 16:18:50 +0000] [1] [INFO] Using worker: gthread\n2026-10-05T16:18:50.630585552Z [2026-10-05 16:18:50 +0000] [8] [INFO] Booting worker with pid: 8\n2026-10-05T16:18:50.701487039Z [2026-10-05 16:18:50 +0000] [7] [INFO] Booting worker with pid: 7\n"
+                },
+                "limitations": [
+                  "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+                  "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "erp_runtime_health",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 3.0261197090148926
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_6119b65fcd884886bd1fdb48af5fa3a9",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001"
+                },
+                "collected_at": "2026-10-05T16:29:01.921481Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00001",
+                    "docstatus": 1,
+                    "status": "To Bill",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:34.634048",
+                    "items": [
+                      {
+                        "name": "88avusekpn",
+                        "idx": 1,
+                        "item_code": "LAB-NORMAL",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 2.0,
+                        "stock_qty": 2.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00001",
+                        "so_detail": "87mjdoobl0",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00001",
+                      "docstatus": 1,
+                      "status": "To Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Fully Delivered",
+                      "per_delivered": 100.0,
+                      "modified": "2026-10-05 23:33:34.557101",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.3048276901245117
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_036b2f0f85064c6bbef239ff661bfc52",
+            "tool_name": "erp_stock_evidence",
+            "description": "erp_stock_evidence",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "holmes_readonly.api.stock_evidence",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL"
+                },
+                "collected_at": "2026-10-05T16:29:02.710409Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn",
+                  "delivery_note_modified": "2026-10-05 23:33:34.634048",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-05",
+                  "posting_time": "10:00:00",
+                  "posting_qty": 18.0,
+                  "current_qty": 18.0,
+                  "authority": "erpnext.stock.utils.get_stock_balance",
+                  "current_as_of": "2026-10-06 00:29:02.571937",
+                  "allow_negative_stock": false,
+                  "item": {
+                    "name": "LAB-NORMAL",
+                    "is_stock_item": 1,
+                    "disabled": 0,
+                    "has_batch_no": 0,
+                    "has_serial_no": 0,
+                    "stock_uom": "Nos",
+                    "allow_negative_stock": 0,
+                    "inspection_required_before_delivery": 0
+                  },
+                  "warehouse_info": {
+                    "name": "Dispatch - HL",
+                    "company": "Holmes Isolated Lab",
+                    "disabled": 0,
+                    "is_group": 0
+                  },
+                  "required_stock_qty": 2.0,
+                  "delivery_note_docstatus": 1,
+                  "is_return": 0,
+                  "snapshot_consistent": true,
+                  "ledger": [
+                    {
+                      "name": "16f50a0430",
+                      "item_code": "LAB-NORMAL",
+                      "warehouse": "Dispatch - HL",
+                      "posting_date": "2026-10-05",
+                      "posting_time": "10:00:00",
+                      "posting_datetime": "2026-10-05 10:00:00",
+                      "actual_qty": -2.0,
+                      "qty_after_transaction": 18.0,
+                      "voucher_type": "Delivery Note",
+                      "voucher_no": "MAT-DN-2026-00001",
+                      "voucher_detail_no": "88avusekpn",
+                      "is_cancelled": 0,
+                      "creation": "2026-10-05 23:33:34.849917",
+                      "modified": "2026-10-05 23:33:34.895264"
+                    },
+                    {
+                      "name": "26a087e171",
+                      "item_code": "LAB-NORMAL",
+                      "warehouse": "Dispatch - HL",
+                      "posting_date": "2026-10-03",
+                      "posting_time": "9:00:00",
+                      "posting_datetime": "2026-10-03 09:00:00",
+                      "actual_qty": 20.0,
+                      "qty_after_transaction": 20.0,
+                      "voucher_type": "Stock Entry",
+                      "voucher_no": "MAT-STE-2026-00001",
+                      "voucher_detail_no": "86l7ggcpbv",
+                      "is_cancelled": 0,
+                      "creation": "2026-10-05 23:33:29.369971",
+                      "modified": "2026-10-05 23:33:29.680589"
+                    }
+                  ],
+                  "ledger_truncated": false
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (stock_evidence; bounded task scope)",
+              "params": {
+                "line_name": "88avusekpn"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 0.7756648063659668
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_bc3b2460f2014cf0ae9a4090b7d6741b",
+            "tool_name": "erp_reservation_batch",
+            "description": "erp_reservation_batch",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn"
+                },
+                "collected_at": "2026-10-05T16:29:03.013959Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn",
+                  "line": {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  },
+                  "is_return": 0,
+                  "delivery_note_modified": "2026-10-05 23:33:34.634048",
+                  "reservations": [],
+                  "reservations_truncated": false,
+                  "batches": [],
+                  "bundles": [],
+                  "checked_on": "2026-10-06"
+                },
+                "limitations": [
+                  "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+                  "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (reservation_batch; bounded task scope)",
+              "params": {
+                "line_name": "88avusekpn"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 0.2745802402496338
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_8f5d382feda6415aa128257d3b40111e",
+            "tool_name": "erp_error_events",
+            "description": "erp_error_events",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Error Log",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "start": "2026-10-05 09:45:00",
+                  "end": "2026-10-05 10:15:00",
+                  "site_timezone": "Asia/Shanghai"
+                },
+                "collected_at": "2026-10-05T16:29:03.246291Z",
+                "business_at": "2026-10-05T10:00:00+08:00",
+                "payload": {
+                  "events": [],
+                  "truncated": false
+                },
+                "limitations": [
+                  "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (error_events; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.21491575241088867
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_ff171f9b959a4739919f2d71d3728e33",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001"
+                },
+                "collected_at": "2026-10-05T16:29:03.515548Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00001",
+                    "docstatus": 1,
+                    "status": "To Bill",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:34.634048",
+                    "items": [
+                      {
+                        "name": "88avusekpn",
+                        "idx": 1,
+                        "item_code": "LAB-NORMAL",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 2.0,
+                        "stock_qty": 2.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00001",
+                        "so_detail": "87mjdoobl0",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00001",
+                      "docstatus": 1,
+                      "status": "To Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Fully Delivered",
+                      "per_delivered": 100.0,
+                      "modified": "2026-10-05 23:33:34.557101",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.26439404487609863
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          }
+        ],
+        "metrics": {
+          "elapsed_seconds": 5.606108099997073,
+          "tool_calls": 7,
+          "successful_calls": 7,
+          "model": null,
+          "max_rounds": 4,
+          "tool_timeout_seconds": 8,
+          "tool_success_rate": 1.0
+        },
+        "engine": "verified_rules",
+        "evidence_inconsistent": false,
+        "generated_at": "2026-10-05T16:29:03.601764+00:00",
+        "model_hypotheses": [],
+        "model_target": null,
+        "model_usage": {
+          "status": "not_called",
+          "cost": "not_available"
+        },
+        "evidence_consistent": true,
+        "approved_case_references": [],
+        "business_state": {
+          "business_complete": true,
+          "docstatus": 1,
+          "status": "To Bill",
+          "modified": "2026-10-05 23:33:34.634048",
+          "readable": true
+        },
+        "confirmed_facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00001 docstatus=1，状态=To Bill，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E007"
+            ]
+          },
+          {
+            "text": "发货单已提交，且每条库存明细存在对应未取消的出库流水；这是 ERP 过账复核，仍需人工确认实际发货与工单关闭。",
+            "evidence_ids": [
+              "E007",
+              "E004"
+            ]
+          },
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 running，健康检查为 healthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "candidate_causes": [],
+        "supporting_evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_2f5c965db88a48889969965cc307a8df",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:28:58.456222Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 0.3590841293334961
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_febabf59937e4502916ddcba408f35d4",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:29:01.316585Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "running",
+                  "health": "healthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                }
+              },
+              "application_logs": "2026-10-05T16:18:32.333505372Z \n2026-10-05T16:18:32.333514074Z Traceback (most recent call last):\n2026-10-05T16:18:32.333789234Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333827042Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333839245Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333849347Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333860149Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.333869551Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333878953Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.333889456Z     raise frappe.PermissionError\n2026-10-05T16:18:32.333898958Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.333908460Z \n2026-10-05T16:18:32.333917662Z Traceback (most recent call last):\n2026-10-05T16:18:32.333927064Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333937166Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333946568Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333955970Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333966672Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334060093Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334090499Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334101102Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334110304Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334119806Z \n2026-10-05T16:18:32.334132208Z Traceback (most recent call last):\n2026-10-05T16:18:32.334142010Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334152213Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334161715Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334236231Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334275939Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334287842Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334297544Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334320349Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334329951Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334339753Z \n2026-10-05T16:18:32.334348855Z Traceback (most recent call last):\n2026-10-05T16:18:32.334358257Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334368360Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334378062Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334387464Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334425772Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334440275Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334459879Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334470182Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334479684Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334489186Z \n2026-10-05T16:18:50.529554649Z [2026-10-05 16:18:50 +0000] [1] [INFO] Starting gunicorn 23.0.0\n2026-10-05T16:18:50.532584134Z [2026-10-05 16:18:50 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)\n2026-10-05T16:18:50.532917698Z [2026-10-05 16:18:50 +0000] [1] [INFO] Using worker: gthread\n2026-10-05T16:18:50.630585552Z [2026-10-05 16:18:50 +0000] [8] [INFO] Booting worker with pid: 8\n2026-10-05T16:18:50.701487039Z [2026-10-05 16:18:50 +0000] [7] [INFO] Booting worker with pid: 7\n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 3.0261197090148926
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_6119b65fcd884886bd1fdb48af5fa3a9",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:29:01.921481Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.3048276901245117
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_036b2f0f85064c6bbef239ff661bfc52",
+            "tool_name": "erp_stock_evidence",
+            "status": "success",
+            "source": "holmes_readonly.api.stock_evidence",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL"
+            },
+            "collected_at": "2026-10-05T16:29:02.710409Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL",
+              "posting_date": "2026-10-05",
+              "posting_time": "10:00:00",
+              "posting_qty": 18.0,
+              "current_qty": 18.0,
+              "authority": "erpnext.stock.utils.get_stock_balance",
+              "current_as_of": "2026-10-06 00:29:02.571937",
+              "allow_negative_stock": false,
+              "item": {
+                "name": "LAB-NORMAL",
+                "is_stock_item": 1,
+                "disabled": 0,
+                "has_batch_no": 0,
+                "has_serial_no": 0,
+                "stock_uom": "Nos",
+                "allow_negative_stock": 0,
+                "inspection_required_before_delivery": 0
+              },
+              "warehouse_info": {
+                "name": "Dispatch - HL",
+                "company": "Holmes Isolated Lab",
+                "disabled": 0,
+                "is_group": 0
+              },
+              "required_stock_qty": 2.0,
+              "delivery_note_docstatus": 1,
+              "is_return": 0,
+              "snapshot_consistent": true,
+              "ledger": [
+                {
+                  "name": "16f50a0430",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-05",
+                  "posting_time": "10:00:00",
+                  "posting_datetime": "2026-10-05 10:00:00",
+                  "actual_qty": -2.0,
+                  "qty_after_transaction": 18.0,
+                  "voucher_type": "Delivery Note",
+                  "voucher_no": "MAT-DN-2026-00001",
+                  "voucher_detail_no": "88avusekpn",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:34.849917",
+                  "modified": "2026-10-05 23:33:34.895264"
+                },
+                {
+                  "name": "26a087e171",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-03",
+                  "posting_time": "9:00:00",
+                  "posting_datetime": "2026-10-03 09:00:00",
+                  "actual_qty": 20.0,
+                  "qty_after_transaction": 20.0,
+                  "voucher_type": "Stock Entry",
+                  "voucher_no": "MAT-STE-2026-00001",
+                  "voucher_detail_no": "86l7ggcpbv",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:29.369971",
+                  "modified": "2026-10-05 23:33:29.680589"
+                }
+              ],
+              "ledger_truncated": false
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.7756648063659668
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_bc3b2460f2014cf0ae9a4090b7d6741b",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:29:03.013959Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "line": {
+                "name": "88avusekpn",
+                "idx": 1,
+                "item_code": "LAB-NORMAL",
+                "warehouse": "Dispatch - HL",
+                "qty": 2.0,
+                "stock_qty": 2.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00001",
+                "so_detail": "87mjdoobl0",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 0.2745802402496338
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_8f5d382feda6415aa128257d3b40111e",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:29:03.246291Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 0.21491575241088867
+          },
+          {
+            "id": "E007",
+            "tool_call_id": "tool_ff171f9b959a4739919f2d71d3728e33",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:29:03.515548Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.26439404487609863
+          }
+        ],
+        "missing_information": [
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。"
+        ],
+        "next_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ]
+      }
+    },
+    {
+      "scenario": "collector_restrictions",
+      "unauthorized_status": 403,
+      "query_status": 403
+    },
+    {
+      "scenario": "database_unavailable",
+      "result": {
+        "schema_version": "erpnext-support/v1",
+        "classification": "runtime_unavailable",
+        "status": "manual_action",
+        "mode": "rules_degraded",
+        "facts": [
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 exited，健康检查为 unhealthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "causes": [
+          {
+            "text": "ERP API 读取不可用；单次读取故障不能确认数据库、Redis或容器根因。",
+            "evidence_ids": [
+              "E001"
+            ],
+            "code": "runtime_unavailable",
+            "status": "candidate"
+          },
+          {
+            "text": "db 运行异常可能影响ERP请求；需要与失败时间及应用请求证据关联，不能单独认定发货根因。",
+            "evidence_ids": [
+              "E002"
+            ],
+            "code": "runtime_database",
+            "status": "candidate"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_a1b869ebcdb240559fdc37858be773fb",
+            "tool_name": "erp_capabilities",
+            "status": "error",
+            "source": "erp_capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:19.696686Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.8351995944976807
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_2212c985329e413a9e9e50c34ed27f06",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:29:22.456698Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "exited",
+                  "health": "unhealthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                }
+              },
+              "application_logs": "2026-10-05T16:18:32.333505372Z \n2026-10-05T16:18:32.333514074Z Traceback (most recent call last):\n2026-10-05T16:18:32.333789234Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333827042Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333839245Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333849347Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333860149Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.333869551Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333878953Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.333889456Z     raise frappe.PermissionError\n2026-10-05T16:18:32.333898958Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.333908460Z \n2026-10-05T16:18:32.333917662Z Traceback (most recent call last):\n2026-10-05T16:18:32.333927064Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333937166Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333946568Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333955970Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333966672Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334060093Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334090499Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334101102Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334110304Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334119806Z \n2026-10-05T16:18:32.334132208Z Traceback (most recent call last):\n2026-10-05T16:18:32.334142010Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334152213Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334161715Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334236231Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334275939Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334287842Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334297544Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334320349Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334329951Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334339753Z \n2026-10-05T16:18:32.334348855Z Traceback (most recent call last):\n2026-10-05T16:18:32.334358257Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334368360Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334378062Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334387464Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334425772Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334440275Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334459879Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334470182Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334479684Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334489186Z \n2026-10-05T16:18:50.529554649Z [2026-10-05 16:18:50 +0000] [1] [INFO] Starting gunicorn 23.0.0\n2026-10-05T16:18:50.532584134Z [2026-10-05 16:18:50 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)\n2026-10-05T16:18:50.532917698Z [2026-10-05 16:18:50 +0000] [1] [INFO] Using worker: gthread\n2026-10-05T16:18:50.630585552Z [2026-10-05 16:18:50 +0000] [8] [INFO] Booting worker with pid: 8\n2026-10-05T16:18:50.701487039Z [2026-10-05 16:18:50 +0000] [7] [INFO] Booting worker with pid: 7\n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 2.960909128189087
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_c57fad654b9c49678cdb8ede736fb517",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:22.823662Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.09416317939758301
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_28dd64468ec544e586e04936d893f0d2",
+            "tool_name": "erp_error_events",
+            "status": "error",
+            "source": "erp_error_events",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:22.927101Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.09444332122802734
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_f83713412e78463d8c108104aa7e78ba",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:23.041192Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.10308623313903809
+          }
+        ],
+        "missing": [
+          "erp_capabilities 未取得可用证据：source_unavailable。",
+          "erp_delivery_context 未取得可用证据：source_unavailable。",
+          "erp_error_events 未取得可用证据：source_unavailable。",
+          "没有成功核验受支持的固定 ERPNext/Frappe 组合，业务根因无法确认。",
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。",
+          "未读取到发货单，无法检查业务状态和明细。"
+        ],
+        "limits": [
+          "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+          "运行日志按时间窗口采集，尚未证明与指定发货单相关。",
+          "诊断保持 ERP 只读，人工处理与关闭工单由授权人员完成。",
+          "API 可用不证明数据库、Redis、容器或物理发货完成；独立运行状态已采集，其业务相关性仍需验证。",
+          "未匹配经人工审核且满足版本条件的已知缺陷案例，不推断当前版本存在历史缺陷。",
+          "模型未配置、未授权或未完成；当前仅返回实际采证与经过验证的规则结果，未完成完整模型Agent诊断。"
+        ],
+        "manual_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ],
+        "verification": [
+          "人工处理后重新读取同一发货单、库存权威结果和对应未取消的出库流水。",
+          "API 恢复或单据状态变化不能证明旧候选原因成立；对照原错误与业务结果，由售后人员人工确认关闭。"
+        ],
+        "tool_calls": [
+          {
+            "tool_call_id": "tool_a1b869ebcdb240559fdc37858be773fb",
+            "tool_name": "erp_capabilities",
+            "description": "erp_capabilities",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "source_unavailable",
+              "return_code": null,
+              "data": {
+                "source": "erp_capabilities",
+                "query": {},
+                "collected_at": "2026-10-05T16:29:19.696686Z",
+                "business_at": null,
+                "payload": {
+                  "failure": {
+                    "code": "source_unavailable",
+                    "source": "/api/method/holmes_readonly.api.capabilities"
+                  }
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (capabilities; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.8351995944976807
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_2212c985329e413a9e9e50c34ed27f06",
+            "tool_name": "erp_runtime_health",
+            "description": "erp_runtime_health",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "local-restricted-erp-collector",
+                "query": {
+                  "project": "holmes-erp-07dff38559e8",
+                  "services": [
+                    "frontend",
+                    "backend",
+                    "db",
+                    "redis-queue",
+                    "redis-cache"
+                  ],
+                  "log_tail": 50,
+                  "log_window_seconds": 900
+                },
+                "collected_at": "2026-10-05T16:29:22.456698Z",
+                "business_at": null,
+                "payload": {
+                  "services": {
+                    "frontend": {
+                      "category": "application",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "backend": {
+                      "category": "application",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "db": {
+                      "category": "database",
+                      "state": "exited",
+                      "health": "unhealthy",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "redis-queue": {
+                      "category": "redis",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "PONG"
+                    },
+                    "redis-cache": {
+                      "category": "redis",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "PONG"
+                    }
+                  },
+                  "application_logs": "2026-10-05T16:18:32.333505372Z \n2026-10-05T16:18:32.333514074Z Traceback (most recent call last):\n2026-10-05T16:18:32.333789234Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333827042Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333839245Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333849347Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333860149Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.333869551Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333878953Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.333889456Z     raise frappe.PermissionError\n2026-10-05T16:18:32.333898958Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.333908460Z \n2026-10-05T16:18:32.333917662Z Traceback (most recent call last):\n2026-10-05T16:18:32.333927064Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333937166Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333946568Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333955970Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333966672Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334060093Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334090499Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334101102Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334110304Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334119806Z \n2026-10-05T16:18:32.334132208Z Traceback (most recent call last):\n2026-10-05T16:18:32.334142010Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334152213Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334161715Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334236231Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334275939Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334287842Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334297544Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334320349Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334329951Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334339753Z \n2026-10-05T16:18:32.334348855Z Traceback (most recent call last):\n2026-10-05T16:18:32.334358257Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334368360Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334378062Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334387464Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334425772Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334440275Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334459879Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334470182Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334479684Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334489186Z \n2026-10-05T16:18:50.529554649Z [2026-10-05 16:18:50 +0000] [1] [INFO] Starting gunicorn 23.0.0\n2026-10-05T16:18:50.532584134Z [2026-10-05 16:18:50 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)\n2026-10-05T16:18:50.532917698Z [2026-10-05 16:18:50 +0000] [1] [INFO] Using worker: gthread\n2026-10-05T16:18:50.630585552Z [2026-10-05 16:18:50 +0000] [8] [INFO] Booting worker with pid: 8\n2026-10-05T16:18:50.701487039Z [2026-10-05 16:18:50 +0000] [7] [INFO] Booting worker with pid: 7\n"
+                },
+                "limitations": [
+                  "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+                  "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "erp_runtime_health",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 2.960909128189087
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_c57fad654b9c49678cdb8ede736fb517",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "source_unavailable",
+              "return_code": null,
+              "data": {
+                "source": "erp_delivery_context",
+                "query": {},
+                "collected_at": "2026-10-05T16:29:22.823662Z",
+                "business_at": null,
+                "payload": {
+                  "failure": {
+                    "code": "source_unavailable",
+                    "source": "/api/method/holmes_readonly.api.capabilities"
+                  }
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.09416317939758301
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_28dd64468ec544e586e04936d893f0d2",
+            "tool_name": "erp_error_events",
+            "description": "erp_error_events",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "source_unavailable",
+              "return_code": null,
+              "data": {
+                "source": "erp_error_events",
+                "query": {},
+                "collected_at": "2026-10-05T16:29:22.927101Z",
+                "business_at": null,
+                "payload": {
+                  "failure": {
+                    "code": "source_unavailable",
+                    "source": "/api/method/holmes_readonly.api.capabilities"
+                  }
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (error_events; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.09444332122802734
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_f83713412e78463d8c108104aa7e78ba",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "source_unavailable",
+              "return_code": null,
+              "data": {
+                "source": "erp_delivery_context",
+                "query": {},
+                "collected_at": "2026-10-05T16:29:23.041192Z",
+                "business_at": null,
+                "payload": {
+                  "failure": {
+                    "code": "source_unavailable",
+                    "source": "/api/method/holmes_readonly.api.capabilities"
+                  }
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.10308623313903809
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          }
+        ],
+        "metrics": {
+          "elapsed_seconds": 4.3320869999988645,
+          "tool_calls": 5,
+          "successful_calls": 1,
+          "model": null,
+          "max_rounds": 4,
+          "tool_timeout_seconds": 8,
+          "tool_success_rate": 0.2
+        },
+        "engine": "verified_rules",
+        "evidence_inconsistent": false,
+        "generated_at": "2026-10-05T16:29:23.095299+00:00",
+        "model_hypotheses": [],
+        "model_target": null,
+        "model_usage": {
+          "status": "not_called",
+          "cost": "not_available"
+        },
+        "evidence_consistent": true,
+        "approved_case_references": [],
+        "business_state": {
+          "business_complete": false,
+          "docstatus": null,
+          "status": null,
+          "modified": null,
+          "readable": false
+        },
+        "confirmed_facts": [
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 exited，健康检查为 unhealthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "candidate_causes": [
+          {
+            "code": "runtime_unavailable",
+            "status": "candidate",
+            "text": "ERP API 读取不可用；单次读取故障不能确认数据库、Redis或容器根因。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "code": "runtime_database",
+            "status": "candidate",
+            "text": "db 运行异常可能影响ERP请求；需要与失败时间及应用请求证据关联，不能单独认定发货根因。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "supporting_evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_a1b869ebcdb240559fdc37858be773fb",
+            "tool_name": "erp_capabilities",
+            "status": "error",
+            "source": "erp_capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:19.696686Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.8351995944976807
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_2212c985329e413a9e9e50c34ed27f06",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:29:22.456698Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "exited",
+                  "health": "unhealthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                }
+              },
+              "application_logs": "2026-10-05T16:18:32.333505372Z \n2026-10-05T16:18:32.333514074Z Traceback (most recent call last):\n2026-10-05T16:18:32.333789234Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333827042Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333839245Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333849347Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333860149Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.333869551Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333878953Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.333889456Z     raise frappe.PermissionError\n2026-10-05T16:18:32.333898958Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.333908460Z \n2026-10-05T16:18:32.333917662Z Traceback (most recent call last):\n2026-10-05T16:18:32.333927064Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.333937166Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.333946568Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.333955970Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.333966672Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334060093Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334090499Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334101102Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334110304Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334119806Z \n2026-10-05T16:18:32.334132208Z Traceback (most recent call last):\n2026-10-05T16:18:32.334142010Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334152213Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334161715Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334236231Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334275939Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334287842Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334297544Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334320349Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334329951Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334339753Z \n2026-10-05T16:18:32.334348855Z Traceback (most recent call last):\n2026-10-05T16:18:32.334358257Z   File \"apps/frappe/frappe/app.py\", line 115, in application\n2026-10-05T16:18:32.334368360Z     response = frappe.api.handle(request)\n2026-10-05T16:18:32.334378062Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334387464Z   File \"apps/frappe/frappe/api/__init__.py\", line 50, in handle\n2026-10-05T16:18:32.334425772Z     data = endpoint(**arguments)\n2026-10-05T16:18:32.334440275Z            ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:18:32.334459879Z   File \"apps/frappe/frappe/api/v1.py\", line 76, in read_doc\n2026-10-05T16:18:32.334470182Z     raise frappe.PermissionError\n2026-10-05T16:18:32.334479684Z frappe.exceptions.PermissionError\n2026-10-05T16:18:32.334489186Z \n2026-10-05T16:18:50.529554649Z [2026-10-05 16:18:50 +0000] [1] [INFO] Starting gunicorn 23.0.0\n2026-10-05T16:18:50.532584134Z [2026-10-05 16:18:50 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)\n2026-10-05T16:18:50.532917698Z [2026-10-05 16:18:50 +0000] [1] [INFO] Using worker: gthread\n2026-10-05T16:18:50.630585552Z [2026-10-05 16:18:50 +0000] [8] [INFO] Booting worker with pid: 8\n2026-10-05T16:18:50.701487039Z [2026-10-05 16:18:50 +0000] [7] [INFO] Booting worker with pid: 7\n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 2.960909128189087
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_c57fad654b9c49678cdb8ede736fb517",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:22.823662Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.09416317939758301
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_28dd64468ec544e586e04936d893f0d2",
+            "tool_name": "erp_error_events",
+            "status": "error",
+            "source": "erp_error_events",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:22.927101Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.09444332122802734
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_f83713412e78463d8c108104aa7e78ba",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": "2026-10-05T16:29:23.041192Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.10308623313903809
+          }
+        ],
+        "missing_information": [
+          "erp_capabilities 未取得可用证据：source_unavailable。",
+          "erp_delivery_context 未取得可用证据：source_unavailable。",
+          "erp_error_events 未取得可用证据：source_unavailable。",
+          "没有成功核验受支持的固定 ERPNext/Frappe 组合，业务根因无法确认。",
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。",
+          "未读取到发货单，无法检查业务状态和明细。"
+        ],
+        "next_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ]
+      }
+    },
+    {
+      "scenario": "database_unavailable_restore",
+      "api_ready": true,
+      "states": {
+        "frontend": "running",
+        "websocket": "running",
+        "backend": "running",
+        "worker": "running",
+        "scheduler": "running",
+        "create-site": "exited",
+        "configurator": "exited",
+        "db": "running",
+        "redis-queue": "running",
+        "redis-cache": "running"
+      }
+    },
+    {
+      "scenario": "cache_unavailable",
+      "result": {
+        "schema_version": "erpnext-support/v1",
+        "classification": "runtime_unavailable",
+        "status": "manual_action",
+        "mode": "rules_degraded",
+        "facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00001 docstatus=1，状态=To Bill，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E007"
+            ]
+          },
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 running，健康检查为 healthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 exited，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "causes": [
+          {
+            "text": "ERP API 读取不可用；单次读取故障不能确认数据库、Redis或容器根因。",
+            "evidence_ids": [
+              "E004"
+            ],
+            "code": "runtime_unavailable",
+            "status": "candidate"
+          },
+          {
+            "text": "redis-cache 运行异常可能影响ERP请求；需要与失败时间及应用请求证据关联，不能单独认定发货根因。",
+            "evidence_ids": [
+              "E002"
+            ],
+            "code": "runtime_redis",
+            "status": "candidate"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_ac63c332aa22441583c685842904966c",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:30:02.137468Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 5.191350936889648
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_ef2585786d3f42c09ec356bd55859b6f",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:30:05.104947Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "running",
+                  "health": "healthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "exited",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                }
+              },
+              "application_logs": "2026-10-05T16:29:22.879148777Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879156979Z   File \"/usr/local/lib/python3.11/socket.py\", line 962, in getaddrinfo\n2026-10-05T16:29:22.879165580Z     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n2026-10-05T16:29:22.879175082Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879183984Z socket.gaierror: [Errno -3] Temporary failure in name resolution\n2026-10-05T16:29:22.879192085Z \n2026-10-05T16:29:22.879199587Z During handling of the above exception, another exception occurred:\n2026-10-05T16:29:22.879208089Z \n2026-10-05T16:29:22.879216190Z Traceback (most recent call last):\n2026-10-05T16:29:22.879224792Z   File \"apps/frappe/frappe/app.py\", line 102, in application\n2026-10-05T16:29:22.879234294Z     validate_auth()\n2026-10-05T16:29:22.879245896Z   File \"apps/frappe/frappe/auth.py\", line 621, in validate_auth\n2026-10-05T16:29:22.879254998Z     validate_auth_via_api_keys(authorization_header)\n2026-10-05T16:29:22.879264100Z   File \"apps/frappe/frappe/auth.py\", line 687, in validate_auth_via_api_keys\n2026-10-05T16:29:22.879273101Z     validate_api_key_secret(api_key, api_secret, authorization_source)\n2026-10-05T16:29:22.879282503Z   File \"apps/frappe/frappe/auth.py\", line 703, in validate_api_key_secret\n2026-10-05T16:29:22.879291705Z     docname = frappe.db.get_value(\n2026-10-05T16:29:22.879300407Z               ^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879309208Z   File \"apps/frappe/frappe/database/database.py\", line 514, in get_value\n2026-10-05T16:29:22.879318910Z     result = self.get_values(\n2026-10-05T16:29:22.879327712Z              ^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879336114Z   File \"apps/frappe/frappe/database/database.py\", line 618, in get_values\n2026-10-05T16:29:22.879344916Z     out = self._get_values_from_table(\n2026-10-05T16:29:22.879354017Z           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879362319Z   File \"apps/frappe/frappe/database/database.py\", line 891, in _get_values_from_table\n2026-10-05T16:29:22.879395625Z     return query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)\n2026-10-05T16:29:22.879407528Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879416630Z   File \"apps/frappe/frappe/query_builder/utils.py\", line 87, in execute_query\n2026-10-05T16:29:22.879422931Z     result = frappe.db.sql(query, params, *args, **kwargs)  # nosemgrep\n2026-10-05T16:29:22.879428932Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879434733Z   File \"apps/frappe/frappe/database/database.py\", line 207, in sql\n2026-10-05T16:29:22.879441234Z     self.connect()\n2026-10-05T16:29:22.879446936Z   File \"apps/frappe/frappe/database/database.py\", line 112, in connect\n2026-10-05T16:29:22.879453137Z     self._conn: MariadbConnection | PostgresConnection = self.get_connection()\n2026-10-05T16:29:22.879459238Z                                                          ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879465139Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 108, in get_connection\n2026-10-05T16:29:22.879471340Z     conn = self._get_connection()\n2026-10-05T16:29:22.879477142Z            ^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879482843Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 114, in _get_connection\n2026-10-05T16:29:22.879489544Z     return self.create_connection()\n2026-10-05T16:29:22.879495445Z            ^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879568860Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 117, in create_connection\n2026-10-05T16:29:22.879577761Z     return pymysql.connect(**self.get_connection_settings())\n2026-10-05T16:29:22.879584263Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879597865Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 361, in __init__\n2026-10-05T16:29:22.879604467Z     self.connect()\n2026-10-05T16:29:22.879610168Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 716, in connect\n2026-10-05T16:29:22.879616669Z     raise exc\n2026-10-05T16:29:22.879622370Z pymysql.err.OperationalError: (2003, \"Can't connect to MySQL server on 'db' ([Errno -3] Temporary failure in name resolution)\")\n2026-10-05T16:29:22.879629271Z \n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 3.219364643096924
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_c495190356a042c2aaafd34dbef7a025",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:30:13.014327Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 7.5440661907196045
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_086a016245f84b808532d54d4c32796c",
+            "tool_name": "erp_stock_evidence",
+            "status": "error",
+            "source": "erp_stock_evidence",
+            "query": {
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:30:21.051800Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "tool_timeout",
+                "source": "/api/resource/Item/LAB-NORMAL"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 8.007265567779541
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_607e8cb4643541b8aeb153562b0549dd",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:30:27.657274Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "line": {
+                "name": "88avusekpn",
+                "idx": 1,
+                "item_code": "LAB-NORMAL",
+                "warehouse": "Dispatch - HL",
+                "qty": 2.0,
+                "stock_qty": 2.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00001",
+                "so_detail": "87mjdoobl0",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 6.601215600967407
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_403eeb9064404b93b1804cca30449526",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:30:33.879010Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 6.201981067657471
+          },
+          {
+            "id": "E007",
+            "tool_call_id": "tool_9551616435754a98ab6da16f41dfb5cd",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:30:40.873198Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 6.988595008850098
+          }
+        ],
+        "missing": [
+          "erp_stock_evidence 未取得可用证据：tool_timeout。",
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。",
+          "发货单已提交，但未读取到全部对应出库流水，不能仅凭状态确认库存发货业务完成。"
+        ],
+        "limits": [
+          "operator_submit_permission_unknown",
+          "runtime_health_not_available",
+          "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+          "运行日志按时间窗口采集，尚未证明与指定发货单相关。",
+          "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+          "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。",
+          "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。",
+          "诊断保持 ERP 只读，人工处理与关闭工单由授权人员完成。",
+          "API 可用不证明数据库、Redis、容器或物理发货完成；独立运行状态已采集，其业务相关性仍需验证。",
+          "未匹配经人工审核且满足版本条件的已知缺陷案例，不推断当前版本存在历史缺陷。",
+          "模型未配置、未授权或未完成；当前仅返回实际采证与经过验证的规则结果，未完成完整模型Agent诊断。"
+        ],
+        "manual_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ],
+        "verification": [
+          "人工处理后重新读取同一发货单、库存权威结果和对应未取消的出库流水。",
+          "API 恢复或单据状态变化不能证明旧候选原因成立；对照原错误与业务结果，由售后人员人工确认关闭。"
+        ],
+        "tool_calls": [
+          {
+            "tool_call_id": "tool_ac63c332aa22441583c685842904966c",
+            "tool_name": "erp_capabilities",
+            "description": "erp_capabilities",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "holmes_readonly.api.capabilities",
+                "query": {},
+                "collected_at": "2026-10-05T16:30:02.137468Z",
+                "business_at": null,
+                "payload": {
+                  "erpnext_version": "15.85.1",
+                  "frappe_version": "15.87.0",
+                  "version_supported": true,
+                  "installed_apps": [
+                    {
+                      "name": "frappe",
+                      "version": "15.87.0"
+                    },
+                    {
+                      "name": "erpnext",
+                      "version": "15.85.1"
+                    },
+                    {
+                      "name": "holmes_readonly",
+                      "version": "0.1.0"
+                    }
+                  ],
+                  "read_permissions": {
+                    "Delivery Note": true,
+                    "Sales Order": true,
+                    "Item": true,
+                    "Warehouse": true,
+                    "Bin": true,
+                    "Stock Ledger Entry": true,
+                    "Stock Reservation Entry": true,
+                    "Batch": true,
+                    "Serial and Batch Bundle": true,
+                    "Error Log": true
+                  },
+                  "site_timezone": "Asia/Shanghai",
+                  "operator_submit_permission": "unknown",
+                  "runtime_health": "not_configured"
+                },
+                "limitations": [
+                  "operator_submit_permission_unknown",
+                  "runtime_health_not_available"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (capabilities; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 5.191350936889648
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_ef2585786d3f42c09ec356bd55859b6f",
+            "tool_name": "erp_runtime_health",
+            "description": "erp_runtime_health",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "local-restricted-erp-collector",
+                "query": {
+                  "project": "holmes-erp-07dff38559e8",
+                  "services": [
+                    "frontend",
+                    "backend",
+                    "db",
+                    "redis-queue",
+                    "redis-cache"
+                  ],
+                  "log_tail": 50,
+                  "log_window_seconds": 900
+                },
+                "collected_at": "2026-10-05T16:30:05.104947Z",
+                "business_at": null,
+                "payload": {
+                  "services": {
+                    "frontend": {
+                      "category": "application",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "backend": {
+                      "category": "application",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "db": {
+                      "category": "database",
+                      "state": "running",
+                      "health": "healthy",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "redis-queue": {
+                      "category": "redis",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "PONG"
+                    },
+                    "redis-cache": {
+                      "category": "redis",
+                      "state": "exited",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    }
+                  },
+                  "application_logs": "2026-10-05T16:29:22.879148777Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879156979Z   File \"/usr/local/lib/python3.11/socket.py\", line 962, in getaddrinfo\n2026-10-05T16:29:22.879165580Z     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n2026-10-05T16:29:22.879175082Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879183984Z socket.gaierror: [Errno -3] Temporary failure in name resolution\n2026-10-05T16:29:22.879192085Z \n2026-10-05T16:29:22.879199587Z During handling of the above exception, another exception occurred:\n2026-10-05T16:29:22.879208089Z \n2026-10-05T16:29:22.879216190Z Traceback (most recent call last):\n2026-10-05T16:29:22.879224792Z   File \"apps/frappe/frappe/app.py\", line 102, in application\n2026-10-05T16:29:22.879234294Z     validate_auth()\n2026-10-05T16:29:22.879245896Z   File \"apps/frappe/frappe/auth.py\", line 621, in validate_auth\n2026-10-05T16:29:22.879254998Z     validate_auth_via_api_keys(authorization_header)\n2026-10-05T16:29:22.879264100Z   File \"apps/frappe/frappe/auth.py\", line 687, in validate_auth_via_api_keys\n2026-10-05T16:29:22.879273101Z     validate_api_key_secret(api_key, api_secret, authorization_source)\n2026-10-05T16:29:22.879282503Z   File \"apps/frappe/frappe/auth.py\", line 703, in validate_api_key_secret\n2026-10-05T16:29:22.879291705Z     docname = frappe.db.get_value(\n2026-10-05T16:29:22.879300407Z               ^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879309208Z   File \"apps/frappe/frappe/database/database.py\", line 514, in get_value\n2026-10-05T16:29:22.879318910Z     result = self.get_values(\n2026-10-05T16:29:22.879327712Z              ^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879336114Z   File \"apps/frappe/frappe/database/database.py\", line 618, in get_values\n2026-10-05T16:29:22.879344916Z     out = self._get_values_from_table(\n2026-10-05T16:29:22.879354017Z           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879362319Z   File \"apps/frappe/frappe/database/database.py\", line 891, in _get_values_from_table\n2026-10-05T16:29:22.879395625Z     return query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)\n2026-10-05T16:29:22.879407528Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879416630Z   File \"apps/frappe/frappe/query_builder/utils.py\", line 87, in execute_query\n2026-10-05T16:29:22.879422931Z     result = frappe.db.sql(query, params, *args, **kwargs)  # nosemgrep\n2026-10-05T16:29:22.879428932Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879434733Z   File \"apps/frappe/frappe/database/database.py\", line 207, in sql\n2026-10-05T16:29:22.879441234Z     self.connect()\n2026-10-05T16:29:22.879446936Z   File \"apps/frappe/frappe/database/database.py\", line 112, in connect\n2026-10-05T16:29:22.879453137Z     self._conn: MariadbConnection | PostgresConnection = self.get_connection()\n2026-10-05T16:29:22.879459238Z                                                          ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879465139Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 108, in get_connection\n2026-10-05T16:29:22.879471340Z     conn = self._get_connection()\n2026-10-05T16:29:22.879477142Z            ^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879482843Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 114, in _get_connection\n2026-10-05T16:29:22.879489544Z     return self.create_connection()\n2026-10-05T16:29:22.879495445Z            ^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879568860Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 117, in create_connection\n2026-10-05T16:29:22.879577761Z     return pymysql.connect(**self.get_connection_settings())\n2026-10-05T16:29:22.879584263Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879597865Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 361, in __init__\n2026-10-05T16:29:22.879604467Z     self.connect()\n2026-10-05T16:29:22.879610168Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 716, in connect\n2026-10-05T16:29:22.879616669Z     raise exc\n2026-10-05T16:29:22.879622370Z pymysql.err.OperationalError: (2003, \"Can't connect to MySQL server on 'db' ([Errno -3] Temporary failure in name resolution)\")\n2026-10-05T16:29:22.879629271Z \n"
+                },
+                "limitations": [
+                  "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+                  "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "erp_runtime_health",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 3.219364643096924
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_c495190356a042c2aaafd34dbef7a025",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001"
+                },
+                "collected_at": "2026-10-05T16:30:13.014327Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00001",
+                    "docstatus": 1,
+                    "status": "To Bill",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:34.634048",
+                    "items": [
+                      {
+                        "name": "88avusekpn",
+                        "idx": 1,
+                        "item_code": "LAB-NORMAL",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 2.0,
+                        "stock_qty": 2.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00001",
+                        "so_detail": "87mjdoobl0",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00001",
+                      "docstatus": 1,
+                      "status": "To Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Fully Delivered",
+                      "per_delivered": 100.0,
+                      "modified": "2026-10-05 23:33:34.557101",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 7.5440661907196045
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_086a016245f84b808532d54d4c32796c",
+            "tool_name": "erp_stock_evidence",
+            "description": "erp_stock_evidence",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "tool_timeout",
+              "return_code": null,
+              "data": {
+                "source": "erp_stock_evidence",
+                "query": {
+                  "line_name": "88avusekpn"
+                },
+                "collected_at": "2026-10-05T16:30:21.051800Z",
+                "business_at": null,
+                "payload": {
+                  "failure": {
+                    "code": "tool_timeout",
+                    "source": "/api/resource/Item/LAB-NORMAL"
+                  }
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (stock_evidence; bounded task scope)",
+              "params": {
+                "line_name": "88avusekpn"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 8.007265567779541
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_607e8cb4643541b8aeb153562b0549dd",
+            "tool_name": "erp_reservation_batch",
+            "description": "erp_reservation_batch",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn"
+                },
+                "collected_at": "2026-10-05T16:30:27.657274Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn",
+                  "line": {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  },
+                  "is_return": 0,
+                  "delivery_note_modified": "2026-10-05 23:33:34.634048",
+                  "reservations": [],
+                  "reservations_truncated": false,
+                  "batches": [],
+                  "bundles": [],
+                  "checked_on": "2026-10-06"
+                },
+                "limitations": [
+                  "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+                  "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (reservation_batch; bounded task scope)",
+              "params": {
+                "line_name": "88avusekpn"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 6.601215600967407
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_403eeb9064404b93b1804cca30449526",
+            "tool_name": "erp_error_events",
+            "description": "erp_error_events",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Error Log",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "start": "2026-10-05 09:45:00",
+                  "end": "2026-10-05 10:15:00",
+                  "site_timezone": "Asia/Shanghai"
+                },
+                "collected_at": "2026-10-05T16:30:33.879010Z",
+                "business_at": "2026-10-05T10:00:00+08:00",
+                "payload": {
+                  "events": [],
+                  "truncated": false
+                },
+                "limitations": [
+                  "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (error_events; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 6.201981067657471
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_9551616435754a98ab6da16f41dfb5cd",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001"
+                },
+                "collected_at": "2026-10-05T16:30:40.873198Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00001",
+                    "docstatus": 1,
+                    "status": "To Bill",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:34.634048",
+                    "items": [
+                      {
+                        "name": "88avusekpn",
+                        "idx": 1,
+                        "item_code": "LAB-NORMAL",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 2.0,
+                        "stock_qty": 2.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00001",
+                        "so_detail": "87mjdoobl0",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00001",
+                      "docstatus": 1,
+                      "status": "To Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Fully Delivered",
+                      "per_delivered": 100.0,
+                      "modified": "2026-10-05 23:33:34.557101",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 6.988595008850098
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          }
+        ],
+        "metrics": {
+          "elapsed_seconds": 44.24952190000113,
+          "tool_calls": 7,
+          "successful_calls": 6,
+          "model": null,
+          "max_rounds": 4,
+          "tool_timeout_seconds": 8,
+          "tool_success_rate": 0.8571428571428571
+        },
+        "engine": "verified_rules",
+        "evidence_inconsistent": false,
+        "generated_at": "2026-10-05T16:30:41.007659+00:00",
+        "model_hypotheses": [],
+        "model_target": null,
+        "model_usage": {
+          "status": "not_called",
+          "cost": "not_available"
+        },
+        "evidence_consistent": true,
+        "approved_case_references": [],
+        "business_state": {
+          "business_complete": false,
+          "docstatus": 1,
+          "status": "To Bill",
+          "modified": "2026-10-05 23:33:34.634048",
+          "readable": true
+        },
+        "confirmed_facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00001 docstatus=1，状态=To Bill，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E007"
+            ]
+          },
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 running，健康检查为 healthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 exited，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "candidate_causes": [
+          {
+            "code": "runtime_unavailable",
+            "status": "candidate",
+            "text": "ERP API 读取不可用；单次读取故障不能确认数据库、Redis或容器根因。",
+            "evidence_ids": [
+              "E004"
+            ]
+          },
+          {
+            "code": "runtime_redis",
+            "status": "candidate",
+            "text": "redis-cache 运行异常可能影响ERP请求；需要与失败时间及应用请求证据关联，不能单独认定发货根因。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "supporting_evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_ac63c332aa22441583c685842904966c",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:30:02.137468Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 5.191350936889648
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_ef2585786d3f42c09ec356bd55859b6f",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:30:05.104947Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "running",
+                  "health": "healthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "exited",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                }
+              },
+              "application_logs": "2026-10-05T16:29:22.879148777Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879156979Z   File \"/usr/local/lib/python3.11/socket.py\", line 962, in getaddrinfo\n2026-10-05T16:29:22.879165580Z     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n2026-10-05T16:29:22.879175082Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879183984Z socket.gaierror: [Errno -3] Temporary failure in name resolution\n2026-10-05T16:29:22.879192085Z \n2026-10-05T16:29:22.879199587Z During handling of the above exception, another exception occurred:\n2026-10-05T16:29:22.879208089Z \n2026-10-05T16:29:22.879216190Z Traceback (most recent call last):\n2026-10-05T16:29:22.879224792Z   File \"apps/frappe/frappe/app.py\", line 102, in application\n2026-10-05T16:29:22.879234294Z     validate_auth()\n2026-10-05T16:29:22.879245896Z   File \"apps/frappe/frappe/auth.py\", line 621, in validate_auth\n2026-10-05T16:29:22.879254998Z     validate_auth_via_api_keys(authorization_header)\n2026-10-05T16:29:22.879264100Z   File \"apps/frappe/frappe/auth.py\", line 687, in validate_auth_via_api_keys\n2026-10-05T16:29:22.879273101Z     validate_api_key_secret(api_key, api_secret, authorization_source)\n2026-10-05T16:29:22.879282503Z   File \"apps/frappe/frappe/auth.py\", line 703, in validate_api_key_secret\n2026-10-05T16:29:22.879291705Z     docname = frappe.db.get_value(\n2026-10-05T16:29:22.879300407Z               ^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879309208Z   File \"apps/frappe/frappe/database/database.py\", line 514, in get_value\n2026-10-05T16:29:22.879318910Z     result = self.get_values(\n2026-10-05T16:29:22.879327712Z              ^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879336114Z   File \"apps/frappe/frappe/database/database.py\", line 618, in get_values\n2026-10-05T16:29:22.879344916Z     out = self._get_values_from_table(\n2026-10-05T16:29:22.879354017Z           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879362319Z   File \"apps/frappe/frappe/database/database.py\", line 891, in _get_values_from_table\n2026-10-05T16:29:22.879395625Z     return query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)\n2026-10-05T16:29:22.879407528Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879416630Z   File \"apps/frappe/frappe/query_builder/utils.py\", line 87, in execute_query\n2026-10-05T16:29:22.879422931Z     result = frappe.db.sql(query, params, *args, **kwargs)  # nosemgrep\n2026-10-05T16:29:22.879428932Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879434733Z   File \"apps/frappe/frappe/database/database.py\", line 207, in sql\n2026-10-05T16:29:22.879441234Z     self.connect()\n2026-10-05T16:29:22.879446936Z   File \"apps/frappe/frappe/database/database.py\", line 112, in connect\n2026-10-05T16:29:22.879453137Z     self._conn: MariadbConnection | PostgresConnection = self.get_connection()\n2026-10-05T16:29:22.879459238Z                                                          ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879465139Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 108, in get_connection\n2026-10-05T16:29:22.879471340Z     conn = self._get_connection()\n2026-10-05T16:29:22.879477142Z            ^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879482843Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 114, in _get_connection\n2026-10-05T16:29:22.879489544Z     return self.create_connection()\n2026-10-05T16:29:22.879495445Z            ^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879568860Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 117, in create_connection\n2026-10-05T16:29:22.879577761Z     return pymysql.connect(**self.get_connection_settings())\n2026-10-05T16:29:22.879584263Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:29:22.879597865Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 361, in __init__\n2026-10-05T16:29:22.879604467Z     self.connect()\n2026-10-05T16:29:22.879610168Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 716, in connect\n2026-10-05T16:29:22.879616669Z     raise exc\n2026-10-05T16:29:22.879622370Z pymysql.err.OperationalError: (2003, \"Can't connect to MySQL server on 'db' ([Errno -3] Temporary failure in name resolution)\")\n2026-10-05T16:29:22.879629271Z \n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 3.219364643096924
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_c495190356a042c2aaafd34dbef7a025",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:30:13.014327Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 7.5440661907196045
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_086a016245f84b808532d54d4c32796c",
+            "tool_name": "erp_stock_evidence",
+            "status": "error",
+            "source": "erp_stock_evidence",
+            "query": {
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:30:21.051800Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "tool_timeout",
+                "source": "/api/resource/Item/LAB-NORMAL"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 8.007265567779541
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_607e8cb4643541b8aeb153562b0549dd",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:30:27.657274Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "line": {
+                "name": "88avusekpn",
+                "idx": 1,
+                "item_code": "LAB-NORMAL",
+                "warehouse": "Dispatch - HL",
+                "qty": 2.0,
+                "stock_qty": 2.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00001",
+                "so_detail": "87mjdoobl0",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 6.601215600967407
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_403eeb9064404b93b1804cca30449526",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:30:33.879010Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 6.201981067657471
+          },
+          {
+            "id": "E007",
+            "tool_call_id": "tool_9551616435754a98ab6da16f41dfb5cd",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:30:40.873198Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 6.988595008850098
+          }
+        ],
+        "missing_information": [
+          "erp_stock_evidence 未取得可用证据：tool_timeout。",
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。",
+          "发货单已提交，但未读取到全部对应出库流水，不能仅凭状态确认库存发货业务完成。"
+        ],
+        "next_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ]
+      }
+    },
+    {
+      "scenario": "cache_unavailable_restore",
+      "api_ready": true,
+      "states": {
+        "frontend": "running",
+        "websocket": "running",
+        "backend": "running",
+        "worker": "running",
+        "scheduler": "running",
+        "create-site": "exited",
+        "configurator": "exited",
+        "db": "running",
+        "redis-queue": "running",
+        "redis-cache": "running"
+      }
+    },
+    {
+      "scenario": "api_unavailable",
+      "result": {
+        "schema_version": "erpnext-support/v1",
+        "classification": "runtime_unavailable",
+        "status": "manual_action",
+        "mode": "rules_degraded",
+        "facts": [
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 exited，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 running，健康检查为 healthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "causes": [
+          {
+            "text": "ERP API 读取不可用；单次读取故障不能确认数据库、Redis或容器根因。",
+            "evidence_ids": [
+              "E001"
+            ],
+            "code": "runtime_unavailable",
+            "status": "candidate"
+          },
+          {
+            "text": "backend 运行异常可能影响ERP请求；需要与失败时间及应用请求证据关联，不能单独认定发货根因。",
+            "evidence_ids": [
+              "E002"
+            ],
+            "code": "runtime_application",
+            "status": "candidate"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_620a5e3b27944253ab17fe414f3f0b40",
+            "tool_name": "erp_capabilities",
+            "status": "error",
+            "source": "erp_capabilities",
+            "query": {},
+            "collected_at": null,
+            "business_at": null,
+            "payload": {},
+            "limitations": [],
+            "elapsed_seconds": 8.009541034698486
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_28901b548dc044daa8f1b30c871c20a1",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:31:21.811558Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "exited",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "running",
+                  "health": "healthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                }
+              },
+              "application_logs": "2026-10-05T16:31:07.334351859Z     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n2026-10-05T16:31:07.334357761Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334364162Z socket.gaierror: [Errno -3] Temporary failure in name resolution\n2026-10-05T16:31:07.334370764Z \n2026-10-05T16:31:07.334586118Z During handling of the above exception, another exception occurred:\n2026-10-05T16:31:07.334603622Z \n2026-10-05T16:31:07.334610324Z Traceback (most recent call last):\n2026-10-05T16:31:07.334616425Z   File \"apps/frappe/frappe/app.py\", line 102, in application\n2026-10-05T16:31:07.334622827Z     validate_auth()\n2026-10-05T16:31:07.334648033Z   File \"apps/frappe/frappe/auth.py\", line 621, in validate_auth\n2026-10-05T16:31:07.334661837Z     validate_auth_via_api_keys(authorization_header)\n2026-10-05T16:31:07.334667938Z   File \"apps/frappe/frappe/auth.py\", line 687, in validate_auth_via_api_keys\n2026-10-05T16:31:07.334674240Z     validate_api_key_secret(api_key, api_secret, authorization_source)\n2026-10-05T16:31:07.334680241Z   File \"apps/frappe/frappe/auth.py\", line 703, in validate_api_key_secret\n2026-10-05T16:31:07.334686743Z     docname = frappe.db.get_value(\n2026-10-05T16:31:07.334692344Z               ^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334697946Z   File \"apps/frappe/frappe/database/database.py\", line 514, in get_value\n2026-10-05T16:31:07.334704147Z     result = self.get_values(\n2026-10-05T16:31:07.334710149Z              ^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334729753Z   File \"apps/frappe/frappe/database/database.py\", line 618, in get_values\n2026-10-05T16:31:07.334739956Z     out = self._get_values_from_table(\n2026-10-05T16:31:07.334746057Z           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334751859Z   File \"apps/frappe/frappe/database/database.py\", line 891, in _get_values_from_table\n2026-10-05T16:31:07.334758160Z     return query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)\n2026-10-05T16:31:07.334764162Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334770264Z   File \"apps/frappe/frappe/query_builder/utils.py\", line 87, in execute_query\n2026-10-05T16:31:07.334776765Z     result = frappe.db.sql(query, params, *args, **kwargs)  # nosemgrep\n2026-10-05T16:31:07.334782867Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334788768Z   File \"apps/frappe/frappe/database/database.py\", line 207, in sql\n2026-10-05T16:31:07.334794970Z     self.connect()\n2026-10-05T16:31:07.334800471Z   File \"apps/frappe/frappe/database/database.py\", line 112, in connect\n2026-10-05T16:31:07.334806573Z     self._conn: MariadbConnection | PostgresConnection = self.get_connection()\n2026-10-05T16:31:07.334812574Z                                                          ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334818576Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 108, in get_connection\n2026-10-05T16:31:07.334825177Z     conn = self._get_connection()\n2026-10-05T16:31:07.334832179Z            ^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334855385Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 114, in _get_connection\n2026-10-05T16:31:07.334862486Z     return self.create_connection()\n2026-10-05T16:31:07.334868288Z            ^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334873989Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 117, in create_connection\n2026-10-05T16:31:07.334880291Z     return pymysql.connect(**self.get_connection_settings())\n2026-10-05T16:31:07.334886092Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334896295Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 361, in __init__\n2026-10-05T16:31:07.334902997Z     self.connect()\n2026-10-05T16:31:07.334908798Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 716, in connect\n2026-10-05T16:31:07.334915100Z     raise exc\n2026-10-05T16:31:07.334920801Z pymysql.err.OperationalError: (2003, \"Can't connect to MySQL server on 'db' ([Errno -3] Temporary failure in name resolution)\")\n2026-10-05T16:31:07.334939706Z \n2026-10-05T16:31:07.335233679Z [2026-10-05 16:31:07 +0000] [8] [INFO] Worker exiting (pid: 8)\n2026-10-05T16:31:07.831247828Z [2026-10-05 16:31:07 +0000] [1] [INFO] Shutting down: Master\n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 3.349752187728882
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_18ebfc0bf6ca4b2a9fcd6a143029b91b",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": null,
+            "business_at": null,
+            "payload": {},
+            "limitations": [],
+            "elapsed_seconds": 8.009215593338013
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_a70fc26ddfba452fa6d49cfef4c800cd",
+            "tool_name": "erp_error_events",
+            "status": "error",
+            "source": "erp_error_events",
+            "query": {},
+            "collected_at": "2026-10-05T16:31:38.165027Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "tool_timeout",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 8.00951099395752
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_09d1539344504a879a67a5025baa56d3",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": null,
+            "business_at": null,
+            "payload": {},
+            "limitations": [],
+            "elapsed_seconds": 8.003088474273682
+          }
+        ],
+        "missing": [
+          "erp_capabilities 未取得可用证据：tool_timeout。",
+          "erp_delivery_context 未取得可用证据：tool_timeout。",
+          "erp_error_events 未取得可用证据：tool_timeout。",
+          "没有成功核验受支持的固定 ERPNext/Frappe 组合，业务根因无法确认。",
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。",
+          "未读取到发货单，无法检查业务状态和明细。"
+        ],
+        "limits": [
+          "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+          "运行日志按时间窗口采集，尚未证明与指定发货单相关。",
+          "诊断保持 ERP 只读，人工处理与关闭工单由授权人员完成。",
+          "API 可用不证明数据库、Redis、容器或物理发货完成；独立运行状态已采集，其业务相关性仍需验证。",
+          "未匹配经人工审核且满足版本条件的已知缺陷案例，不推断当前版本存在历史缺陷。",
+          "模型未配置、未授权或未完成；当前仅返回实际采证与经过验证的规则结果，未完成完整模型Agent诊断。"
+        ],
+        "manual_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ],
+        "verification": [
+          "人工处理后重新读取同一发货单、库存权威结果和对应未取消的出库流水。",
+          "API 恢复或单据状态变化不能证明旧候选原因成立；对照原错误与业务结果，由售后人员人工确认关闭。"
+        ],
+        "tool_calls": [
+          {
+            "tool_call_id": "tool_620a5e3b27944253ab17fe414f3f0b40",
+            "tool_name": "erp_capabilities",
+            "description": "erp_capabilities",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "tool_timeout",
+              "return_code": null,
+              "data": null,
+              "images": null,
+              "url": null,
+              "invocation": "erp_capabilities",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 8.009541034698486
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_28901b548dc044daa8f1b30c871c20a1",
+            "tool_name": "erp_runtime_health",
+            "description": "erp_runtime_health",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "local-restricted-erp-collector",
+                "query": {
+                  "project": "holmes-erp-07dff38559e8",
+                  "services": [
+                    "frontend",
+                    "backend",
+                    "db",
+                    "redis-queue",
+                    "redis-cache"
+                  ],
+                  "log_tail": 50,
+                  "log_window_seconds": 900
+                },
+                "collected_at": "2026-10-05T16:31:21.811558Z",
+                "business_at": null,
+                "payload": {
+                  "services": {
+                    "frontend": {
+                      "category": "application",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "backend": {
+                      "category": "application",
+                      "state": "exited",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "db": {
+                      "category": "database",
+                      "state": "running",
+                      "health": "healthy",
+                      "restart_count": 0,
+                      "ping": "not_checked"
+                    },
+                    "redis-queue": {
+                      "category": "redis",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "PONG"
+                    },
+                    "redis-cache": {
+                      "category": "redis",
+                      "state": "running",
+                      "health": "not_configured",
+                      "restart_count": 0,
+                      "ping": "PONG"
+                    }
+                  },
+                  "application_logs": "2026-10-05T16:31:07.334351859Z     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n2026-10-05T16:31:07.334357761Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334364162Z socket.gaierror: [Errno -3] Temporary failure in name resolution\n2026-10-05T16:31:07.334370764Z \n2026-10-05T16:31:07.334586118Z During handling of the above exception, another exception occurred:\n2026-10-05T16:31:07.334603622Z \n2026-10-05T16:31:07.334610324Z Traceback (most recent call last):\n2026-10-05T16:31:07.334616425Z   File \"apps/frappe/frappe/app.py\", line 102, in application\n2026-10-05T16:31:07.334622827Z     validate_auth()\n2026-10-05T16:31:07.334648033Z   File \"apps/frappe/frappe/auth.py\", line 621, in validate_auth\n2026-10-05T16:31:07.334661837Z     validate_auth_via_api_keys(authorization_header)\n2026-10-05T16:31:07.334667938Z   File \"apps/frappe/frappe/auth.py\", line 687, in validate_auth_via_api_keys\n2026-10-05T16:31:07.334674240Z     validate_api_key_secret(api_key, api_secret, authorization_source)\n2026-10-05T16:31:07.334680241Z   File \"apps/frappe/frappe/auth.py\", line 703, in validate_api_key_secret\n2026-10-05T16:31:07.334686743Z     docname = frappe.db.get_value(\n2026-10-05T16:31:07.334692344Z               ^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334697946Z   File \"apps/frappe/frappe/database/database.py\", line 514, in get_value\n2026-10-05T16:31:07.334704147Z     result = self.get_values(\n2026-10-05T16:31:07.334710149Z              ^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334729753Z   File \"apps/frappe/frappe/database/database.py\", line 618, in get_values\n2026-10-05T16:31:07.334739956Z     out = self._get_values_from_table(\n2026-10-05T16:31:07.334746057Z           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334751859Z   File \"apps/frappe/frappe/database/database.py\", line 891, in _get_values_from_table\n2026-10-05T16:31:07.334758160Z     return query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)\n2026-10-05T16:31:07.334764162Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334770264Z   File \"apps/frappe/frappe/query_builder/utils.py\", line 87, in execute_query\n2026-10-05T16:31:07.334776765Z     result = frappe.db.sql(query, params, *args, **kwargs)  # nosemgrep\n2026-10-05T16:31:07.334782867Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334788768Z   File \"apps/frappe/frappe/database/database.py\", line 207, in sql\n2026-10-05T16:31:07.334794970Z     self.connect()\n2026-10-05T16:31:07.334800471Z   File \"apps/frappe/frappe/database/database.py\", line 112, in connect\n2026-10-05T16:31:07.334806573Z     self._conn: MariadbConnection | PostgresConnection = self.get_connection()\n2026-10-05T16:31:07.334812574Z                                                          ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334818576Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 108, in get_connection\n2026-10-05T16:31:07.334825177Z     conn = self._get_connection()\n2026-10-05T16:31:07.334832179Z            ^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334855385Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 114, in _get_connection\n2026-10-05T16:31:07.334862486Z     return self.create_connection()\n2026-10-05T16:31:07.334868288Z            ^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334873989Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 117, in create_connection\n2026-10-05T16:31:07.334880291Z     return pymysql.connect(**self.get_connection_settings())\n2026-10-05T16:31:07.334886092Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334896295Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 361, in __init__\n2026-10-05T16:31:07.334902997Z     self.connect()\n2026-10-05T16:31:07.334908798Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 716, in connect\n2026-10-05T16:31:07.334915100Z     raise exc\n2026-10-05T16:31:07.334920801Z pymysql.err.OperationalError: (2003, \"Can't connect to MySQL server on 'db' ([Errno -3] Temporary failure in name resolution)\")\n2026-10-05T16:31:07.334939706Z \n2026-10-05T16:31:07.335233679Z [2026-10-05 16:31:07 +0000] [8] [INFO] Worker exiting (pid: 8)\n2026-10-05T16:31:07.831247828Z [2026-10-05 16:31:07 +0000] [1] [INFO] Shutting down: Master\n"
+                },
+                "limitations": [
+                  "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+                  "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "erp_runtime_health",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 3.349752187728882
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_18ebfc0bf6ca4b2a9fcd6a143029b91b",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "tool_timeout",
+              "return_code": null,
+              "data": null,
+              "images": null,
+              "url": null,
+              "invocation": "erp_delivery_context",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 8.009215593338013
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_a70fc26ddfba452fa6d49cfef4c800cd",
+            "tool_name": "erp_error_events",
+            "description": "erp_error_events",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "tool_timeout",
+              "return_code": null,
+              "data": {
+                "source": "erp_error_events",
+                "query": {},
+                "collected_at": "2026-10-05T16:31:38.165027Z",
+                "business_at": null,
+                "payload": {
+                  "failure": {
+                    "code": "tool_timeout",
+                    "source": "/api/method/holmes_readonly.api.capabilities"
+                  }
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (error_events; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 8.00951099395752
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_09d1539344504a879a67a5025baa56d3",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "error",
+              "error": "tool_timeout",
+              "return_code": null,
+              "data": null,
+              "images": null,
+              "url": null,
+              "invocation": "erp_delivery_context",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 8.003088474273682
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          }
+        ],
+        "metrics": {
+          "elapsed_seconds": 35.6291541999999,
+          "tool_calls": 5,
+          "successful_calls": 1,
+          "model": null,
+          "max_rounds": 4,
+          "tool_timeout_seconds": 8,
+          "tool_success_rate": 0.2
+        },
+        "engine": "verified_rules",
+        "evidence_inconsistent": false,
+        "generated_at": "2026-10-05T16:31:46.230079+00:00",
+        "model_hypotheses": [],
+        "model_target": null,
+        "model_usage": {
+          "status": "not_called",
+          "cost": "not_available"
+        },
+        "evidence_consistent": true,
+        "approved_case_references": [],
+        "business_state": {
+          "business_complete": false,
+          "docstatus": null,
+          "status": null,
+          "modified": null,
+          "readable": false
+        },
+        "confirmed_facts": [
+          {
+            "text": "采集时 frontend 容器状态为 running，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 backend 容器状态为 exited，健康检查为 not_configured，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 db 容器状态为 running，健康检查为 healthy，Redis检查为 not_checked。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-queue 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          },
+          {
+            "text": "采集时 redis-cache 容器状态为 running，健康检查为 not_configured，Redis检查为 PONG。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "candidate_causes": [
+          {
+            "code": "runtime_unavailable",
+            "status": "candidate",
+            "text": "ERP API 读取不可用；单次读取故障不能确认数据库、Redis或容器根因。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "code": "runtime_application",
+            "status": "candidate",
+            "text": "backend 运行异常可能影响ERP请求；需要与失败时间及应用请求证据关联，不能单独认定发货根因。",
+            "evidence_ids": [
+              "E002"
+            ]
+          }
+        ],
+        "supporting_evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_620a5e3b27944253ab17fe414f3f0b40",
+            "tool_name": "erp_capabilities",
+            "status": "error",
+            "source": "erp_capabilities",
+            "query": {},
+            "collected_at": null,
+            "business_at": null,
+            "payload": {},
+            "limitations": [],
+            "elapsed_seconds": 8.009541034698486
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_28901b548dc044daa8f1b30c871c20a1",
+            "tool_name": "erp_runtime_health",
+            "status": "success",
+            "source": "local-restricted-erp-collector",
+            "query": {
+              "project": "holmes-erp-07dff38559e8",
+              "services": [
+                "frontend",
+                "backend",
+                "db",
+                "redis-queue",
+                "redis-cache"
+              ],
+              "log_tail": 50,
+              "log_window_seconds": 900
+            },
+            "collected_at": "2026-10-05T16:31:21.811558Z",
+            "business_at": null,
+            "payload": {
+              "services": {
+                "frontend": {
+                  "category": "application",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "backend": {
+                  "category": "application",
+                  "state": "exited",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "db": {
+                  "category": "database",
+                  "state": "running",
+                  "health": "healthy",
+                  "restart_count": 0,
+                  "ping": "not_checked"
+                },
+                "redis-queue": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                },
+                "redis-cache": {
+                  "category": "redis",
+                  "state": "running",
+                  "health": "not_configured",
+                  "restart_count": 0,
+                  "ping": "PONG"
+                }
+              },
+              "application_logs": "2026-10-05T16:31:07.334351859Z     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n2026-10-05T16:31:07.334357761Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334364162Z socket.gaierror: [Errno -3] Temporary failure in name resolution\n2026-10-05T16:31:07.334370764Z \n2026-10-05T16:31:07.334586118Z During handling of the above exception, another exception occurred:\n2026-10-05T16:31:07.334603622Z \n2026-10-05T16:31:07.334610324Z Traceback (most recent call last):\n2026-10-05T16:31:07.334616425Z   File \"apps/frappe/frappe/app.py\", line 102, in application\n2026-10-05T16:31:07.334622827Z     validate_auth()\n2026-10-05T16:31:07.334648033Z   File \"apps/frappe/frappe/auth.py\", line 621, in validate_auth\n2026-10-05T16:31:07.334661837Z     validate_auth_via_api_keys(authorization_header)\n2026-10-05T16:31:07.334667938Z   File \"apps/frappe/frappe/auth.py\", line 687, in validate_auth_via_api_keys\n2026-10-05T16:31:07.334674240Z     validate_api_key_secret(api_key, api_secret, authorization_source)\n2026-10-05T16:31:07.334680241Z   File \"apps/frappe/frappe/auth.py\", line 703, in validate_api_key_secret\n2026-10-05T16:31:07.334686743Z     docname = frappe.db.get_value(\n2026-10-05T16:31:07.334692344Z               ^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334697946Z   File \"apps/frappe/frappe/database/database.py\", line 514, in get_value\n2026-10-05T16:31:07.334704147Z     result = self.get_values(\n2026-10-05T16:31:07.334710149Z              ^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334729753Z   File \"apps/frappe/frappe/database/database.py\", line 618, in get_values\n2026-10-05T16:31:07.334739956Z     out = self._get_values_from_table(\n2026-10-05T16:31:07.334746057Z           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334751859Z   File \"apps/frappe/frappe/database/database.py\", line 891, in _get_values_from_table\n2026-10-05T16:31:07.334758160Z     return query.run(as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck)\n2026-10-05T16:31:07.334764162Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334770264Z   File \"apps/frappe/frappe/query_builder/utils.py\", line 87, in execute_query\n2026-10-05T16:31:07.334776765Z     result = frappe.db.sql(query, params, *args, **kwargs)  # nosemgrep\n2026-10-05T16:31:07.334782867Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334788768Z   File \"apps/frappe/frappe/database/database.py\", line 207, in sql\n2026-10-05T16:31:07.334794970Z     self.connect()\n2026-10-05T16:31:07.334800471Z   File \"apps/frappe/frappe/database/database.py\", line 112, in connect\n2026-10-05T16:31:07.334806573Z     self._conn: MariadbConnection | PostgresConnection = self.get_connection()\n2026-10-05T16:31:07.334812574Z                                                          ^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334818576Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 108, in get_connection\n2026-10-05T16:31:07.334825177Z     conn = self._get_connection()\n2026-10-05T16:31:07.334832179Z            ^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334855385Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 114, in _get_connection\n2026-10-05T16:31:07.334862486Z     return self.create_connection()\n2026-10-05T16:31:07.334868288Z            ^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334873989Z   File \"apps/frappe/frappe/database/mariadb/database.py\", line 117, in create_connection\n2026-10-05T16:31:07.334880291Z     return pymysql.connect(**self.get_connection_settings())\n2026-10-05T16:31:07.334886092Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-05T16:31:07.334896295Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 361, in __init__\n2026-10-05T16:31:07.334902997Z     self.connect()\n2026-10-05T16:31:07.334908798Z   File \"env/lib/python3.11/site-packages/pymysql/connections.py\", line 716, in connect\n2026-10-05T16:31:07.334915100Z     raise exc\n2026-10-05T16:31:07.334920801Z pymysql.err.OperationalError: (2003, \"Can't connect to MySQL server on 'db' ([Errno -3] Temporary failure in name resolution)\")\n2026-10-05T16:31:07.334939706Z \n2026-10-05T16:31:07.335233679Z [2026-10-05 16:31:07 +0000] [8] [INFO] Worker exiting (pid: 8)\n2026-10-05T16:31:07.831247828Z [2026-10-05 16:31:07 +0000] [1] [INFO] Shutting down: Master\n"
+            },
+            "limitations": [
+              "运行状态和固定PING不能证明ERP应用连接路径或发货业务完成。",
+              "运行日志按时间窗口采集，尚未证明与指定发货单相关。"
+            ],
+            "elapsed_seconds": 3.349752187728882
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_18ebfc0bf6ca4b2a9fcd6a143029b91b",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": null,
+            "business_at": null,
+            "payload": {},
+            "limitations": [],
+            "elapsed_seconds": 8.009215593338013
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_a70fc26ddfba452fa6d49cfef4c800cd",
+            "tool_name": "erp_error_events",
+            "status": "error",
+            "source": "erp_error_events",
+            "query": {},
+            "collected_at": "2026-10-05T16:31:38.165027Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "tool_timeout",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": [],
+            "elapsed_seconds": 8.00951099395752
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_09d1539344504a879a67a5025baa56d3",
+            "tool_name": "erp_delivery_context",
+            "status": "error",
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": null,
+            "business_at": null,
+            "payload": {},
+            "limitations": [],
+            "elapsed_seconds": 8.003088474273682
+          }
+        ],
+        "missing_information": [
+          "erp_capabilities 未取得可用证据：tool_timeout。",
+          "erp_delivery_context 未取得可用证据：tool_timeout。",
+          "erp_error_events 未取得可用证据：tool_timeout。",
+          "没有成功核验受支持的固定 ERPNext/Frappe 组合，业务根因无法确认。",
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。",
+          "未读取到发货单，无法检查业务状态和明细。"
+        ],
+        "next_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ]
+      }
+    },
+    {
+      "scenario": "api_unavailable_restore",
+      "api_ready": true,
+      "states": {
+        "frontend": "running",
+        "websocket": "running",
+        "backend": "running",
+        "worker": "running",
+        "scheduler": "running",
+        "create-site": "exited",
+        "configurator": "exited",
+        "db": "running",
+        "redis-queue": "running",
+        "redis-cache": "running"
+      }
+    }
+  ],
+  "note": "Faults restored in finally; elapsed and call rates are actual observations, not model accuracy."
+}

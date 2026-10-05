@@ -1,0 +1,25 @@
+{
+  "result": "failed",
+  "stage": "environment_create",
+  "error_type": "TimeoutError",
+  "locations": [
+    "workbench.mjs:168:87"
+  ],
+  "completed_checks": [
+    "actual_login",
+    "create_ticket",
+    "actual_diagnosis",
+    "expand_actual_evidence",
+    "record_actual_human_action",
+    "actual_business_review",
+    "manual_close",
+    "case_workspace",
+    "case_create",
+    "case_search",
+    "case_human_approve",
+    "case_edit_revokes_approval",
+    "case_delete_own_qa_data",
+    "actual_environment_check"
+  ],
+  "elapsed_seconds": 71.6191014
+}

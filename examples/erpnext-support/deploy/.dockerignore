@@ -1,0 +1,15 @@
+# This file applies only to the freshly prepared, allowlisted build context.
+**/.runtime
+**/__pycache__
+**/*.pyc
+**/node_modules
+**/.env
+**/initial-login.json
+**/secret.json
+**/*-secret.json
+**/credentials
+**/collectors
+**/*manual*report*
+**/*.sqlite3*
+**/reports
+**/dist

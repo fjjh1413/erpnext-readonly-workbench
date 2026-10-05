@@ -1,0 +1,2 @@
+# Isolated evaluation dependency; does not rewrite the upstream Poetry lock.
+pytest==9.1.1

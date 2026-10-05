@@ -1,0 +1,54 @@
+{
+  "kind": "real_workbench_container_smoke",
+  "utc": "2026-10-05T16:53:12.215043+00:00",
+  "image": "holmes-erp-workbench:20261006-ad26c4235286",
+  "image_id": "sha256:17afe00d629745bae12815a5e91048ce269f0efeb25618caaec52a979bd3231f",
+  "runtime": "instance-7c936fc98a7a",
+  "erp_calls": 0,
+  "model_invoked": false,
+  "elapsed_seconds": 89.177,
+  "health_http_status": 200,
+  "checks": [
+    {
+      "case": "random_login",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "case": "session_cookie",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "case": "built_frontend",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "case": "compiled_frontend_assets",
+      "count": 2,
+      "passed": true
+    },
+    {
+      "case": "empty_customer_environment",
+      "status": 200,
+      "passed": true
+    }
+  ],
+  "versions": {
+    "python": "3.12.10",
+    "litellm": "1.89.0",
+    "fastapi": "0.136.3"
+  },
+  "docker_health_status": "healthy",
+  "protected_existing_containers_unchanged": true,
+  "readonly_root": true,
+  "nonroot_user": "10001:10001",
+  "docker_socket_mounted": false,
+  "capabilities_dropped": [
+    "ALL"
+  ],
+  "no_new_privileges": true,
+  "only_state_bind_mount": true,
+  "only_owned_network": true
+}

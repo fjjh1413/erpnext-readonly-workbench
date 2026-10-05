@@ -1,0 +1,44 @@
+{
+  "scope": "isolated_local_erp_lab",
+  "mocks": false,
+  "browser": {
+    "channel": "msedge",
+    "version": "154.0.4258.53"
+  },
+  "checks": [
+    "actual_login",
+    "create_ticket",
+    "actual_diagnosis",
+    "expand_actual_evidence",
+    "record_actual_human_action",
+    "actual_business_review",
+    "manual_close",
+    "case_workspace",
+    "actual_environment_check",
+    "real_403",
+    "real_empty",
+    "analyst_controls"
+  ],
+  "ticket_id": "d414cfe36be049b4869945a9ff8160ec",
+  "delivery_note": "MAT-DN-2026-00001",
+  "diagnostic_state": "partial",
+  "review_state": "partial",
+  "business_complete": true,
+  "manual_override": false,
+  "diagnosis_metrics": {
+    "elapsed_seconds": 3.569111500000872,
+    "tool_calls": 6,
+    "successful_calls": 6,
+    "model": null,
+    "max_rounds": 4,
+    "tool_timeout_seconds": 8,
+    "tool_success_rate": 1
+  },
+  "elapsed_seconds": 26.5153522,
+  "artifacts": [
+    "diagnosis.png",
+    "environment.png",
+    "analyst-empty.png"
+  ],
+  "note": "Component tests separately cover loading/interrupted/error states with explicitly mocked HTTP. This run did not mutate ERP data. QA analyst has no environment grants."
+}

@@ -1,0 +1,2218 @@
+{
+  "layer": "C: actual ERPNext API, original Tool.invoke and verified rules",
+  "model": "not_called",
+  "erpnext_version": "15.85.1",
+  "frappe_version": "15.87.0",
+  "project": "holmes-erp-07dff38559e8",
+  "base_url": "http://127.0.0.1:8090",
+  "observations": [
+    {
+      "scenario": "actual_engine_no_model_shortage",
+      "observed_at": "2026-10-05T16:28:00.848674+00:00",
+      "result": {
+        "schema_version": "erpnext-support/v1",
+        "classification": "stock_shortage",
+        "status": "manual_action",
+        "mode": "rules_degraded",
+        "facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00002 docstatus=0，状态=Draft，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E006"
+            ]
+          },
+          {
+            "text": "发货单仍为草稿，不能据此确认业务已完成。",
+            "evidence_ids": [
+              "E006"
+            ]
+          },
+          {
+            "text": "物料 LAB-SHORTAGE / 仓库 Dispatch - HL 本单合计需 3.0 库存单位；当前量 0.0，过账时点量 0.0。",
+            "evidence_ids": [
+              "E006",
+              "E003"
+            ]
+          }
+        ],
+        "causes": [
+          {
+            "text": "物料 LAB-SHORTAGE 在仓库 Dispatch - HL 当前库存少于本单所需数量。",
+            "evidence_ids": [
+              "E006",
+              "E003"
+            ],
+            "code": "stock_shortage",
+            "status": "confirmed"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_09a88a1393a647fca251dbfd81900659",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:27:58.370919Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 0.22607731819152832
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_94cdc7d16def4cd8bd4815737159cd74",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002"
+            },
+            "collected_at": "2026-10-05T16:27:58.733908Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00002",
+                "docstatus": 0,
+                "status": "Draft",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:35.747450",
+                "items": [
+                  {
+                    "name": "88t3p9gmjk",
+                    "idx": 1,
+                    "item_code": "LAB-SHORTAGE",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 3.0,
+                    "stock_qty": 3.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00002",
+                    "so_detail": "88n03k505o",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00002",
+                  "docstatus": 1,
+                  "status": "To Deliver and Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Not Delivered",
+                  "per_delivered": 0.0,
+                  "modified": "2026-10-05 23:33:35.391975",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.33492302894592285
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_18762272885f4214a6c4f7641c14b277",
+            "tool_name": "erp_stock_evidence",
+            "status": "success",
+            "source": "holmes_readonly.api.stock_evidence",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk",
+              "item_code": "LAB-SHORTAGE",
+              "warehouse": "Dispatch - HL"
+            },
+            "collected_at": "2026-10-05T16:27:59.680379Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk",
+              "delivery_note_modified": "2026-10-05 23:33:35.747450",
+              "item_code": "LAB-SHORTAGE",
+              "warehouse": "Dispatch - HL",
+              "posting_date": "2026-10-05",
+              "posting_time": "10:00:00",
+              "posting_qty": 0.0,
+              "current_qty": 0.0,
+              "authority": "erpnext.stock.utils.get_stock_balance",
+              "current_as_of": "2026-10-06 00:27:59.579138",
+              "allow_negative_stock": false,
+              "item": {
+                "name": "LAB-SHORTAGE",
+                "is_stock_item": 1,
+                "disabled": 0,
+                "has_batch_no": 0,
+                "has_serial_no": 0,
+                "stock_uom": "Nos",
+                "allow_negative_stock": 0,
+                "inspection_required_before_delivery": 0
+              },
+              "warehouse_info": {
+                "name": "Dispatch - HL",
+                "company": "Holmes Isolated Lab",
+                "disabled": 0,
+                "is_group": 0
+              },
+              "required_stock_qty": 3.0,
+              "delivery_note_docstatus": 0,
+              "is_return": 0,
+              "snapshot_consistent": true,
+              "ledger": [],
+              "ledger_truncated": false
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.9277591705322266
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_17aad1d6c6304596a37e4542d010594d",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk"
+            },
+            "collected_at": "2026-10-05T16:27:59.953933Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk",
+              "line": {
+                "name": "88t3p9gmjk",
+                "idx": 1,
+                "item_code": "LAB-SHORTAGE",
+                "warehouse": "Dispatch - HL",
+                "qty": 3.0,
+                "stock_qty": 3.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00002",
+                "so_detail": "88n03k505o",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:35.747450",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 0.2573587894439697
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_5c0b3ca1305a4c799195f30435651fb7",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:28:00.191637Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 0.2225050926208496
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_01926bd3cba5444e80bb1d9cc867b0e0",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002"
+            },
+            "collected_at": "2026-10-05T16:28:00.493646Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00002",
+                "docstatus": 0,
+                "status": "Draft",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:35.747450",
+                "items": [
+                  {
+                    "name": "88t3p9gmjk",
+                    "idx": 1,
+                    "item_code": "LAB-SHORTAGE",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 3.0,
+                    "stock_qty": 3.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00002",
+                    "so_detail": "88n03k505o",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00002",
+                  "docstatus": 1,
+                  "status": "To Deliver and Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Not Delivered",
+                  "per_delivered": 0.0,
+                  "modified": "2026-10-05 23:33:35.391975",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.2984640598297119
+          }
+        ],
+        "missing": [
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。"
+        ],
+        "limits": [
+          "operator_submit_permission_unknown",
+          "runtime_health_not_available",
+          "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+          "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。",
+          "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。",
+          "诊断保持 ERP 只读，人工处理与关闭工单由授权人员完成。",
+          "API 可用不证明数据库、Redis、容器或物理发货完成；运行层采集尚未接入。",
+          "未匹配经人工审核且满足版本条件的已知缺陷案例，不推断当前版本存在历史缺陷。",
+          "模型未配置、未授权或未完成；当前仅返回实际采证与经过验证的规则结果，未完成完整模型Agent诊断。"
+        ],
+        "manual_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ],
+        "verification": [
+          "人工处理后重新读取同一发货单、库存权威结果和对应未取消的出库流水。",
+          "API 恢复或单据状态变化不能证明旧候选原因成立；对照原错误与业务结果，由售后人员人工确认关闭。"
+        ],
+        "tool_calls": [
+          {
+            "tool_call_id": "tool_09a88a1393a647fca251dbfd81900659",
+            "tool_name": "erp_capabilities",
+            "description": "erp_capabilities",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "holmes_readonly.api.capabilities",
+                "query": {},
+                "collected_at": "2026-10-05T16:27:58.370919Z",
+                "business_at": null,
+                "payload": {
+                  "erpnext_version": "15.85.1",
+                  "frappe_version": "15.87.0",
+                  "version_supported": true,
+                  "installed_apps": [
+                    {
+                      "name": "frappe",
+                      "version": "15.87.0"
+                    },
+                    {
+                      "name": "erpnext",
+                      "version": "15.85.1"
+                    },
+                    {
+                      "name": "holmes_readonly",
+                      "version": "0.1.0"
+                    }
+                  ],
+                  "read_permissions": {
+                    "Delivery Note": true,
+                    "Sales Order": true,
+                    "Item": true,
+                    "Warehouse": true,
+                    "Bin": true,
+                    "Stock Ledger Entry": true,
+                    "Stock Reservation Entry": true,
+                    "Batch": true,
+                    "Serial and Batch Bundle": true,
+                    "Error Log": true
+                  },
+                  "site_timezone": "Asia/Shanghai",
+                  "operator_submit_permission": "unknown",
+                  "runtime_health": "not_configured"
+                },
+                "limitations": [
+                  "operator_submit_permission_unknown",
+                  "runtime_health_not_available"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (capabilities; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.22607731819152832
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_94cdc7d16def4cd8bd4815737159cd74",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00002"
+                },
+                "collected_at": "2026-10-05T16:27:58.733908Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00002",
+                    "docstatus": 0,
+                    "status": "Draft",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:35.747450",
+                    "items": [
+                      {
+                        "name": "88t3p9gmjk",
+                        "idx": 1,
+                        "item_code": "LAB-SHORTAGE",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 3.0,
+                        "stock_qty": 3.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00002",
+                        "so_detail": "88n03k505o",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00002",
+                      "docstatus": 1,
+                      "status": "To Deliver and Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Not Delivered",
+                      "per_delivered": 0.0,
+                      "modified": "2026-10-05 23:33:35.391975",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.33492302894592285
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_18762272885f4214a6c4f7641c14b277",
+            "tool_name": "erp_stock_evidence",
+            "description": "erp_stock_evidence",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "holmes_readonly.api.stock_evidence",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00002",
+                  "line_name": "88t3p9gmjk",
+                  "item_code": "LAB-SHORTAGE",
+                  "warehouse": "Dispatch - HL"
+                },
+                "collected_at": "2026-10-05T16:27:59.680379Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": "MAT-DN-2026-00002",
+                  "line_name": "88t3p9gmjk",
+                  "delivery_note_modified": "2026-10-05 23:33:35.747450",
+                  "item_code": "LAB-SHORTAGE",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-05",
+                  "posting_time": "10:00:00",
+                  "posting_qty": 0.0,
+                  "current_qty": 0.0,
+                  "authority": "erpnext.stock.utils.get_stock_balance",
+                  "current_as_of": "2026-10-06 00:27:59.579138",
+                  "allow_negative_stock": false,
+                  "item": {
+                    "name": "LAB-SHORTAGE",
+                    "is_stock_item": 1,
+                    "disabled": 0,
+                    "has_batch_no": 0,
+                    "has_serial_no": 0,
+                    "stock_uom": "Nos",
+                    "allow_negative_stock": 0,
+                    "inspection_required_before_delivery": 0
+                  },
+                  "warehouse_info": {
+                    "name": "Dispatch - HL",
+                    "company": "Holmes Isolated Lab",
+                    "disabled": 0,
+                    "is_group": 0
+                  },
+                  "required_stock_qty": 3.0,
+                  "delivery_note_docstatus": 0,
+                  "is_return": 0,
+                  "snapshot_consistent": true,
+                  "ledger": [],
+                  "ledger_truncated": false
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (stock_evidence; bounded task scope)",
+              "params": {
+                "line_name": "88t3p9gmjk"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 0.9277591705322266
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_17aad1d6c6304596a37e4542d010594d",
+            "tool_name": "erp_reservation_batch",
+            "description": "erp_reservation_batch",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00002",
+                  "line_name": "88t3p9gmjk"
+                },
+                "collected_at": "2026-10-05T16:27:59.953933Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": "MAT-DN-2026-00002",
+                  "line_name": "88t3p9gmjk",
+                  "line": {
+                    "name": "88t3p9gmjk",
+                    "idx": 1,
+                    "item_code": "LAB-SHORTAGE",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 3.0,
+                    "stock_qty": 3.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00002",
+                    "so_detail": "88n03k505o",
+                    "use_serial_batch_fields": 0
+                  },
+                  "is_return": 0,
+                  "delivery_note_modified": "2026-10-05 23:33:35.747450",
+                  "reservations": [],
+                  "reservations_truncated": false,
+                  "batches": [],
+                  "bundles": [],
+                  "checked_on": "2026-10-06"
+                },
+                "limitations": [
+                  "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+                  "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (reservation_batch; bounded task scope)",
+              "params": {
+                "line_name": "88t3p9gmjk"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 0.2573587894439697
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_5c0b3ca1305a4c799195f30435651fb7",
+            "tool_name": "erp_error_events",
+            "description": "erp_error_events",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Error Log",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00002",
+                  "start": "2026-10-05 09:45:00",
+                  "end": "2026-10-05 10:15:00",
+                  "site_timezone": "Asia/Shanghai"
+                },
+                "collected_at": "2026-10-05T16:28:00.191637Z",
+                "business_at": "2026-10-05T10:00:00+08:00",
+                "payload": {
+                  "events": [],
+                  "truncated": false
+                },
+                "limitations": [
+                  "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (error_events; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.2225050926208496
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_01926bd3cba5444e80bb1d9cc867b0e0",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00002"
+                },
+                "collected_at": "2026-10-05T16:28:00.493646Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00002",
+                    "docstatus": 0,
+                    "status": "Draft",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:35.747450",
+                    "items": [
+                      {
+                        "name": "88t3p9gmjk",
+                        "idx": 1,
+                        "item_code": "LAB-SHORTAGE",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 3.0,
+                        "stock_qty": 3.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00002",
+                        "so_detail": "88n03k505o",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00002",
+                      "docstatus": 1,
+                      "status": "To Deliver and Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Not Delivered",
+                      "per_delivered": 0.0,
+                      "modified": "2026-10-05 23:33:35.391975",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.2984640598297119
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          }
+        ],
+        "metrics": {
+          "elapsed_seconds": 2.451219200000196,
+          "tool_calls": 6,
+          "successful_calls": 6,
+          "model": null,
+          "max_rounds": 4,
+          "tool_timeout_seconds": 8,
+          "tool_success_rate": 1.0
+        },
+        "engine": "verified_rules",
+        "evidence_inconsistent": false,
+        "generated_at": "2026-10-05T16:28:00.547416+00:00",
+        "model_hypotheses": [],
+        "model_target": null,
+        "model_usage": {
+          "status": "not_called",
+          "cost": "not_available"
+        },
+        "evidence_consistent": true,
+        "approved_case_references": [],
+        "business_state": {
+          "business_complete": false,
+          "docstatus": 0,
+          "status": "Draft",
+          "modified": "2026-10-05 23:33:35.747450",
+          "readable": true
+        },
+        "confirmed_facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00002 docstatus=0，状态=Draft，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E006"
+            ]
+          },
+          {
+            "text": "发货单仍为草稿，不能据此确认业务已完成。",
+            "evidence_ids": [
+              "E006"
+            ]
+          },
+          {
+            "text": "物料 LAB-SHORTAGE / 仓库 Dispatch - HL 本单合计需 3.0 库存单位；当前量 0.0，过账时点量 0.0。",
+            "evidence_ids": [
+              "E006",
+              "E003"
+            ]
+          }
+        ],
+        "candidate_causes": [
+          {
+            "code": "stock_shortage",
+            "status": "confirmed",
+            "text": "物料 LAB-SHORTAGE 在仓库 Dispatch - HL 当前库存少于本单所需数量。",
+            "evidence_ids": [
+              "E006",
+              "E003"
+            ]
+          }
+        ],
+        "supporting_evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_09a88a1393a647fca251dbfd81900659",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:27:58.370919Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 0.22607731819152832
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_94cdc7d16def4cd8bd4815737159cd74",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002"
+            },
+            "collected_at": "2026-10-05T16:27:58.733908Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00002",
+                "docstatus": 0,
+                "status": "Draft",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:35.747450",
+                "items": [
+                  {
+                    "name": "88t3p9gmjk",
+                    "idx": 1,
+                    "item_code": "LAB-SHORTAGE",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 3.0,
+                    "stock_qty": 3.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00002",
+                    "so_detail": "88n03k505o",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00002",
+                  "docstatus": 1,
+                  "status": "To Deliver and Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Not Delivered",
+                  "per_delivered": 0.0,
+                  "modified": "2026-10-05 23:33:35.391975",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.33492302894592285
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_18762272885f4214a6c4f7641c14b277",
+            "tool_name": "erp_stock_evidence",
+            "status": "success",
+            "source": "holmes_readonly.api.stock_evidence",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk",
+              "item_code": "LAB-SHORTAGE",
+              "warehouse": "Dispatch - HL"
+            },
+            "collected_at": "2026-10-05T16:27:59.680379Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk",
+              "delivery_note_modified": "2026-10-05 23:33:35.747450",
+              "item_code": "LAB-SHORTAGE",
+              "warehouse": "Dispatch - HL",
+              "posting_date": "2026-10-05",
+              "posting_time": "10:00:00",
+              "posting_qty": 0.0,
+              "current_qty": 0.0,
+              "authority": "erpnext.stock.utils.get_stock_balance",
+              "current_as_of": "2026-10-06 00:27:59.579138",
+              "allow_negative_stock": false,
+              "item": {
+                "name": "LAB-SHORTAGE",
+                "is_stock_item": 1,
+                "disabled": 0,
+                "has_batch_no": 0,
+                "has_serial_no": 0,
+                "stock_uom": "Nos",
+                "allow_negative_stock": 0,
+                "inspection_required_before_delivery": 0
+              },
+              "warehouse_info": {
+                "name": "Dispatch - HL",
+                "company": "Holmes Isolated Lab",
+                "disabled": 0,
+                "is_group": 0
+              },
+              "required_stock_qty": 3.0,
+              "delivery_note_docstatus": 0,
+              "is_return": 0,
+              "snapshot_consistent": true,
+              "ledger": [],
+              "ledger_truncated": false
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.9277591705322266
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_17aad1d6c6304596a37e4542d010594d",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk"
+            },
+            "collected_at": "2026-10-05T16:27:59.953933Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "line_name": "88t3p9gmjk",
+              "line": {
+                "name": "88t3p9gmjk",
+                "idx": 1,
+                "item_code": "LAB-SHORTAGE",
+                "warehouse": "Dispatch - HL",
+                "qty": 3.0,
+                "stock_qty": 3.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00002",
+                "so_detail": "88n03k505o",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:35.747450",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 0.2573587894439697
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_5c0b3ca1305a4c799195f30435651fb7",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:28:00.191637Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 0.2225050926208496
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_01926bd3cba5444e80bb1d9cc867b0e0",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00002"
+            },
+            "collected_at": "2026-10-05T16:28:00.493646Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00002",
+                "docstatus": 0,
+                "status": "Draft",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:35.747450",
+                "items": [
+                  {
+                    "name": "88t3p9gmjk",
+                    "idx": 1,
+                    "item_code": "LAB-SHORTAGE",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 3.0,
+                    "stock_qty": 3.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00002",
+                    "so_detail": "88n03k505o",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00002",
+                  "docstatus": 1,
+                  "status": "To Deliver and Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Not Delivered",
+                  "per_delivered": 0.0,
+                  "modified": "2026-10-05 23:33:35.391975",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.2984640598297119
+          }
+        ],
+        "missing_information": [
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。"
+        ],
+        "next_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ]
+      }
+    },
+    {
+      "scenario": "actual_engine_no_model_normal",
+      "observed_at": "2026-10-05T16:28:03.801082+00:00",
+      "result": {
+        "schema_version": "erpnext-support/v1",
+        "classification": "normal",
+        "status": "business_complete",
+        "mode": "rules_degraded",
+        "facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00001 docstatus=1，状态=To Bill，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E006"
+            ]
+          },
+          {
+            "text": "发货单已提交，且每条库存明细存在对应未取消的出库流水；这是 ERP 过账复核，仍需人工确认实际发货与工单关闭。",
+            "evidence_ids": [
+              "E006",
+              "E003"
+            ]
+          }
+        ],
+        "causes": [],
+        "evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_14a2012714ed47dc8a3ded93dc2ff2ff",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:28:01.374877Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 0.2714803218841553
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_feb6915466a8420aa261d5fe6f75084c",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:28:01.689449Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.29440951347351074
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_7921f174f15b494ab47dca72680927c9",
+            "tool_name": "erp_stock_evidence",
+            "status": "success",
+            "source": "holmes_readonly.api.stock_evidence",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL"
+            },
+            "collected_at": "2026-10-05T16:28:02.509146Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL",
+              "posting_date": "2026-10-05",
+              "posting_time": "10:00:00",
+              "posting_qty": 18.0,
+              "current_qty": 18.0,
+              "authority": "erpnext.stock.utils.get_stock_balance",
+              "current_as_of": "2026-10-06 00:28:02.378064",
+              "allow_negative_stock": false,
+              "item": {
+                "name": "LAB-NORMAL",
+                "is_stock_item": 1,
+                "disabled": 0,
+                "has_batch_no": 0,
+                "has_serial_no": 0,
+                "stock_uom": "Nos",
+                "allow_negative_stock": 0,
+                "inspection_required_before_delivery": 0
+              },
+              "warehouse_info": {
+                "name": "Dispatch - HL",
+                "company": "Holmes Isolated Lab",
+                "disabled": 0,
+                "is_group": 0
+              },
+              "required_stock_qty": 2.0,
+              "delivery_note_docstatus": 1,
+              "is_return": 0,
+              "snapshot_consistent": true,
+              "ledger": [
+                {
+                  "name": "16f50a0430",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-05",
+                  "posting_time": "10:00:00",
+                  "posting_datetime": "2026-10-05 10:00:00",
+                  "actual_qty": -2.0,
+                  "qty_after_transaction": 18.0,
+                  "voucher_type": "Delivery Note",
+                  "voucher_no": "MAT-DN-2026-00001",
+                  "voucher_detail_no": "88avusekpn",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:34.849917",
+                  "modified": "2026-10-05 23:33:34.895264"
+                },
+                {
+                  "name": "26a087e171",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-03",
+                  "posting_time": "9:00:00",
+                  "posting_datetime": "2026-10-03 09:00:00",
+                  "actual_qty": 20.0,
+                  "qty_after_transaction": 20.0,
+                  "voucher_type": "Stock Entry",
+                  "voucher_no": "MAT-STE-2026-00001",
+                  "voucher_detail_no": "86l7ggcpbv",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:29.369971",
+                  "modified": "2026-10-05 23:33:29.680589"
+                }
+              ],
+              "ledger_truncated": false
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.8053135871887207
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_9945de591a1642c188ee0c6cc927aef7",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:28:02.803612Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "line": {
+                "name": "88avusekpn",
+                "idx": 1,
+                "item_code": "LAB-NORMAL",
+                "warehouse": "Dispatch - HL",
+                "qty": 2.0,
+                "stock_qty": 2.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00001",
+                "so_detail": "87mjdoobl0",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 0.25463414192199707
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_03745e98e2e3447f9cd0e7617c016841",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:28:03.049237Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 0.2198014259338379
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_b0523c513945495aa6865663058714eb",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:28:03.351062Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.30018186569213867
+          }
+        ],
+        "missing": [
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。"
+        ],
+        "limits": [
+          "operator_submit_permission_unknown",
+          "runtime_health_not_available",
+          "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+          "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。",
+          "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。",
+          "诊断保持 ERP 只读，人工处理与关闭工单由授权人员完成。",
+          "API 可用不证明数据库、Redis、容器或物理发货完成；运行层采集尚未接入。",
+          "未匹配经人工审核且满足版本条件的已知缺陷案例，不推断当前版本存在历史缺陷。",
+          "模型未配置、未授权或未完成；当前仅返回实际采证与经过验证的规则结果，未完成完整模型Agent诊断。"
+        ],
+        "manual_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ],
+        "verification": [
+          "人工处理后重新读取同一发货单、库存权威结果和对应未取消的出库流水。",
+          "API 恢复或单据状态变化不能证明旧候选原因成立；对照原错误与业务结果，由售后人员人工确认关闭。"
+        ],
+        "tool_calls": [
+          {
+            "tool_call_id": "tool_14a2012714ed47dc8a3ded93dc2ff2ff",
+            "tool_name": "erp_capabilities",
+            "description": "erp_capabilities",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "holmes_readonly.api.capabilities",
+                "query": {},
+                "collected_at": "2026-10-05T16:28:01.374877Z",
+                "business_at": null,
+                "payload": {
+                  "erpnext_version": "15.85.1",
+                  "frappe_version": "15.87.0",
+                  "version_supported": true,
+                  "installed_apps": [
+                    {
+                      "name": "frappe",
+                      "version": "15.87.0"
+                    },
+                    {
+                      "name": "erpnext",
+                      "version": "15.85.1"
+                    },
+                    {
+                      "name": "holmes_readonly",
+                      "version": "0.1.0"
+                    }
+                  ],
+                  "read_permissions": {
+                    "Delivery Note": true,
+                    "Sales Order": true,
+                    "Item": true,
+                    "Warehouse": true,
+                    "Bin": true,
+                    "Stock Ledger Entry": true,
+                    "Stock Reservation Entry": true,
+                    "Batch": true,
+                    "Serial and Batch Bundle": true,
+                    "Error Log": true
+                  },
+                  "site_timezone": "Asia/Shanghai",
+                  "operator_submit_permission": "unknown",
+                  "runtime_health": "not_configured"
+                },
+                "limitations": [
+                  "operator_submit_permission_unknown",
+                  "runtime_health_not_available"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (capabilities; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.2714803218841553
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_feb6915466a8420aa261d5fe6f75084c",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001"
+                },
+                "collected_at": "2026-10-05T16:28:01.689449Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00001",
+                    "docstatus": 1,
+                    "status": "To Bill",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:34.634048",
+                    "items": [
+                      {
+                        "name": "88avusekpn",
+                        "idx": 1,
+                        "item_code": "LAB-NORMAL",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 2.0,
+                        "stock_qty": 2.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00001",
+                        "so_detail": "87mjdoobl0",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00001",
+                      "docstatus": 1,
+                      "status": "To Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Fully Delivered",
+                      "per_delivered": 100.0,
+                      "modified": "2026-10-05 23:33:34.557101",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.29440951347351074
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_7921f174f15b494ab47dca72680927c9",
+            "tool_name": "erp_stock_evidence",
+            "description": "erp_stock_evidence",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "holmes_readonly.api.stock_evidence",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL"
+                },
+                "collected_at": "2026-10-05T16:28:02.509146Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn",
+                  "delivery_note_modified": "2026-10-05 23:33:34.634048",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-05",
+                  "posting_time": "10:00:00",
+                  "posting_qty": 18.0,
+                  "current_qty": 18.0,
+                  "authority": "erpnext.stock.utils.get_stock_balance",
+                  "current_as_of": "2026-10-06 00:28:02.378064",
+                  "allow_negative_stock": false,
+                  "item": {
+                    "name": "LAB-NORMAL",
+                    "is_stock_item": 1,
+                    "disabled": 0,
+                    "has_batch_no": 0,
+                    "has_serial_no": 0,
+                    "stock_uom": "Nos",
+                    "allow_negative_stock": 0,
+                    "inspection_required_before_delivery": 0
+                  },
+                  "warehouse_info": {
+                    "name": "Dispatch - HL",
+                    "company": "Holmes Isolated Lab",
+                    "disabled": 0,
+                    "is_group": 0
+                  },
+                  "required_stock_qty": 2.0,
+                  "delivery_note_docstatus": 1,
+                  "is_return": 0,
+                  "snapshot_consistent": true,
+                  "ledger": [
+                    {
+                      "name": "16f50a0430",
+                      "item_code": "LAB-NORMAL",
+                      "warehouse": "Dispatch - HL",
+                      "posting_date": "2026-10-05",
+                      "posting_time": "10:00:00",
+                      "posting_datetime": "2026-10-05 10:00:00",
+                      "actual_qty": -2.0,
+                      "qty_after_transaction": 18.0,
+                      "voucher_type": "Delivery Note",
+                      "voucher_no": "MAT-DN-2026-00001",
+                      "voucher_detail_no": "88avusekpn",
+                      "is_cancelled": 0,
+                      "creation": "2026-10-05 23:33:34.849917",
+                      "modified": "2026-10-05 23:33:34.895264"
+                    },
+                    {
+                      "name": "26a087e171",
+                      "item_code": "LAB-NORMAL",
+                      "warehouse": "Dispatch - HL",
+                      "posting_date": "2026-10-03",
+                      "posting_time": "9:00:00",
+                      "posting_datetime": "2026-10-03 09:00:00",
+                      "actual_qty": 20.0,
+                      "qty_after_transaction": 20.0,
+                      "voucher_type": "Stock Entry",
+                      "voucher_no": "MAT-STE-2026-00001",
+                      "voucher_detail_no": "86l7ggcpbv",
+                      "is_cancelled": 0,
+                      "creation": "2026-10-05 23:33:29.369971",
+                      "modified": "2026-10-05 23:33:29.680589"
+                    }
+                  ],
+                  "ledger_truncated": false
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (stock_evidence; bounded task scope)",
+              "params": {
+                "line_name": "88avusekpn"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 0.8053135871887207
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_9945de591a1642c188ee0c6cc927aef7",
+            "tool_name": "erp_reservation_batch",
+            "description": "erp_reservation_batch",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn"
+                },
+                "collected_at": "2026-10-05T16:28:02.803612Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "line_name": "88avusekpn",
+                  "line": {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  },
+                  "is_return": 0,
+                  "delivery_note_modified": "2026-10-05 23:33:34.634048",
+                  "reservations": [],
+                  "reservations_truncated": false,
+                  "batches": [],
+                  "bundles": [],
+                  "checked_on": "2026-10-06"
+                },
+                "limitations": [
+                  "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+                  "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (reservation_batch; bounded task scope)",
+              "params": {
+                "line_name": "88avusekpn"
+              },
+              "icon_url": null,
+              "elapsed_seconds": 0.25463414192199707
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_03745e98e2e3447f9cd0e7617c016841",
+            "tool_name": "erp_error_events",
+            "description": "erp_error_events",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Error Log",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001",
+                  "start": "2026-10-05 09:45:00",
+                  "end": "2026-10-05 10:15:00",
+                  "site_timezone": "Asia/Shanghai"
+                },
+                "collected_at": "2026-10-05T16:28:03.049237Z",
+                "business_at": "2026-10-05T10:00:00+08:00",
+                "payload": {
+                  "events": [],
+                  "truncated": false
+                },
+                "limitations": [
+                  "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+                ]
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (error_events; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.2198014259338379
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          },
+          {
+            "tool_call_id": "tool_b0523c513945495aa6865663058714eb",
+            "tool_name": "erp_delivery_context",
+            "description": "erp_delivery_context",
+            "result": {
+              "schema_version": "robusta:v1.0.0",
+              "status": "success",
+              "error": null,
+              "return_code": null,
+              "data": {
+                "source": "Frappe resource: Delivery Note/Sales Order",
+                "query": {
+                  "delivery_note": "MAT-DN-2026-00001"
+                },
+                "collected_at": "2026-10-05T16:28:03.351062Z",
+                "business_at": "2026-10-05T10:00:00",
+                "payload": {
+                  "delivery_note": {
+                    "name": "MAT-DN-2026-00001",
+                    "docstatus": 1,
+                    "status": "To Bill",
+                    "company": "Holmes Isolated Lab",
+                    "posting_date": "2026-10-05",
+                    "posting_time": "10:00:00",
+                    "is_return": 0,
+                    "modified": "2026-10-05 23:33:34.634048",
+                    "items": [
+                      {
+                        "name": "88avusekpn",
+                        "idx": 1,
+                        "item_code": "LAB-NORMAL",
+                        "warehouse": "Dispatch - HL",
+                        "qty": 2.0,
+                        "stock_qty": 2.0,
+                        "uom": "Nos",
+                        "stock_uom": "Nos",
+                        "conversion_factor": 1.0,
+                        "against_sales_order": "SAL-ORD-2026-00001",
+                        "so_detail": "87mjdoobl0",
+                        "use_serial_batch_fields": 0
+                      }
+                    ],
+                    "items_truncated": false
+                  },
+                  "sales_orders": [
+                    {
+                      "name": "SAL-ORD-2026-00001",
+                      "docstatus": 1,
+                      "status": "To Bill",
+                      "company": "Holmes Isolated Lab",
+                      "delivery_status": "Fully Delivered",
+                      "per_delivered": 100.0,
+                      "modified": "2026-10-05 23:33:34.557101",
+                      "reserve_stock": 0
+                    }
+                  ]
+                },
+                "limitations": []
+              },
+              "images": null,
+              "url": null,
+              "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+              "params": {},
+              "icon_url": null,
+              "elapsed_seconds": 0.30018186569213867
+            },
+            "size": null,
+            "toolset_name": "erpnext/support-readonly"
+          }
+        ],
+        "metrics": {
+          "elapsed_seconds": 2.403851700000814,
+          "tool_calls": 6,
+          "successful_calls": 6,
+          "model": null,
+          "max_rounds": 4,
+          "tool_timeout_seconds": 8,
+          "tool_success_rate": 1.0
+        },
+        "engine": "verified_rules",
+        "evidence_inconsistent": false,
+        "generated_at": "2026-10-05T16:28:03.436888+00:00",
+        "model_hypotheses": [],
+        "model_target": null,
+        "model_usage": {
+          "status": "not_called",
+          "cost": "not_available"
+        },
+        "evidence_consistent": true,
+        "approved_case_references": [],
+        "business_state": {
+          "business_complete": true,
+          "docstatus": 1,
+          "status": "To Bill",
+          "modified": "2026-10-05 23:33:34.634048",
+          "readable": true
+        },
+        "confirmed_facts": [
+          {
+            "text": "采集版本为 ERPNext 15.85.1 / Frappe 15.87.0。",
+            "evidence_ids": [
+              "E001"
+            ]
+          },
+          {
+            "text": "发货单 MAT-DN-2026-00001 docstatus=1，状态=To Bill，过账=2026-10-05 10:00:00。",
+            "evidence_ids": [
+              "E006"
+            ]
+          },
+          {
+            "text": "发货单已提交，且每条库存明细存在对应未取消的出库流水；这是 ERP 过账复核，仍需人工确认实际发货与工单关闭。",
+            "evidence_ids": [
+              "E006",
+              "E003"
+            ]
+          }
+        ],
+        "candidate_causes": [],
+        "supporting_evidence": [
+          {
+            "id": "E001",
+            "tool_call_id": "tool_14a2012714ed47dc8a3ded93dc2ff2ff",
+            "tool_name": "erp_capabilities",
+            "status": "success",
+            "source": "holmes_readonly.api.capabilities",
+            "query": {},
+            "collected_at": "2026-10-05T16:28:01.374877Z",
+            "business_at": null,
+            "payload": {
+              "erpnext_version": "15.85.1",
+              "frappe_version": "15.87.0",
+              "version_supported": true,
+              "installed_apps": [
+                {
+                  "name": "frappe",
+                  "version": "15.87.0"
+                },
+                {
+                  "name": "erpnext",
+                  "version": "15.85.1"
+                },
+                {
+                  "name": "holmes_readonly",
+                  "version": "0.1.0"
+                }
+              ],
+              "read_permissions": {
+                "Delivery Note": true,
+                "Sales Order": true,
+                "Item": true,
+                "Warehouse": true,
+                "Bin": true,
+                "Stock Ledger Entry": true,
+                "Stock Reservation Entry": true,
+                "Batch": true,
+                "Serial and Batch Bundle": true,
+                "Error Log": true
+              },
+              "site_timezone": "Asia/Shanghai",
+              "operator_submit_permission": "unknown",
+              "runtime_health": "not_configured"
+            },
+            "limitations": [
+              "operator_submit_permission_unknown",
+              "runtime_health_not_available"
+            ],
+            "elapsed_seconds": 0.2714803218841553
+          },
+          {
+            "id": "E002",
+            "tool_call_id": "tool_feb6915466a8420aa261d5fe6f75084c",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:28:01.689449Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.29440951347351074
+          },
+          {
+            "id": "E003",
+            "tool_call_id": "tool_7921f174f15b494ab47dca72680927c9",
+            "tool_name": "erp_stock_evidence",
+            "status": "success",
+            "source": "holmes_readonly.api.stock_evidence",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL"
+            },
+            "collected_at": "2026-10-05T16:28:02.509146Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "item_code": "LAB-NORMAL",
+              "warehouse": "Dispatch - HL",
+              "posting_date": "2026-10-05",
+              "posting_time": "10:00:00",
+              "posting_qty": 18.0,
+              "current_qty": 18.0,
+              "authority": "erpnext.stock.utils.get_stock_balance",
+              "current_as_of": "2026-10-06 00:28:02.378064",
+              "allow_negative_stock": false,
+              "item": {
+                "name": "LAB-NORMAL",
+                "is_stock_item": 1,
+                "disabled": 0,
+                "has_batch_no": 0,
+                "has_serial_no": 0,
+                "stock_uom": "Nos",
+                "allow_negative_stock": 0,
+                "inspection_required_before_delivery": 0
+              },
+              "warehouse_info": {
+                "name": "Dispatch - HL",
+                "company": "Holmes Isolated Lab",
+                "disabled": 0,
+                "is_group": 0
+              },
+              "required_stock_qty": 2.0,
+              "delivery_note_docstatus": 1,
+              "is_return": 0,
+              "snapshot_consistent": true,
+              "ledger": [
+                {
+                  "name": "16f50a0430",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-05",
+                  "posting_time": "10:00:00",
+                  "posting_datetime": "2026-10-05 10:00:00",
+                  "actual_qty": -2.0,
+                  "qty_after_transaction": 18.0,
+                  "voucher_type": "Delivery Note",
+                  "voucher_no": "MAT-DN-2026-00001",
+                  "voucher_detail_no": "88avusekpn",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:34.849917",
+                  "modified": "2026-10-05 23:33:34.895264"
+                },
+                {
+                  "name": "26a087e171",
+                  "item_code": "LAB-NORMAL",
+                  "warehouse": "Dispatch - HL",
+                  "posting_date": "2026-10-03",
+                  "posting_time": "9:00:00",
+                  "posting_datetime": "2026-10-03 09:00:00",
+                  "actual_qty": 20.0,
+                  "qty_after_transaction": 20.0,
+                  "voucher_type": "Stock Entry",
+                  "voucher_no": "MAT-STE-2026-00001",
+                  "voucher_detail_no": "86l7ggcpbv",
+                  "is_cancelled": 0,
+                  "creation": "2026-10-05 23:33:29.369971",
+                  "modified": "2026-10-05 23:33:29.680589"
+                }
+              ],
+              "ledger_truncated": false
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.8053135871887207
+          },
+          {
+            "id": "E004",
+            "tool_call_id": "tool_9945de591a1642c188ee0c6cc927aef7",
+            "tool_name": "erp_reservation_batch",
+            "status": "success",
+            "source": "Frappe resources: Stock Reservation Entry/Batch/Serial and Batch Bundle",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn"
+            },
+            "collected_at": "2026-10-05T16:28:02.803612Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "line_name": "88avusekpn",
+              "line": {
+                "name": "88avusekpn",
+                "idx": 1,
+                "item_code": "LAB-NORMAL",
+                "warehouse": "Dispatch - HL",
+                "qty": 2.0,
+                "stock_qty": 2.0,
+                "uom": "Nos",
+                "stock_uom": "Nos",
+                "conversion_factor": 1.0,
+                "against_sales_order": "SAL-ORD-2026-00001",
+                "so_detail": "87mjdoobl0",
+                "use_serial_batch_fields": 0
+              },
+              "is_return": 0,
+              "delivery_note_modified": "2026-10-05 23:33:34.634048",
+              "reservations": [],
+              "reservations_truncated": false,
+              "batches": [],
+              "bundles": [],
+              "checked_on": "2026-10-06"
+            },
+            "limitations": [
+              "预留结果只覆盖诊断账号可见的授权范围，空列表不能证明没有隐藏预留。",
+              "批次库存的自动分配与历史可用量未适配；不调用可能写入的批次重算或预留方法。"
+            ],
+            "elapsed_seconds": 0.25463414192199707
+          },
+          {
+            "id": "E005",
+            "tool_call_id": "tool_03745e98e2e3447f9cd0e7617c016841",
+            "tool_name": "erp_error_events",
+            "status": "success",
+            "source": "Frappe resource: Error Log",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001",
+              "start": "2026-10-05 09:45:00",
+              "end": "2026-10-05 10:15:00",
+              "site_timezone": "Asia/Shanghai"
+            },
+            "collected_at": "2026-10-05T16:28:03.049237Z",
+            "business_at": "2026-10-05T10:00:00+08:00",
+            "payload": {
+              "events": [],
+              "truncated": false
+            },
+            "limitations": [
+              "仅关联发货单且位于时间窗内的 Error Log；没有关联字段的服务器/容器日志尚未接入。"
+            ],
+            "elapsed_seconds": 0.2198014259338379
+          },
+          {
+            "id": "E006",
+            "tool_call_id": "tool_b0523c513945495aa6865663058714eb",
+            "tool_name": "erp_delivery_context",
+            "status": "success",
+            "source": "Frappe resource: Delivery Note/Sales Order",
+            "query": {
+              "delivery_note": "MAT-DN-2026-00001"
+            },
+            "collected_at": "2026-10-05T16:28:03.351062Z",
+            "business_at": "2026-10-05T10:00:00",
+            "payload": {
+              "delivery_note": {
+                "name": "MAT-DN-2026-00001",
+                "docstatus": 1,
+                "status": "To Bill",
+                "company": "Holmes Isolated Lab",
+                "posting_date": "2026-10-05",
+                "posting_time": "10:00:00",
+                "is_return": 0,
+                "modified": "2026-10-05 23:33:34.634048",
+                "items": [
+                  {
+                    "name": "88avusekpn",
+                    "idx": 1,
+                    "item_code": "LAB-NORMAL",
+                    "warehouse": "Dispatch - HL",
+                    "qty": 2.0,
+                    "stock_qty": 2.0,
+                    "uom": "Nos",
+                    "stock_uom": "Nos",
+                    "conversion_factor": 1.0,
+                    "against_sales_order": "SAL-ORD-2026-00001",
+                    "so_detail": "87mjdoobl0",
+                    "use_serial_batch_fields": 0
+                  }
+                ],
+                "items_truncated": false
+              },
+              "sales_orders": [
+                {
+                  "name": "SAL-ORD-2026-00001",
+                  "docstatus": 1,
+                  "status": "To Bill",
+                  "company": "Holmes Isolated Lab",
+                  "delivery_status": "Fully Delivered",
+                  "per_delivered": 100.0,
+                  "modified": "2026-10-05 23:33:34.557101",
+                  "reserve_stock": 0
+                }
+              ]
+            },
+            "limitations": [],
+            "elapsed_seconds": 0.30018186569213867
+          }
+        ],
+        "missing_information": [
+          "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。"
+        ],
+        "next_steps": [
+          "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+          "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+        ]
+      }
+    }
+  ],
+  "note": "Actual observations only; pytest output supplies assertion outcomes. No model accuracy was measured."
+}

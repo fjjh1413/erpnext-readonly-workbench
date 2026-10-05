@@ -1,0 +1,15 @@
+{
+  "result": "failed",
+  "stage": "manual_close",
+  "error_type": "TimeoutError",
+  "locations": [
+    "workbench.mjs:95:99"
+  ],
+  "completed_checks": [
+    "actual_login",
+    "create_ticket",
+    "actual_diagnosis",
+    "expand_actual_evidence"
+  ],
+  "elapsed_seconds": 77.99785589999999
+}

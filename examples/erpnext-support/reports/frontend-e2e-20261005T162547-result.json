@@ -1,0 +1,57 @@
+{
+  "scope": "isolated_local_erp_lab",
+  "mocks": false,
+  "browser": {
+    "channel": "msedge",
+    "version": "154.0.4258.53"
+  },
+  "browser_errors": 0,
+  "checks": [
+    "actual_login",
+    "create_ticket",
+    "actual_diagnosis",
+    "expand_actual_evidence",
+    "record_actual_human_action",
+    "actual_business_review",
+    "manual_close",
+    "case_workspace",
+    "case_create",
+    "case_search",
+    "case_human_approve",
+    "case_edit_revokes_approval",
+    "case_delete_own_qa_data",
+    "actual_environment_check",
+    "runtime_collector_actual_result_display",
+    "environment_create_same_authorized_origin",
+    "environment_edit",
+    "environment_delete_own_qa_data",
+    "real_403",
+    "real_empty",
+    "analyst_controls"
+  ],
+  "ticket_id": "34c56f6a2d6b40a49b4034906052c1f0",
+  "delivery_note": "MAT-DN-2026-00001",
+  "diagnostic_state": "partial",
+  "review_state": "partial",
+  "business_complete": true,
+  "manual_override": false,
+  "diagnosis_metrics": {
+    "elapsed_seconds": 8.584678600000188,
+    "tool_calls": 7,
+    "successful_calls": 7,
+    "model": null,
+    "max_rounds": 4,
+    "tool_timeout_seconds": 8,
+    "tool_success_rate": 1
+  },
+  "collector_status": "success",
+  "collector_error": null,
+  "elapsed_seconds": 72.00026299999999,
+  "artifacts": [
+    "diagnosis.png",
+    "case.png",
+    "environment.png",
+    "analyst-empty.png"
+  ],
+  "note": "Component tests separately cover loading/interrupted/error states with explicitly mocked HTTP. This run did not mutate ERP data. QA analyst has no environment grants. Only the case and duplicate environment created by this run were deleted. Collector UI accepts explicit error as a correctly displayed degraded state; see collector_status rather than inferring collector availability from UI test success."
+}

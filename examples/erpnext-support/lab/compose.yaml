@@ -1,0 +1,136 @@
+# Adapted service topology from official frappe/frappe_docker pwd.yml.
+# Test-only deployment; every persistent resource is project-scoped and labelled.
+x-erp: &erp
+  image: frappe/erpnext:v15.85.1
+  environment: &erp-env
+    ERP_LAB_ID: ${ERP_LAB_ID:?use lab.py}
+    PYTHONPATH: /home/frappe/frappe-bench/apps/holmes_readonly
+    FRAPPE_REDIS_CACHE: redis://redis-cache:6379
+    FRAPPE_REDIS_QUEUE: redis://redis-queue:6379
+  volumes: &erp-volumes
+    - sites:/home/frappe/frappe-bench/sites
+    - logs:/home/frappe/frappe-bench/logs
+    - ./frappe_app:/home/frappe/frappe-bench/apps/holmes_readonly:ro
+  networks: [core]
+  labels:
+    io.holmes.erp-lab: ${ERP_LAB_ID:?use lab.py}
+  security_opt: [no-new-privileges:true]
+  restart: "no"
+services:
+  db:
+    image: mariadb:10.6.22
+    command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --skip-character-set-client-handshake]
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+    secrets: [db_root_password]
+    volumes: [db-data:/var/lib/mysql]
+    networks: [core]
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    mem_limit: 1024m
+  redis-cache:
+    image: redis:6.2.18-alpine
+    networks: [core]
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+    tmpfs: [/data]
+    mem_limit: 128m
+  redis-queue:
+    image: redis:6.2.18-alpine
+    networks: [core]
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+    volumes: [redis-data:/data]
+    mem_limit: 128m
+  configurator:
+    <<: *erp
+    entrypoint: [/home/frappe/frappe-bench/env/bin/python, /opt/lab/configure.py]
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+      - ./frappe_app:/home/frappe/frappe-bench/apps/holmes_readonly:ro
+      - ./scripts:/opt/lab:ro
+  create-site:
+    <<: *erp
+    entrypoint: [/home/frappe/frappe-bench/env/bin/python, /opt/lab/bootstrap.py]
+    secrets: [db_root_password, admin_password]
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+      - ./frappe_app:/home/frappe/frappe-bench/apps/holmes_readonly:ro
+      - ./scripts:/opt/lab:ro
+    depends_on:
+      db: {condition: service_healthy}
+      configurator: {condition: service_completed_successfully}
+      redis-cache: {condition: service_started}
+      redis-queue: {condition: service_started}
+    mem_limit: 1536m
+  backend:
+    <<: *erp
+    environment:
+      <<: *erp-env
+      GUNICORN_WORKERS: "2"
+    depends_on:
+      create-site: {condition: service_completed_successfully}
+    mem_limit: 1024m
+  websocket:
+    <<: *erp
+    command: [node, /home/frappe/frappe-bench/apps/frappe/socketio.js]
+    depends_on:
+      create-site: {condition: service_completed_successfully}
+    mem_limit: 256m
+  worker:
+    <<: *erp
+    command: [bench, worker, --queue, "short,default,long"]
+    depends_on:
+      create-site: {condition: service_completed_successfully}
+    mem_limit: 512m
+  scheduler:
+    <<: *erp
+    command: [bench, schedule]
+    depends_on:
+      create-site: {condition: service_completed_successfully}
+    mem_limit: 256m
+  frontend:
+    <<: *erp
+    command: [nginx-entrypoint.sh]
+    environment:
+      BACKEND: backend:8000
+      FRAPPE_SITE_NAME_HEADER: frontend
+      SOCKETIO: websocket:9000
+      UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
+      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
+      UPSTREAM_REAL_IP_RECURSIVE: "off"
+      PROXY_READ_TIMEOUT: "120"
+      CLIENT_MAX_BODY_SIZE: 2m
+    networks: [core, entry]
+    ports:
+      - target: 8080
+        published: "8090"
+        host_ip: 127.0.0.1
+    depends_on:
+      backend: {condition: service_started}
+      websocket: {condition: service_started}
+    mem_limit: 128m
+networks:
+  core:
+    internal: true
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+  entry:
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+volumes:
+  sites:
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+  logs:
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+  db-data:
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+  redis-data:
+    labels: {io.holmes.erp-lab: '${ERP_LAB_ID:?use lab.py}'}
+secrets:
+  db_root_password:
+    file: ${ERP_SECRET_DIR:?use lab.py}/db_root_password
+  admin_password:
+    file: ${ERP_SECRET_DIR:?use lab.py}/admin_password

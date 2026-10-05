@@ -1,0 +1,2 @@
+*.sh text eol=lf
+reports/*.xml whitespace=-blank-at-eol,-blank-at-eof

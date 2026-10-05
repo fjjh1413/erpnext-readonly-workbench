@@ -1,0 +1,169 @@
+{
+  "kind": "real_erp_api_permission_and_stock_verification",
+  "model_invoked": false,
+  "project": "holmes-erp-07dff38559e8",
+  "base_url": "http://127.0.0.1:8090",
+  "utc": "2026-10-05T15:47:33.073803+00:00",
+  "checks": [
+    {
+      "case": "actual_versions_and_permissions",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 4350.081,
+      "result": {
+        "erpnext_version": "15.85.1",
+        "frappe_version": "15.87.0",
+        "site_timezone": "Asia/Shanghai",
+        "limitations": [
+          "operator_submit_permission_unknown",
+          "runtime_health_not_available"
+        ]
+      }
+    },
+    {
+      "case": "guest_capabilities_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 75.096,
+      "result": null
+    },
+    {
+      "case": "non_get_extension_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 67.143,
+      "result": null
+    },
+    {
+      "case": "normal_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 2578.702,
+      "result": {
+        "name": "MAT-DN-2026-00001",
+        "docstatus": 1
+      }
+    },
+    {
+      "case": "normal_authoritative_stock",
+      "http_status": 500,
+      "passed": false,
+      "elapsed_ms": 1434.743,
+      "result": null
+    },
+    {
+      "case": "shortage_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 153.932,
+      "result": {
+        "name": "MAT-DN-2026-00002",
+        "docstatus": 0
+      }
+    },
+    {
+      "case": "shortage_authoritative_stock",
+      "http_status": 500,
+      "passed": false,
+      "elapsed_ms": 301.659,
+      "result": null
+    },
+    {
+      "case": "historical_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 188.08,
+      "result": {
+        "name": "MAT-DN-2026-00003",
+        "docstatus": 0
+      }
+    },
+    {
+      "case": "historical_authoritative_stock",
+      "http_status": 500,
+      "passed": false,
+      "elapsed_ms": 326.258,
+      "result": null
+    },
+    {
+      "case": "draft_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 217.124,
+      "result": {
+        "name": "MAT-DN-2026-00004",
+        "docstatus": 0
+      }
+    },
+    {
+      "case": "draft_authoritative_stock",
+      "http_status": 500,
+      "passed": false,
+      "elapsed_ms": 1962.282,
+      "result": null
+    },
+    {
+      "case": "cross_document_child_denied",
+      "http_status": 417,
+      "passed": true,
+      "elapsed_ms": 148.743,
+      "result": null
+    },
+    {
+      "case": "restricted_warehouse_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 188.208,
+      "result": null
+    },
+    {
+      "case": "allowed_warehouse_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 89.369,
+      "result": null
+    },
+    {
+      "case": "sales_order_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 1456.959,
+      "result": null
+    },
+    {
+      "case": "stock_ledger_permission_checked_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 126.325,
+      "result": {
+        "rows": 2
+      }
+    },
+    {
+      "case": "bin_permission_checked_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 112.992,
+      "result": {
+        "rows": 1
+      }
+    },
+    {
+      "case": "readonly_delivery_write_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 240.705,
+      "result": null
+    },
+    {
+      "case": "readonly_customer_create_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 493.981,
+      "result": null
+    }
+  ],
+  "passed": 15,
+  "total": 19,
+  "elapsed_ms": 14512.382
+}

@@ -153,13 +153,13 @@ def redact(value: Any, known_secrets: Iterable[str] = ()) -> Any:
     text = value
     for secret in sorted(secrets, key=len, reverse=True):
         text = text.replace(secret, REDACTED)
-    text = re.sub(r"(?i)([a-z][a-z0-9+.-]*://)[^\s/@:]+:[^\s/@]+@", rf"\1{REDACTED}@", text)
+    text = re.sub(r"(?i)(?<![a-z0-9+.-])([a-z][a-z0-9+.-]*://)[^\s/@:]+:[^\s/@]+@", rf"\1{REDACTED}@", text)
     text = re.sub(
         r"(?i)(authorization[\"']?\s*[:=]\s*)(?:\"[^\"]*\"|'[^']*'|(?:bearer|basic)\s+[^\s,;\"']+|[^\s,;\"']+)",
         rf"\1{REDACTED}", text,
     )
     text = re.sub(
-        r"(?i)((?:[\w-]*(?:password|passwd|secret|token|api[_-]?key)[\w-]*)[\"']?\s*[:=]\s*)(?:\"[^\"]*\"|'[^']*'|[^\s,;&]+)",
+        r"(?i)(?<![A-Za-z0-9_-])((?=[A-Za-z0-9_-]*(?:password|passwd|secret|token|api[_-]?key))[A-Za-z0-9_-]+[\"']?\s*[:=]\s*)(?:\"[^\"]*\"|'[^']*'|[^\s,;&]+)",
         rf"\1{REDACTED}",
         text,
     )

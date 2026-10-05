@@ -1,0 +1,32 @@
+# Customer template: configure an explicitly authorised HTTPS ERP origin in
+# the private settings file. No ERP/MariaDB/Redis or Docker daemon is exposed.
+services:
+  workbench:
+    image: ${WORKBENCH_IMAGE:?set the exact built image tag or digest}
+    user: 10001:10001
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    ports:
+      - target: 8765
+        published: "8765"
+        host_ip: 127.0.0.1
+    volumes:
+      - type: bind
+        source: ${WORKBENCH_RUNTIME_DIR:?use a fresh private runtime}
+        target: /state
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    environment:
+      ERP_SUPPORT_SETTINGS: /state/settings.json
+      LITELLM_LOCAL_MODEL_COST_MAP: "True"
+      ERP_SUPPORT_MODEL_API_KEY: ${ERP_SUPPORT_MODEL_API_KEY:-}
+    labels:
+      io.holmes.workbench: ${WORKBENCH_INSTANCE_ID:?use a new random instance id}
+    mem_limit: 1536m
+    networks: [outbound]
+networks:
+  outbound:
+    labels:
+      io.holmes.workbench: ${WORKBENCH_INSTANCE_ID:?use a new random instance id}

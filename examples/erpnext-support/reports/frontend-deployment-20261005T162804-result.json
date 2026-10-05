@@ -1,0 +1,22 @@
+{
+  "result": "passed",
+  "scope": "fresh_isolated_container_without_erp_environment",
+  "url": "http://127.0.0.1:8766",
+  "mocks": false,
+  "browser": {
+    "channel": "msedge",
+    "version": "154.0.4258.53"
+  },
+  "browser_errors": 0,
+  "checks": [
+    "real_container_login",
+    "tickets_empty",
+    "诊断详情_real_empty",
+    "案例库_real_empty",
+    "环境配置_real_empty",
+    "real_logout"
+  ],
+  "elapsed_seconds": 10.108,
+  "screenshot": "deployment-tickets.png",
+  "note": "No ERP requests, traces, saved sessions or credentials were exported."
+}

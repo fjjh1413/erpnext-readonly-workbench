@@ -1,0 +1,33 @@
+{
+  "fixture_actor": "Administrator",
+  "diagnosis_agent_writes": false,
+  "delivery_note": "MAT-DN-2026-00005",
+  "line_name": "j3o8o1p30o",
+  "item_code": "LAB-RECHECK",
+  "warehouse": "Dispatch - HL",
+  "sales_order": "SAL-ORD-2026-00005",
+  "before": {
+    "docstatus": 0,
+    "posting_qty": 0.0,
+    "current_qty": 0.0,
+    "actual_submit_error": "NegativeStockError"
+  },
+  "material_receipt": "MAT-STE-2026-00003",
+  "after_receipt_qty": 5.0,
+  "manual_actions": [
+    "submit_material_receipt_qty_5",
+    "update_delivery_posting_time",
+    "submit_delivery_note"
+  ],
+  "after": {
+    "docstatus": 1,
+    "posting_qty": 2.0,
+    "current_qty": 2.0
+  },
+  "restricted_delivery_note": "MAT-DN-2026-00006",
+  "restricted_line_name": "j4vr8bpf77",
+  "credential_files": {
+    "limited": "holmes_limited_secret.json",
+    "denied": "holmes_denied_secret.json"
+  }
+}

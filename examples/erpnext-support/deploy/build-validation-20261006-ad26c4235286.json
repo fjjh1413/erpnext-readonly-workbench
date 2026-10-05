@@ -1,0 +1,39 @@
+{
+  "kind": "real_workbench_docker_build_and_frozen_source_verification",
+  "utc": "2026-10-05T16:55:22.863738+00:00",
+  "image": "holmes-erp-workbench:20261006-ad26c4235286",
+  "image_id": "sha256:17afe00d629745bae12815a5e91048ce269f0efeb25618caaec52a979bd3231f",
+  "repo_digests": [
+    "holmes-erp-workbench@sha256:17afe00d629745bae12815a5e91048ce269f0efeb25618caaec52a979bd3231f"
+  ],
+  "architecture": "amd64",
+  "source_manifest": "build-source-manifest-20261006-ad26c4235286.json",
+  "source_manifest_sha256": "55a7f78e53cddfa9aaf2e29b1b2159526c2947948695f8705d55eaddc1e141cf",
+  "source_file_count": 291,
+  "all_holmes_and_frontend_source_paths_and_hashes_match_current": true,
+  "current_source_differences": [],
+  "poetry_lock_sha256": "87769c4aad693a3e6a5adb8abf3e473bd13bf6a0c5514c1fbd74dae3135e30ce",
+  "frontend_npm_lock_sha256": "a82f8261c3f750283269f7adf4d8215f917eb49f9a4ea8fe1b05941d60830ac5",
+  "dockerfile_sha256": "9688a3294a480e355978f523f9c771bb767d9e80c8cee522e60360f9abc92ed8",
+  "fixed_toolchains": {
+    "node": "24.21.0",
+    "python": "3.12.10",
+    "poetry": "1.8.5"
+  },
+  "base_image_digests": {
+    "node:24.21.0-bookworm-slim": "sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6",
+    "python:3.12.10-slim-bookworm": "sha256:fd95fa221297a88e1cf49c55ec1828edd7c5a428187e67b5d1805692d11588db"
+  },
+  "dependency_lockfiles_unchanged_between_source_and_build": true,
+  "build_exit_code": 0,
+  "npm_ci_and_frontend_build_completed": true,
+  "dependency_and_frontend_build_cache_reused_for_final_source_refresh": true,
+  "container_validation": "container-validation-20261005T165312215043Z.json",
+  "only_owned_smoke_container_and_network_cleaned": true,
+  "private_runtime_preserved": "instance-7c936fc98a7a",
+  "erp_calls": 0,
+  "model_invoked": false,
+  "limitations": [
+    "This validates deployment startup/login/static assets only; it is not container-to-ERP integration or real model accuracy."
+  ]
+}

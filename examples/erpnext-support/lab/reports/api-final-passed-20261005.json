@@ -1,0 +1,197 @@
+{
+  "kind": "real_erp_api_permission_and_stock_verification",
+  "model_invoked": false,
+  "project": "holmes-erp-07dff38559e8",
+  "base_url": "http://127.0.0.1:8090",
+  "utc": "2026-10-05T15:49:36.848603+00:00",
+  "checks": [
+    {
+      "case": "actual_versions_and_permissions",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 673.641,
+      "result": {
+        "erpnext_version": "15.85.1",
+        "frappe_version": "15.87.0",
+        "site_timezone": "Asia/Shanghai",
+        "limitations": [
+          "operator_submit_permission_unknown",
+          "runtime_health_not_available"
+        ]
+      }
+    },
+    {
+      "case": "guest_capabilities_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 278.143,
+      "result": null
+    },
+    {
+      "case": "non_get_extension_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 193.079,
+      "result": null
+    },
+    {
+      "case": "normal_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 394.736,
+      "result": {
+        "name": "MAT-DN-2026-00001",
+        "docstatus": 1
+      }
+    },
+    {
+      "case": "normal_authoritative_stock",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 424.409,
+      "result": {
+        "posting_qty": 18.0,
+        "current_qty": 18.0,
+        "posting_date": "2026-10-05",
+        "posting_time": "10:00:00",
+        "authority": "erpnext.stock.utils.get_stock_balance",
+        "limitations": []
+      }
+    },
+    {
+      "case": "shortage_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 391.96,
+      "result": {
+        "name": "MAT-DN-2026-00002",
+        "docstatus": 0
+      }
+    },
+    {
+      "case": "shortage_authoritative_stock",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 330.95,
+      "result": {
+        "posting_qty": 0.0,
+        "current_qty": 0.0,
+        "posting_date": "2026-10-05",
+        "posting_time": "10:00:00",
+        "authority": "erpnext.stock.utils.get_stock_balance",
+        "limitations": []
+      }
+    },
+    {
+      "case": "historical_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 123.27,
+      "result": {
+        "name": "MAT-DN-2026-00003",
+        "docstatus": 0
+      }
+    },
+    {
+      "case": "historical_authoritative_stock",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 277.281,
+      "result": {
+        "posting_qty": 0.0,
+        "current_qty": 10.0,
+        "posting_date": "2026-10-04",
+        "posting_time": "10:00:00",
+        "authority": "erpnext.stock.utils.get_stock_balance",
+        "limitations": []
+      }
+    },
+    {
+      "case": "draft_delivery_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 137.247,
+      "result": {
+        "name": "MAT-DN-2026-00004",
+        "docstatus": 0
+      }
+    },
+    {
+      "case": "draft_authoritative_stock",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 304.052,
+      "result": {
+        "posting_qty": 18.0,
+        "current_qty": 18.0,
+        "posting_date": "2026-10-05",
+        "posting_time": "10:00:00",
+        "authority": "erpnext.stock.utils.get_stock_balance",
+        "limitations": []
+      }
+    },
+    {
+      "case": "cross_document_child_denied",
+      "http_status": 417,
+      "passed": true,
+      "elapsed_ms": 132.595,
+      "result": null
+    },
+    {
+      "case": "restricted_warehouse_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 76.381,
+      "result": null
+    },
+    {
+      "case": "allowed_warehouse_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 62.58,
+      "result": null
+    },
+    {
+      "case": "sales_order_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 237.023,
+      "result": null
+    },
+    {
+      "case": "stock_ledger_permission_checked_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 87.663,
+      "result": {
+        "rows": 2
+      }
+    },
+    {
+      "case": "bin_permission_checked_read",
+      "http_status": 200,
+      "passed": true,
+      "elapsed_ms": 81.785,
+      "result": {
+        "rows": 1
+      }
+    },
+    {
+      "case": "readonly_delivery_write_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 194.896,
+      "result": null
+    },
+    {
+      "case": "readonly_customer_create_denied",
+      "http_status": 403,
+      "passed": true,
+      "elapsed_ms": 182.479,
+      "result": null
+    }
+  ],
+  "passed": 19,
+  "total": 19,
+  "elapsed_ms": 4584.17
+}
