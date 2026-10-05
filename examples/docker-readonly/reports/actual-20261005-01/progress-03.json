@@ -1,0 +1,18 @@
+{
+  "scenario": "cache_connection_error",
+  "iteration": 1,
+  "project": "holmes-lab-97708cd18408",
+  "passed": true,
+  "cleanup_completed": true,
+  "setup_and_injection_seconds": 77.46581060000062,
+  "report": "01-cache_connection_error.json",
+  "candidate_codes": [
+    "cache_connection_error"
+  ],
+  "mode": "deterministic-evidence",
+  "diagnosis_seconds": 21.409594599999764,
+  "tool_calls": 9,
+  "successful_calls": 9,
+  "tool_success_rate": 1.0,
+  "expected_candidate_found": true
+}

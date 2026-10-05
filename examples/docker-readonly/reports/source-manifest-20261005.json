@@ -1,0 +1,19 @@
+{
+  "source_sha256": {
+    "holmes/core/docker_diagnosis.py": "91a6f76fe42bbdc61626c25ba177aba3aa44720f901dac02d206de63bea62149",
+    "holmes/plugins/toolsets/__init__.py": "2c93fba7f6c2f566ff9a63e6e48a79a31bee27f101e0d7f5f57d068ee479a18c",
+    "holmes/plugins/toolsets/docker_readonly/backend.py": "4ab172c177d4967c04d1ec4213b7a2ac4b173c1d8680f9be5603e5fc96993f00",
+    "holmes/plugins/toolsets/docker_readonly/security.py": "15aa7dde8572e0e19597c13e3260ca032291fa355c296ce11d98c222982001ea",
+    "holmes/plugins/toolsets/docker_readonly/tools.py": "02e7fdba474d8e0c023511fb9272f2b829597085e9587ba7416c57665086463e",
+    "holmes/plugins/toolsets/docker_readonly/__init__.py": "5ef58858962155169c79de94bff269c7fec46465c8ef21f5e12d6285128c45ed",
+    "examples/docker-readonly/app/Dockerfile": "89255af2e3665b931651371781aafa29a9c52b4b937e26486ff25b912ad42194",
+    "examples/docker-readonly/app/healthcheck.py": "c7edb8b7535c5b585afec807c8aad9abcb56536369ab18a178b080336ed194c1",
+    "examples/docker-readonly/app/main.py": "8da40481398eb1b3015e3dc09e4b1a60ac5610fa1564703529f32df7be95e3e3",
+    "examples/docker-readonly/app/probe.py": "9981246f6f38bb0326ca6ca3eaca0c41a83f9bde780e1d617e50bd15b477c28b",
+    "examples/docker-readonly/app/requirements.txt": "2d19f7a27bb708876768e7a8844dd9914efbc49ffd66ec30d75697cac49f3f01",
+    "examples/docker-readonly/lab.py": "2eae89a7770df650e2799dbf9fd5582d78efdf8865ab65ce6e441a47bd269fbb",
+    "examples/docker-readonly/compose.yaml": "819eabaab4e7244afd02735222423955cec15ab2a1a1c0f32102847752affe24",
+    "examples/docker-readonly/evaluate.py": "62e087effcd42c16bd1057963943c3a7abf38a49b67cff4db3fa6cf4ebfd2fa8"
+  },
+  "license_sha256": "c9fac3af24cb81afed5960ef9101ba43e648007c88db90a2573ee70410de68ed"
+}

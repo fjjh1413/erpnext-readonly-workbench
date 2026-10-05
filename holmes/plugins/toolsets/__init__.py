@@ -25,6 +25,7 @@ from holmes.plugins.toolsets.confluence.confluence import ConfluenceToolset
 from holmes.plugins.toolsets.connectivity_check import ConnectivityCheckToolset
 from holmes.plugins.toolsets.coralogix.toolset_coralogix import CoralogixToolset
 from holmes.plugins.toolsets.database.database import DatabaseToolset
+from holmes.plugins.toolsets.docker_readonly import DockerReadonlyToolset
 from holmes.plugins.toolsets.mongodb.mongodb import MongoDBToolset
 from holmes.plugins.toolsets.datadog.toolset_datadog_general import (
     DatadogGeneralToolset,
@@ -125,6 +126,7 @@ def load_python_toolsets(
         multi_instance(ServiceNowTablesToolset),
         multi_instance(VictoriaLogsToolset),
         DatabaseToolset(),
+        DockerReadonlyToolset(),
         multi_instance(ElasticsearchDataToolset),
         multi_instance(ElasticsearchClusterToolset),
     ]

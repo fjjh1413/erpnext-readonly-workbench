@@ -1,0 +1,2 @@
+# Linux container entrypoints must remain LF after a Windows checkout.
+*.sh text eol=lf

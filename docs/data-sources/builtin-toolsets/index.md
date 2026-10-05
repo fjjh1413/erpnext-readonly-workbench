@@ -89,6 +89,7 @@ HolmesGPT includes pre-built integrations for popular monitoring and observabili
 <div class="grid cards" markdown>
 
 -   [:simple-docker:{ .lg .middle } **Docker**](docker.md)
+-   [:simple-docker:{ .lg .middle } **Docker Readonly Lab (downstream)**](docker-readonly.md)
 -   [:material-package:{ .lg .middle } **Helm**](helm.md)
 -   [:simple-redhatopenshift:{ .lg .middle } **OpenShift**](openshift.md)
 -   [:simple-kubernetes:{ .lg .middle } **KubeVela**](kubevela.md)

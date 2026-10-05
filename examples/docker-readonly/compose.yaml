@@ -1,0 +1,112 @@
+# New, opt-in diagnostic lab; no Docker socket is mounted into any service.
+services:
+  api:
+    image: ${HOLMES_PROJECT:?created by lab.py}-api:lab
+    build:
+      context: ./app
+    labels:
+      io.holmes.readonly-lab: ${HOLMES_LAB_ID:?created by lab.py}
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      REDIS_HOST: redis
+      REDIS_PORT: ${HOLMES_API_REDIS_PORT:-6379}
+      APP_MODE: ${HOLMES_API_APP_MODE:-test-lab}
+    secrets:
+      - mysql_probe_password
+      - redis_probe_password
+    networks: [lab]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, healthcheck.py]
+      interval: 3s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    mem_limit: 256m
+  probe:
+    # Docker internal-only networks cannot publish host ports. A fixed read-only
+    # probe runs inside that network; host tools invoke only probe.py's choices.
+    image: ${HOLMES_PROJECT:?created by lab.py}-api:lab
+    labels:
+      io.holmes.readonly-lab: ${HOLMES_LAB_ID:?created by lab.py}
+    command: [python, -c, "import signal; signal.pause()"]
+    secrets:
+      - mysql_probe_password
+      - redis_probe_password
+    networks: [lab]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    mem_limit: 128m
+  mysql:
+    image: mysql:8.4.4
+    labels:
+      io.holmes.readonly-lab: ${HOLMES_LAB_ID:?created by lab.py}
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+    secrets:
+      - mysql_root_password
+      - mysql_probe_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init-probe.sh:/docker-entrypoint-initdb.d/10-probe.sh:ro
+      - ./mysql/healthcheck.sh:/opt/lab/healthcheck.sh:ro
+    networks: [lab]
+    healthcheck:
+      test: [CMD, bash, /opt/lab/healthcheck.sh]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    mem_limit: 768m
+  redis:
+    image: redis:7.4.2-alpine
+    labels:
+      io.holmes.readonly-lab: ${HOLMES_LAB_ID:?created by lab.py}
+    entrypoint: [sh, /opt/lab/start-redis.sh]
+    secrets:
+      - redis_probe_password
+    volumes:
+      - ./redis/start-redis.sh:/opt/lab/start-redis.sh:ro
+      - ./redis/healthcheck.sh:/opt/lab/healthcheck.sh:ro
+    networks: [lab]
+    healthcheck:
+      test: [CMD, sh, /opt/lab/healthcheck.sh]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 3s
+    read_only: true
+    tmpfs: [/data, /tmp]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    mem_limit: 128m
+networks:
+  lab:
+    internal: true
+    labels:
+      io.holmes.readonly-lab: ${HOLMES_LAB_ID:?created by lab.py}
+volumes:
+  mysql_data:
+    labels:
+      io.holmes.readonly-lab: ${HOLMES_LAB_ID:?created by lab.py}
+secrets:
+  mysql_root_password:
+    file: ${HOLMES_SECRET_DIR:?created by lab.py}/mysql_root_password
+  mysql_probe_password:
+    file: ${HOLMES_SECRET_DIR:?created by lab.py}/mysql_probe_password
+  redis_probe_password:
+    file: ${HOLMES_SECRET_DIR:?created by lab.py}/redis_probe_password

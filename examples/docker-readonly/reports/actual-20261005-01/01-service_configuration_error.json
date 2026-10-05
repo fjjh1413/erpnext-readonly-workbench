@@ -1,0 +1,634 @@
+{
+  "schema_version": "docker-readonly-diagnosis/v1",
+  "project": "holmes-lab-4c6034b1997f",
+  "mode": "deterministic-evidence",
+  "observed_at": "2026-10-05T12:23:51.446836+00:00",
+  "summary": "观测支持以下候选原因，尚不能确认全部根因。",
+  "confirmed_facts": [
+    {
+      "statement": "api 容器状态=exited，健康状态=unhealthy，退出码=3。",
+      "evidence_ids": [
+        "e_f966df95e6d240858e2f133e20067356"
+      ]
+    },
+    {
+      "statement": "mysql 容器状态=running，健康状态=healthy，退出码=0。",
+      "evidence_ids": [
+        "e_a50b51f288524f17bb99c352440a9c92"
+      ]
+    },
+    {
+      "statement": "redis 容器状态=running，健康状态=healthy，退出码=0。",
+      "evidence_ids": [
+        "e_976ae04da0304cd0b7ca04029371a115"
+      ]
+    },
+    {
+      "statement": "应用非敏感配置观测：{\"REDIS_HOST\": \"redis\", \"REDIS_PORT\": \"6379\", \"APP_MODE\": \"invalid\", \"MYSQL_HOST\": \"mysql\", \"MYSQL_PORT\": \"3306\"}",
+      "evidence_ids": [
+        "e_33c8a131af8a4965bc0f7d473d518453"
+      ]
+    },
+    {
+      "statement": "只读探针对 mysql 的固定检查成功（SELECT 1）。",
+      "evidence_ids": [
+        "e_641a7f54afa245c09ae790e9107ad3eb"
+      ]
+    },
+    {
+      "statement": "只读探针对 redis 的固定检查成功（PING）。",
+      "evidence_ids": [
+        "e_bf729d8ad4874e33b84328c84d85b21f"
+      ]
+    },
+    {
+      "statement": "api 有界日志查询返回 15 行。",
+      "evidence_ids": [
+        "e_a77ab0f0ca4d475298d75b715a9b2929"
+      ]
+    },
+    {
+      "statement": "mysql 有界日志查询返回 49 行。",
+      "evidence_ids": [
+        "e_77e4f5a4ff284f89b7a65dce487ce734"
+      ]
+    },
+    {
+      "statement": "redis 有界日志查询返回 7 行。",
+      "evidence_ids": [
+        "e_76b6ddcc466b4076944646759044c56f"
+      ]
+    }
+  ],
+  "candidate_causes": [
+    {
+      "statement": "APP_MODE 与测试应用要求 test-lab 不一致，可能导致服务或依赖连接失败。",
+      "evidence_ids": [
+        "e_33c8a131af8a4965bc0f7d473d518453"
+      ],
+      "code": "service_configuration_error",
+      "confidence": "high"
+    }
+  ],
+  "supporting_evidence": [
+    {
+      "id": "e_f966df95e6d240858e2f133e20067356",
+      "tool_name": "docker_lab_health",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "api",
+        "state": {
+          "status": "exited",
+          "running": false,
+          "health": "unhealthy",
+          "exit_code": 3,
+          "oom_killed": false
+        }
+      }
+    },
+    {
+      "id": "e_a50b51f288524f17bb99c352440a9c92",
+      "tool_name": "docker_lab_health",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "mysql",
+        "state": {
+          "status": "running",
+          "running": true,
+          "health": "healthy",
+          "exit_code": 0,
+          "oom_killed": false
+        }
+      }
+    },
+    {
+      "id": "e_976ae04da0304cd0b7ca04029371a115",
+      "tool_name": "docker_lab_health",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "redis",
+        "state": {
+          "status": "running",
+          "running": true,
+          "health": "healthy",
+          "exit_code": 0,
+          "oom_killed": false
+        }
+      }
+    },
+    {
+      "id": "e_33c8a131af8a4965bc0f7d473d518453",
+      "tool_name": "docker_lab_config",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "api",
+        "config": {
+          "REDIS_HOST": "redis",
+          "REDIS_PORT": "6379",
+          "APP_MODE": "invalid",
+          "MYSQL_HOST": "mysql",
+          "MYSQL_PORT": "3306"
+        }
+      }
+    },
+    {
+      "id": "e_641a7f54afa245c09ae790e9107ad3eb",
+      "tool_name": "docker_lab_mysql",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "mysql",
+        "check": "SELECT 1",
+        "reachable": true,
+        "elapsed_ms": 201.501
+      }
+    },
+    {
+      "id": "e_bf729d8ad4874e33b84328c84d85b21f",
+      "tool_name": "docker_lab_redis",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "redis",
+        "check": "PING",
+        "reachable": true,
+        "elapsed_ms": 41.941
+      }
+    },
+    {
+      "id": "e_a77ab0f0ca4d475298d75b715a9b2929",
+      "tool_name": "docker_lab_logs",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "api",
+        "lines": [
+          "2026-10-05T12:23:29.209649625Z INFO:     Started server process [1]",
+          "2026-10-05T12:23:29.209825554Z INFO:     Waiting for application startup.",
+          "2026-10-05T12:23:29.210802215Z ERROR:    Configuration validation failed: APP_MODE must be test-lab",
+          "2026-10-05T12:23:29.214226283Z ERROR:    Traceback (most recent call last):",
+          "2026-10-05T12:23:29.214279692Z   File \"/usr/local/lib/python3.12/site-packages/starlette/routing.py\", line 654, in lifespan",
+          "2026-10-05T12:23:29.214289993Z     async with self.lifespan_context(app) as maybe_state:",
+          "2026-10-05T12:23:29.214296494Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "2026-10-05T12:23:29.214302395Z   File \"/usr/local/lib/python3.12/contextlib.py\", line 210, in __aenter__",
+          "2026-10-05T12:23:29.214308796Z     return await anext(self.gen)",
+          "2026-10-05T12:23:29.214314697Z            ^^^^^^^^^^^^^^^^^^^^^",
+          "2026-10-05T12:23:29.214320498Z   File \"/app/main.py\", line 38, in lifespan",
+          "2026-10-05T12:23:29.214326499Z     raise ValueError(\"APP_MODE must be test-lab\")",
+          "2026-10-05T12:23:29.214332600Z ValueError: APP_MODE must be test-lab",
+          "2026-10-05T12:23:29.214338701Z ",
+          "2026-10-05T12:23:29.214349403Z ERROR:    Application startup failed. Exiting."
+        ],
+        "truncated": false,
+        "tail": 100,
+        "since_seconds": 300,
+        "filter_applied": false
+      }
+    },
+    {
+      "id": "e_77e4f5a4ff284f89b7a65dce487ce734",
+      "tool_name": "docker_lab_logs",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "mysql",
+        "lines": [
+          "2026-10-05T12:22:31.492624428Z 2026-10-05 12:22:31+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.4-1.el9 started.",
+          "2026-10-05T12:22:32.673028758Z 2026-10-05 12:22:32+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'",
+          "2026-10-05T12:22:32.707578481Z 2026-10-05 12:22:32+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.4-1.el9 started.",
+          "2026-10-05T12:22:33.730464718Z 2026-10-05 12:22:33+00:00 [Note] [Entrypoint]: Initializing database files",
+          "2026-10-05T12:22:47.351268407Z 2026-10-05 12:22:47+00:00 [Note] [Entrypoint]: Database files initialized",
+          "2026-10-05T12:22:47.360553818Z 2026-10-05 12:22:47+00:00 [Note] [Entrypoint]: Starting temporary server",
+          "2026-10-05T12:22:50.803716092Z 2026-10-05 12:22:50+00:00 [Note] [Entrypoint]: Temporary server started.",
+          "2026-10-05T12:22:50.924792226Z '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'",
+          "2026-10-05T12:23:02.969771575Z ",
+          "2026-10-05T12:23:02.980456306Z 2026-10-05 12:23:02+00:00 [Note] [Entrypoint]: /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/10-probe.sh",
+          "2026-10-05T12:23:03.173757125Z ",
+          "2026-10-05T12:23:03.182038321Z 2026-10-05 12:23:03+00:00 [Note] [Entrypoint]: Stopping temporary server",
+          "2026-10-05T12:23:05.222218270Z 2026-10-05 12:23:05+00:00 [Note] [Entrypoint]: Temporary server stopped",
+          "2026-10-05T12:23:05.222320488Z ",
+          "2026-10-05T12:23:05.229567598Z 2026-10-05 12:23:05+00:00 [Note] [Entrypoint]: MySQL init process done. Ready for start up.",
+          "2026-10-05T12:23:05.229621707Z ",
+          "2026-10-05T12:22:33.837547255Z 2026-10-05T12:22:33.817227Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.",
+          "2026-10-05T12:22:33.837604965Z 2026-10-05T12:22:33.824647Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.4.4) initializing of server in progress as process 81",
+          "2026-10-05T12:22:33.870916283Z 2026-10-05T12:22:33.868266Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.",
+          "2026-10-05T12:22:35.208524668Z 2026-10-05T12:22:35.207729Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.",
+          "2026-10-05T12:22:40.339708115Z 2026-10-05T12:22:40.338785Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.",
+          "2026-10-05T12:22:47.280373864Z 2026-10-05T12:22:47.279457Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.",
+          "2026-10-05T12:22:48.107441117Z 2026-10-05T12:22:47.432987Z 0 [System] [MY-015015] [Server] MySQL Server - start.",
+          "2026-10-05T12:22:48.107522731Z 2026-10-05T12:22:48.063398Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.4) starting as process 158",
+          "2026-10-05T12:22:48.141480659Z 2026-10-05T12:22:48.140488Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.",
+          "2026-10-05T12:22:49.461923537Z 2026-10-05T12:22:49.461081Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.",
+          "2026-10-05T12:22:50.627153346Z 2026-10-05T12:22:50.626284Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.",
+          "2026-10-05T12:22:50.627226558Z 2026-10-05T12:22:50.626480Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.",
+          "2026-10-05T12:22:50.641783628Z 2026-10-05T12:22:50.640931Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.",
+          "2026-10-05T12:22:50.745192163Z 2026-10-05T12:22:50.744332Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock",
+          "2026-10-05T12:22:50.745381794Z 2026-10-05T12:22:50.744834Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.4'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.",
+          "2026-10-05T12:22:54.669417150Z Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.",
+          "2026-10-05T12:22:54.669494363Z Warning: Unable to load '/usr/share/zoneinfo/leap-seconds.list' as time zone. Skipping it.",
+          "2026-10-05T12:22:54.669511066Z Warning: Unable to load '/usr/share/zoneinfo/leapseconds' as time zone. Skipping it.",
+          "2026-10-05T12:23:02.318329195Z Warning: Unable to load '/usr/share/zoneinfo/tzdata.zi' as time zone. Skipping it.",
+          "2026-10-05T12:23:02.318396407Z Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.",
+          "2026-10-05T12:23:02.318407910Z Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.",
+          "2026-10-05T12:23:03.210765810Z 2026-10-05T12:23:03.209823Z 11 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 8.4.4).",
+          "2026-10-05T12:23:04.771512852Z 2026-10-05T12:23:04.770694Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.4)  MySQL Community Server - GPL.",
+          "2026-10-05T12:23:04.771637575Z 2026-10-05T12:23:04.770846Z 0 [System] [MY-015016] [Server] MySQL Server - end.",
+          "2026-10-05T12:23:05.933388640Z 2026-10-05T12:23:05.294474Z 0 [System] [MY-015015] [Server] MySQL Server - start.",
+          "2026-10-05T12:23:05.933455452Z 2026-10-05T12:23:05.921532Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.4) starting as process 1",
+          "2026-10-05T12:23:05.951700348Z 2026-10-05T12:23:05.950833Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.",
+          "2026-10-05T12:23:07.129121384Z 2026-10-05T12:23:07.128300Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.",
+          "2026-10-05T12:23:08.148553644Z 2026-10-05T12:23:08.147822Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.",
+          "2026-10-05T12:23:08.148632257Z 2026-10-05T12:23:08.148034Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.",
+          "2026-10-05T12:23:08.164492766Z 2026-10-05T12:23:08.163616Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.",
+          "2026-10-05T12:23:08.271700197Z 2026-10-05T12:23:08.270760Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock",
+          "2026-10-05T12:23:08.271880827Z 2026-10-05T12:23:08.271458Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.4'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL."
+        ],
+        "truncated": false,
+        "tail": 100,
+        "since_seconds": 300,
+        "filter_applied": false
+      }
+    },
+    {
+      "id": "e_76b6ddcc466b4076944646759044c56f",
+      "tool_name": "docker_lab_logs",
+      "observed_at": "2026-10-05T12:23:51.446836+00:00",
+      "observation": {
+        "service": "redis",
+        "lines": [
+          "2026-10-05T12:22:32.888376829Z 1:C 05 Oct 2026 12:22:32.887 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo",
+          "2026-10-05T12:22:32.888480146Z 1:C 05 Oct 2026 12:22:32.887 * Redis version=7.4.2, bits=64, commit=00000000, modified=0, pid=1, just started",
+          "2026-10-05T12:22:32.888494349Z 1:C 05 Oct 2026 12:22:32.887 * Configuration loaded",
+          "2026-10-05T12:22:32.890208533Z 1:M 05 Oct 2026 12:22:32.889 * monotonic clock: POSIX clock_gettime",
+          "2026-10-05T12:22:32.893697411Z 1:M 05 Oct 2026 12:22:32.893 * Running mode=standalone, port=6379.",
+          "2026-10-05T12:22:32.895349784Z 1:M 05 Oct 2026 12:22:32.894 * Server initialized",
+          "2026-10-05T12:22:32.895397892Z 1:M 05 Oct 2026 12:22:32.894 * Ready to accept connections tcp"
+        ],
+        "truncated": false,
+        "tail": 100,
+        "since_seconds": 300,
+        "filter_applied": false
+      }
+    }
+  ],
+  "missing_information": [
+    "未检查业务请求、历史变更、负载及完整故障发生时序。"
+  ],
+  "next_steps": [
+    "由操作者核对 Compose 非敏感配置与预期服务名/端口；修正方案须另行人工执行。",
+    "复核应用 /ready 与业务请求路径，并结合故障发生时间补充日志和变更记录。"
+  ],
+  "tool_calls": [
+    {
+      "tool_call_id": "e_f966df95e6d240858e2f133e20067356",
+      "tool_name": "docker_lab_health",
+      "description": "docker_lab_health",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "api",
+          "state": {
+            "status": "exited",
+            "running": false,
+            "health": "unhealthy",
+            "exit_code": 3,
+            "oom_killed": false
+          }
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (health; parameters validated before use)",
+        "params": {
+          "service": "api"
+        },
+        "icon_url": null,
+        "elapsed_seconds": 1.2376458644866943
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_a50b51f288524f17bb99c352440a9c92",
+      "tool_name": "docker_lab_health",
+      "description": "docker_lab_health",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "mysql",
+          "state": {
+            "status": "running",
+            "running": true,
+            "health": "healthy",
+            "exit_code": 0,
+            "oom_killed": false
+          }
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (health; parameters validated before use)",
+        "params": {
+          "service": "mysql"
+        },
+        "icon_url": null,
+        "elapsed_seconds": 1.2281193733215332
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_976ae04da0304cd0b7ca04029371a115",
+      "tool_name": "docker_lab_health",
+      "description": "docker_lab_health",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "redis",
+          "state": {
+            "status": "running",
+            "running": true,
+            "health": "healthy",
+            "exit_code": 0,
+            "oom_killed": false
+          }
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (health; parameters validated before use)",
+        "params": {
+          "service": "redis"
+        },
+        "icon_url": null,
+        "elapsed_seconds": 1.2746033668518066
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_33c8a131af8a4965bc0f7d473d518453",
+      "tool_name": "docker_lab_config",
+      "description": "docker_lab_config",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "api",
+          "config": {
+            "REDIS_HOST": "redis",
+            "REDIS_PORT": "6379",
+            "APP_MODE": "invalid",
+            "MYSQL_HOST": "mysql",
+            "MYSQL_PORT": "3306"
+          }
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (config; parameters validated before use)",
+        "params": {},
+        "icon_url": null,
+        "elapsed_seconds": 1.2096226215362549
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_641a7f54afa245c09ae790e9107ad3eb",
+      "tool_name": "docker_lab_mysql",
+      "description": "docker_lab_mysql",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "mysql",
+          "check": "SELECT 1",
+          "reachable": true,
+          "elapsed_ms": 201.501
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (mysql; parameters validated before use)",
+        "params": {},
+        "icon_url": null,
+        "elapsed_seconds": 6.047625780105591
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_bf729d8ad4874e33b84328c84d85b21f",
+      "tool_name": "docker_lab_redis",
+      "description": "docker_lab_redis",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "redis",
+          "check": "PING",
+          "reachable": true,
+          "elapsed_ms": 41.941
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (redis; parameters validated before use)",
+        "params": {},
+        "icon_url": null,
+        "elapsed_seconds": 6.154571056365967
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_a77ab0f0ca4d475298d75b715a9b2929",
+      "tool_name": "docker_lab_logs",
+      "description": "docker_lab_logs",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "api",
+          "lines": [
+            "2026-10-05T12:23:29.209649625Z INFO:     Started server process [1]",
+            "2026-10-05T12:23:29.209825554Z INFO:     Waiting for application startup.",
+            "2026-10-05T12:23:29.210802215Z ERROR:    Configuration validation failed: APP_MODE must be test-lab",
+            "2026-10-05T12:23:29.214226283Z ERROR:    Traceback (most recent call last):",
+            "2026-10-05T12:23:29.214279692Z   File \"/usr/local/lib/python3.12/site-packages/starlette/routing.py\", line 654, in lifespan",
+            "2026-10-05T12:23:29.214289993Z     async with self.lifespan_context(app) as maybe_state:",
+            "2026-10-05T12:23:29.214296494Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^",
+            "2026-10-05T12:23:29.214302395Z   File \"/usr/local/lib/python3.12/contextlib.py\", line 210, in __aenter__",
+            "2026-10-05T12:23:29.214308796Z     return await anext(self.gen)",
+            "2026-10-05T12:23:29.214314697Z            ^^^^^^^^^^^^^^^^^^^^^",
+            "2026-10-05T12:23:29.214320498Z   File \"/app/main.py\", line 38, in lifespan",
+            "2026-10-05T12:23:29.214326499Z     raise ValueError(\"APP_MODE must be test-lab\")",
+            "2026-10-05T12:23:29.214332600Z ValueError: APP_MODE must be test-lab",
+            "2026-10-05T12:23:29.214338701Z ",
+            "2026-10-05T12:23:29.214349403Z ERROR:    Application startup failed. Exiting."
+          ],
+          "truncated": false,
+          "tail": 100,
+          "since_seconds": 300,
+          "filter_applied": false
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (logs; parameters validated before use)",
+        "params": {
+          "service": "api",
+          "tail": 100,
+          "since_seconds": 300,
+          "filter_applied": false
+        },
+        "icon_url": null,
+        "elapsed_seconds": 1.4334959983825684
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_77e4f5a4ff284f89b7a65dce487ce734",
+      "tool_name": "docker_lab_logs",
+      "description": "docker_lab_logs",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "mysql",
+          "lines": [
+            "2026-10-05T12:22:31.492624428Z 2026-10-05 12:22:31+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.4-1.el9 started.",
+            "2026-10-05T12:22:32.673028758Z 2026-10-05 12:22:32+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'",
+            "2026-10-05T12:22:32.707578481Z 2026-10-05 12:22:32+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.4-1.el9 started.",
+            "2026-10-05T12:22:33.730464718Z 2026-10-05 12:22:33+00:00 [Note] [Entrypoint]: Initializing database files",
+            "2026-10-05T12:22:47.351268407Z 2026-10-05 12:22:47+00:00 [Note] [Entrypoint]: Database files initialized",
+            "2026-10-05T12:22:47.360553818Z 2026-10-05 12:22:47+00:00 [Note] [Entrypoint]: Starting temporary server",
+            "2026-10-05T12:22:50.803716092Z 2026-10-05 12:22:50+00:00 [Note] [Entrypoint]: Temporary server started.",
+            "2026-10-05T12:22:50.924792226Z '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'",
+            "2026-10-05T12:23:02.969771575Z ",
+            "2026-10-05T12:23:02.980456306Z 2026-10-05 12:23:02+00:00 [Note] [Entrypoint]: /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/10-probe.sh",
+            "2026-10-05T12:23:03.173757125Z ",
+            "2026-10-05T12:23:03.182038321Z 2026-10-05 12:23:03+00:00 [Note] [Entrypoint]: Stopping temporary server",
+            "2026-10-05T12:23:05.222218270Z 2026-10-05 12:23:05+00:00 [Note] [Entrypoint]: Temporary server stopped",
+            "2026-10-05T12:23:05.222320488Z ",
+            "2026-10-05T12:23:05.229567598Z 2026-10-05 12:23:05+00:00 [Note] [Entrypoint]: MySQL init process done. Ready for start up.",
+            "2026-10-05T12:23:05.229621707Z ",
+            "2026-10-05T12:22:33.837547255Z 2026-10-05T12:22:33.817227Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.",
+            "2026-10-05T12:22:33.837604965Z 2026-10-05T12:22:33.824647Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.4.4) initializing of server in progress as process 81",
+            "2026-10-05T12:22:33.870916283Z 2026-10-05T12:22:33.868266Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.",
+            "2026-10-05T12:22:35.208524668Z 2026-10-05T12:22:35.207729Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.",
+            "2026-10-05T12:22:40.339708115Z 2026-10-05T12:22:40.338785Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.",
+            "2026-10-05T12:22:47.280373864Z 2026-10-05T12:22:47.279457Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.",
+            "2026-10-05T12:22:48.107441117Z 2026-10-05T12:22:47.432987Z 0 [System] [MY-015015] [Server] MySQL Server - start.",
+            "2026-10-05T12:22:48.107522731Z 2026-10-05T12:22:48.063398Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.4) starting as process 158",
+            "2026-10-05T12:22:48.141480659Z 2026-10-05T12:22:48.140488Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.",
+            "2026-10-05T12:22:49.461923537Z 2026-10-05T12:22:49.461081Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.",
+            "2026-10-05T12:22:50.627153346Z 2026-10-05T12:22:50.626284Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.",
+            "2026-10-05T12:22:50.627226558Z 2026-10-05T12:22:50.626480Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.",
+            "2026-10-05T12:22:50.641783628Z 2026-10-05T12:22:50.640931Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.",
+            "2026-10-05T12:22:50.745192163Z 2026-10-05T12:22:50.744332Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock",
+            "2026-10-05T12:22:50.745381794Z 2026-10-05T12:22:50.744834Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.4'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.",
+            "2026-10-05T12:22:54.669417150Z Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.",
+            "2026-10-05T12:22:54.669494363Z Warning: Unable to load '/usr/share/zoneinfo/leap-seconds.list' as time zone. Skipping it.",
+            "2026-10-05T12:22:54.669511066Z Warning: Unable to load '/usr/share/zoneinfo/leapseconds' as time zone. Skipping it.",
+            "2026-10-05T12:23:02.318329195Z Warning: Unable to load '/usr/share/zoneinfo/tzdata.zi' as time zone. Skipping it.",
+            "2026-10-05T12:23:02.318396407Z Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.",
+            "2026-10-05T12:23:02.318407910Z Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.",
+            "2026-10-05T12:23:03.210765810Z 2026-10-05T12:23:03.209823Z 11 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 8.4.4).",
+            "2026-10-05T12:23:04.771512852Z 2026-10-05T12:23:04.770694Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.4)  MySQL Community Server - GPL.",
+            "2026-10-05T12:23:04.771637575Z 2026-10-05T12:23:04.770846Z 0 [System] [MY-015016] [Server] MySQL Server - end.",
+            "2026-10-05T12:23:05.933388640Z 2026-10-05T12:23:05.294474Z 0 [System] [MY-015015] [Server] MySQL Server - start.",
+            "2026-10-05T12:23:05.933455452Z 2026-10-05T12:23:05.921532Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.4) starting as process 1",
+            "2026-10-05T12:23:05.951700348Z 2026-10-05T12:23:05.950833Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.",
+            "2026-10-05T12:23:07.129121384Z 2026-10-05T12:23:07.128300Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.",
+            "2026-10-05T12:23:08.148553644Z 2026-10-05T12:23:08.147822Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.",
+            "2026-10-05T12:23:08.148632257Z 2026-10-05T12:23:08.148034Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.",
+            "2026-10-05T12:23:08.164492766Z 2026-10-05T12:23:08.163616Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.",
+            "2026-10-05T12:23:08.271700197Z 2026-10-05T12:23:08.270760Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock",
+            "2026-10-05T12:23:08.271880827Z 2026-10-05T12:23:08.271458Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.4'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL."
+          ],
+          "truncated": false,
+          "tail": 100,
+          "since_seconds": 300,
+          "filter_applied": false
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (logs; parameters validated before use)",
+        "params": {
+          "service": "mysql",
+          "tail": 100,
+          "since_seconds": 300,
+          "filter_applied": false
+        },
+        "icon_url": null,
+        "elapsed_seconds": 1.4626481533050537
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    },
+    {
+      "tool_call_id": "e_76b6ddcc466b4076944646759044c56f",
+      "tool_name": "docker_lab_logs",
+      "description": "docker_lab_logs",
+      "result": {
+        "schema_version": "robusta:v1.0.0",
+        "status": "success",
+        "error": null,
+        "return_code": null,
+        "data": {
+          "service": "redis",
+          "lines": [
+            "2026-10-05T12:22:32.888376829Z 1:C 05 Oct 2026 12:22:32.887 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo",
+            "2026-10-05T12:22:32.888480146Z 1:C 05 Oct 2026 12:22:32.887 * Redis version=7.4.2, bits=64, commit=00000000, modified=0, pid=1, just started",
+            "2026-10-05T12:22:32.888494349Z 1:C 05 Oct 2026 12:22:32.887 * Configuration loaded",
+            "2026-10-05T12:22:32.890208533Z 1:M 05 Oct 2026 12:22:32.889 * monotonic clock: POSIX clock_gettime",
+            "2026-10-05T12:22:32.893697411Z 1:M 05 Oct 2026 12:22:32.893 * Running mode=standalone, port=6379.",
+            "2026-10-05T12:22:32.895349784Z 1:M 05 Oct 2026 12:22:32.894 * Server initialized",
+            "2026-10-05T12:22:32.895397892Z 1:M 05 Oct 2026 12:22:32.894 * Ready to accept connections tcp"
+          ],
+          "truncated": false,
+          "tail": 100,
+          "since_seconds": 300,
+          "filter_applied": false
+        },
+        "images": null,
+        "url": null,
+        "invocation": "Read generated local lab (logs; parameters validated before use)",
+        "params": {
+          "service": "redis",
+          "tail": 100,
+          "since_seconds": 300,
+          "filter_applied": false
+        },
+        "icon_url": null,
+        "elapsed_seconds": 1.4585235118865967
+      },
+      "size": null,
+      "toolset_name": "docker/readonly-lab"
+    }
+  ],
+  "metrics": {
+    "tool_calls": 9,
+    "successful_calls": 9,
+    "tool_success_rate": 1.0,
+    "elapsed_seconds": 21.5208333999999,
+    "tool_elapsed_seconds": 21.506855726242065
+  },
+  "model_hypotheses": [],
+  "limitations": [
+    "仅检查本次隔离测试项目；不代表生产环境或全部应用功能。",
+    "MySQL SELECT 1 与 Redis PING 从隔离网络中的独立只读探针发起，不能单独证明应用自身配置的连接路径正常。",
+    "日志窗口有界且可能截断；候选原因不等于已确认根因。"
+  ]
+}

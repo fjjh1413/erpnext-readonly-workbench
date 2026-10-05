@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="183.514" timestamp="2026-10-05T20:25:13.307587+08:00" hostname="DESKTOP-32HLNT8"><testcase classname="test_live_permissions_restore" name="test_real_permissions_and_three_fault_restores" time="183.432" /></testsuite></testsuites>

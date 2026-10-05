@@ -1,0 +1,88 @@
+{
+  "evaluation_type": "real-compose-deterministic-evidence; no real LLM calls",
+  "finished_at_utc": "2026-10-05T12:24:06.787978+00:00",
+  "python": "3.12.10",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "upstream_commit": "9e21560c7ad1d02fdac29c9d9979999992bc3edb",
+  "docker": "29.8.1",
+  "compose": "5.5.1",
+  "total_elapsed_seconds": 482.13403839999955,
+  "results": [
+    {
+      "scenario": "healthy",
+      "iteration": 1,
+      "project": "holmes-lab-d3ddd2bf0ebe",
+      "passed": true,
+      "cleanup_completed": true,
+      "setup_and_injection_seconds": 116.1617438000012,
+      "report": "01-healthy.json",
+      "candidate_codes": [],
+      "mode": "deterministic-evidence",
+      "diagnosis_seconds": 25.129394800000227,
+      "tool_calls": 9,
+      "successful_calls": 9,
+      "tool_success_rate": 1.0,
+      "expected_candidate_found": true
+    },
+    {
+      "scenario": "database_unavailable",
+      "iteration": 1,
+      "project": "holmes-lab-4556129a0565",
+      "passed": true,
+      "cleanup_completed": true,
+      "setup_and_injection_seconds": 70.9911675000003,
+      "report": "01-database_unavailable.json",
+      "candidate_codes": [
+        "database_unavailable"
+      ],
+      "mode": "deterministic-evidence",
+      "diagnosis_seconds": 17.165865400000257,
+      "tool_calls": 9,
+      "successful_calls": 9,
+      "tool_success_rate": 1.0,
+      "expected_candidate_found": true
+    },
+    {
+      "scenario": "cache_connection_error",
+      "iteration": 1,
+      "project": "holmes-lab-97708cd18408",
+      "passed": true,
+      "cleanup_completed": true,
+      "setup_and_injection_seconds": 77.46581060000062,
+      "report": "01-cache_connection_error.json",
+      "candidate_codes": [
+        "cache_connection_error"
+      ],
+      "mode": "deterministic-evidence",
+      "diagnosis_seconds": 21.409594599999764,
+      "tool_calls": 9,
+      "successful_calls": 9,
+      "tool_success_rate": 1.0,
+      "expected_candidate_found": true
+    },
+    {
+      "scenario": "service_configuration_error",
+      "iteration": 1,
+      "project": "holmes-lab-4c6034b1997f",
+      "passed": true,
+      "cleanup_completed": true,
+      "setup_and_injection_seconds": 68.62947170000007,
+      "report": "01-service_configuration_error.json",
+      "candidate_codes": [
+        "service_configuration_error"
+      ],
+      "mode": "deterministic-evidence",
+      "diagnosis_seconds": 21.5208333999999,
+      "tool_calls": 9,
+      "successful_calls": 9,
+      "tool_success_rate": 1.0,
+      "expected_candidate_found": true
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "每种场景只按 repeat 次执行，不能据此推断长期可靠性。",
+    "采证耗时包含工具调用和本地诊断，不包含镜像下载、建容器和故障注入。",
+    "本报告未调用真实模型；scripted LLM 的 Agent 接线测试另见 pytest 记录。"
+  ]
+}

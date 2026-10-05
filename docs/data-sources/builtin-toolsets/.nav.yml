@@ -16,6 +16,7 @@ nav:
   - Crossplane: crossplane.md
   - DataDog: datadog.md
   - Docker: docker.md
+  - Docker Readonly Lab (downstream): docker-readonly.md
   - Elasticsearch / OpenSearch: elasticsearch.md
   - GCP (MCP): gcp.md
   - GitHub (MCP): github-mcp.md

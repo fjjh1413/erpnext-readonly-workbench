@@ -1,0 +1,18 @@
+{
+  "scenario": "service_configuration_error",
+  "iteration": 1,
+  "project": "holmes-lab-4c6034b1997f",
+  "passed": true,
+  "cleanup_completed": true,
+  "setup_and_injection_seconds": 68.62947170000007,
+  "report": "01-service_configuration_error.json",
+  "candidate_codes": [
+    "service_configuration_error"
+  ],
+  "mode": "deterministic-evidence",
+  "diagnosis_seconds": 21.5208333999999,
+  "tool_calls": 9,
+  "successful_calls": 9,
+  "tool_success_rate": 1.0,
+  "expected_candidate_found": true
+}

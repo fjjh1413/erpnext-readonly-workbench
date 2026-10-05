@@ -1,0 +1,16 @@
+{
+  "scenario": "healthy",
+  "iteration": 1,
+  "project": "holmes-lab-d3ddd2bf0ebe",
+  "passed": true,
+  "cleanup_completed": true,
+  "setup_and_injection_seconds": 116.1617438000012,
+  "report": "01-healthy.json",
+  "candidate_codes": [],
+  "mode": "deterministic-evidence",
+  "diagnosis_seconds": 25.129394800000227,
+  "tool_calls": 9,
+  "successful_calls": 9,
+  "tool_success_rate": 1.0,
+  "expected_candidate_found": true
+}

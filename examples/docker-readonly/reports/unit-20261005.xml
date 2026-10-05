@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="3" failures="0" skipped="0" tests="3" time="129.073" timestamp="2026-10-05T20:17:01.529881+08:00" hostname="DESKTOP-32HLNT8"><testcase classname="" name="test_agent_loop" time="0.000"><error message="collection failure">tests\docker_readonly\test_agent_loop.py:13: in &lt;module&gt;
+    from litellm import ModelResponse
+.venv\Lib\site-packages\litellm\__init__.py:1337: in &lt;module&gt;
+    from . import interactions
+.venv\Lib\site-packages\litellm\interactions\__init__.py:56: in &lt;module&gt;
+    from litellm.interactions import agents
+.venv\Lib\site-packages\litellm\interactions\agents\__init__.py:15: in &lt;module&gt;
+    from litellm.interactions.agents.main import (
+.venv\Lib\site-packages\litellm\interactions\agents\main.py:39: in &lt;module&gt;
+    from litellm.interactions.agents.http_handler import agents_http_handler
+.venv\Lib\site-packages\litellm\interactions\agents\http_handler.py:14: in &lt;module&gt;
+    from litellm.interactions.http_handler import InteractionsHTTPHandler
+.venv\Lib\site-packages\litellm\interactions\http_handler.py:21: in &lt;module&gt;
+    from litellm.interactions.streaming_iterator import (
+.venv\Lib\site-packages\litellm\interactions\streaming_iterator.py:22: in &lt;module&gt;
+    from litellm.llms.base_llm.interactions.transformation import BaseInteractionsAPIConfig
+.venv\Lib\site-packages\litellm\llms\base_llm\interactions\__init__.py:3: in &lt;module&gt;
+    from litellm.llms.base_llm.interactions.transformation import BaseInteractionsAPIConfig
+.venv\Lib\site-packages\litellm\llms\base_llm\interactions\transformation.py:18: in &lt;module&gt;
+    from litellm.types.interactions import (
+.venv\Lib\site-packages\litellm\types\interactions\__init__.py:8: in &lt;module&gt;
+    from litellm.types.interactions.generated import (
+.venv\Lib\site-packages\litellm\types\interactions\generated.py:400: in &lt;module&gt;
+    class ModelOption(RootModel[str]):
+                      ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\main.py:965: in __class_getitem__
+    submodel = _generics.create_generic_submodel(model_name, origin, args, params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generics.py:144: in create_generic_submodel
+    reference_module_globals = sys.modules[created_model.__module__].__dict__
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'pydantic.root_model'</error></testcase><testcase classname="" name="test_diagnosis" time="0.000"><error message="collection failure">tests\docker_readonly\test_diagnosis.py:8: in &lt;module&gt;
+    from holmes.core.docker_diagnosis import CHECKS, DiagnosisReport, build_report
+holmes\core\docker_diagnosis.py:19: in &lt;module&gt;
+    from holmes.core.llm import LLM, DefaultLLM
+holmes\core\llm.py:12: in &lt;module&gt;
+    import litellm
+.venv\Lib\site-packages\litellm\__init__.py:1337: in &lt;module&gt;
+    from . import interactions
+.venv\Lib\site-packages\litellm\interactions\__init__.py:56: in &lt;module&gt;
+    from litellm.interactions import agents
+.venv\Lib\site-packages\litellm\interactions\agents\__init__.py:15: in &lt;module&gt;
+    from litellm.interactions.agents.main import (
+.venv\Lib\site-packages\litellm\interactions\agents\main.py:39: in &lt;module&gt;
+    from litellm.interactions.agents.http_handler import agents_http_handler
+.venv\Lib\site-packages\litellm\interactions\agents\http_handler.py:14: in &lt;module&gt;
+    from litellm.interactions.http_handler import InteractionsHTTPHandler
+.venv\Lib\site-packages\litellm\interactions\http_handler.py:21: in &lt;module&gt;
+    from litellm.interactions.streaming_iterator import (
+.venv\Lib\site-packages\litellm\interactions\streaming_iterator.py:22: in &lt;module&gt;
+    from litellm.llms.base_llm.interactions.transformation import BaseInteractionsAPIConfig
+.venv\Lib\site-packages\litellm\llms\base_llm\interactions\__init__.py:3: in &lt;module&gt;
+    from litellm.llms.base_llm.interactions.transformation import BaseInteractionsAPIConfig
+.venv\Lib\site-packages\litellm\llms\base_llm\interactions\transformation.py:18: in &lt;module&gt;
+    from litellm.types.interactions import (
+.venv\Lib\site-packages\litellm\types\interactions\__init__.py:8: in &lt;module&gt;
+    from litellm.types.interactions.generated import (
+.venv\Lib\site-packages\litellm\types\interactions\generated.py:400: in &lt;module&gt;
+    class ModelOption(RootModel[str]):
+                      ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\main.py:965: in __class_getitem__
+    submodel = _generics.create_generic_submodel(model_name, origin, args, params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generics.py:144: in create_generic_submodel
+    reference_module_globals = sys.modules[created_model.__module__].__dict__
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'pydantic.root_model'</error></testcase><testcase classname="" name="test_tools" time="0.000"><error message="collection failure">tests\docker_readonly\test_tools.py:13: in &lt;module&gt;
+    from holmes.core.tools import StructuredToolResultStatus, ToolInvokeContext
+holmes\core\tools.py:43: in &lt;module&gt;
+    from holmes.core.llm import LLM
+holmes\core\llm.py:12: in &lt;module&gt;
+    import litellm
+.venv\Lib\site-packages\litellm\__init__.py:1337: in &lt;module&gt;
+    from . import interactions
+.venv\Lib\site-packages\litellm\interactions\__init__.py:56: in &lt;module&gt;
+    from litellm.interactions import agents
+.venv\Lib\site-packages\litellm\interactions\agents\__init__.py:15: in &lt;module&gt;
+    from litellm.interactions.agents.main import (
+.venv\Lib\site-packages\litellm\interactions\agents\main.py:39: in &lt;module&gt;
+    from litellm.interactions.agents.http_handler import agents_http_handler
+.venv\Lib\site-packages\litellm\interactions\agents\http_handler.py:14: in &lt;module&gt;
+    from litellm.interactions.http_handler import InteractionsHTTPHandler
+.venv\Lib\site-packages\litellm\interactions\http_handler.py:21: in &lt;module&gt;
+    from litellm.interactions.streaming_iterator import (
+.venv\Lib\site-packages\litellm\interactions\streaming_iterator.py:22: in &lt;module&gt;
+    from litellm.llms.base_llm.interactions.transformation import BaseInteractionsAPIConfig
+.venv\Lib\site-packages\litellm\llms\base_llm\interactions\__init__.py:3: in &lt;module&gt;
+    from litellm.llms.base_llm.interactions.transformation import BaseInteractionsAPIConfig
+.venv\Lib\site-packages\litellm\llms\base_llm\interactions\transformation.py:18: in &lt;module&gt;
+    from litellm.types.interactions import (
+.venv\Lib\site-packages\litellm\types\interactions\__init__.py:8: in &lt;module&gt;
+    from litellm.types.interactions.generated import (
+.venv\Lib\site-packages\litellm\types\interactions\generated.py:400: in &lt;module&gt;
+    class ModelOption(RootModel[str]):
+                      ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\main.py:965: in __class_getitem__
+    submodel = _generics.create_generic_submodel(model_name, origin, args, params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generics.py:144: in create_generic_submodel
+    reference_module_globals = sys.modules[created_model.__module__].__dict__
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'pydantic.root_model'</error></testcase></testsuite></testsuites>

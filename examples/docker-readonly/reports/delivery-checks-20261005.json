@@ -1,0 +1,65 @@
+{
+  "recorded_at_utc": "2026-10-05T12:47:14.890711+00:00",
+  "python": "3.12.10",
+  "isolated_python": true,
+  "pip_check": "No broken requirements found.",
+  "protected_upstream_files_unchanged": [
+    "LICENSE",
+    "pyproject.toml",
+    "poetry.lock"
+  ],
+  "staged_files_scanned": 62,
+  "reports_scanned": 23,
+  "runtime_credential_values_scanned": 18,
+  "staged_credential_matches": 0,
+  "report_credential_matches": 0,
+  "final_source_snapshot_matches": true,
+  "container_shell_files_lf": 4,
+  "remaining_lab_resources": {
+    "containers": 0,
+    "networks": 0,
+    "volumes": 0
+  },
+  "preexisting_containers_still_running": [
+    "docker-learning-web-1",
+    "my-site",
+    "my-first-web"
+  ],
+  "junit": {
+    "unit-delivery-20261005.xml": {
+      "tests": 82,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    "lab-probe-unit-20261005.xml": {
+      "tests": 70,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "upstream-regression-20261005.xml": {
+      "tests": 80,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "live-20261005-01.xml": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "permissions-restore-20261005.xml": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "limitations": [
+    "Real model provider was not called.",
+    "All upstream tests were not run.",
+    "Bootstrap fresh installation was not repeated; syntax and equivalent installed environment were checked."
+  ]
+}

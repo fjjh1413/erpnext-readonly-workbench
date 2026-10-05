@@ -1,0 +1,50 @@
+{
+  "project": "holmes-lab-96ce4aea6018",
+  "restores": [
+    {
+      "fault": "database_unavailable",
+      "readiness": {
+        "status_code": 200,
+        "body": {
+          "status": "ready",
+          "dependencies": {
+            "mysql": "ok",
+            "redis": "ok"
+          }
+        }
+      }
+    },
+    {
+      "fault": "cache_connection_error",
+      "readiness": {
+        "status_code": 200,
+        "body": {
+          "status": "ready",
+          "dependencies": {
+            "mysql": "ok",
+            "redis": "ok"
+          }
+        }
+      }
+    },
+    {
+      "fault": "service_configuration_error",
+      "readiness": {
+        "status_code": 200,
+        "body": {
+          "status": "ready",
+          "dependencies": {
+            "mysql": "ok",
+            "redis": "ok"
+          }
+        }
+      }
+    }
+  ],
+  "cleanup_completed": true,
+  "permissions": {
+    "mysql_error_code": 1044,
+    "mysql_write_denied": true,
+    "redis_write_denied": true
+  }
+}
