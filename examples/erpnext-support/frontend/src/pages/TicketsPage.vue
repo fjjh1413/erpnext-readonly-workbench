@@ -1,19 +1,26 @@
-<script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+<script setup lang="ts">
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { api, itemsOf } from '../api.js'
-import { formatTime, statusLabel } from '../labels.js'
+import { api, itemsOf, toError } from '../api'
+import type { Environment, ErrorState, Ticket, User } from '../types'
+import { usePagedList } from '../usePagedList'
+import { formatTime, statusLabel } from '../labels'
 import StatePanel from '../components/StatePanel.vue'
 import StatusTag from '../components/StatusTag.vue'
+import ErrorNotice from '../components/ErrorNotice.vue'
+import PageNavigation from '../components/PageNavigation.vue'
 
-const props = defineProps({ user: Object })
-const emit = defineEmits(['open'])
-const loading = ref(true), error = ref(null), tickets = ref([]), environments = ref([]), users = ref([])
+const props = defineProps<{ user: User }>()
+const emit = defineEmits<{ open: [id: string] }>()
+const environments = ref<Environment[]>([]), users = ref<User[]>([])
+const environmentSearchLoading = ref(false), userSearchLoading = ref(false)
+let environmentSearchVersion = 0, userSearchVersion = 0
 const filters = reactive({ q: '', status: '', environment_id: '', owner: '' })
-const showCreate = ref(false), saving = ref(false), saveError = ref(null), ownerSaving = ref('')
-const form = reactive({ environment_id: '', delivery_note: '', description: '', occurred_at: null, operator_user: '', owner: '' })
+const { items: tickets, loading, error, pagination, load: loadTickets, reset } = usePagedList<Ticket>(api.tickets, () => ({ ...filters }))
+const showCreate = ref(false), saving = ref(false), saveError = ref<ErrorState | null>(null), ownerSaving = ref('')
+const form = reactive({ environment_id: '', delivery_note: '', description: '', occurred_at: null as Date | string | null, operator_user: '', owner: '' })
 const stateOptions = ['pending', 'investigating', 'awaiting_action', 'needs_information', 'awaiting_review', 'closed']
-const environmentName = (id) => environments.value.find((item) => String(item.id) === String(id))?.name || `环境 ${id}`
+const environmentName = (id: string) => environments.value.find((item) => String(item.id) === String(id))?.name || `环境 ${id}`
 const rows = computed(() => tickets.value.filter((item) => {
   const q = filters.q.trim().toLowerCase()
   return (!q || `${item.delivery_note} ${item.description} ${item.id}`.toLowerCase().includes(q)) &&
@@ -22,12 +29,30 @@ const rows = computed(() => tickets.value.filter((item) => {
     (!filters.owner || item.owner === filters.owner)
 }))
 const openCount = computed(() => tickets.value.filter((item) => item.status !== 'closed').length)
+async function searchEnvironments(q: string) {
+  const version = ++environmentSearchVersion
+  environmentSearchLoading.value = true
+  try {
+    const result = itemsOf<Environment>(await api.environments({ limit: 100, q }))
+    if (version === environmentSearchVersion) environments.value = result
+  } catch (failure) { if (version === environmentSearchVersion) error.value = toError(failure) }
+  finally { if (version === environmentSearchVersion) environmentSearchLoading.value = false }
+}
+async function searchUsers(q: string) {
+  const version = ++userSearchVersion
+  userSearchLoading.value = true
+  try {
+    const result = itemsOf<User>(await api.users({ limit: 100, q })).filter(item => !item.disabled)
+    if (version === userSearchVersion) users.value = result
+  } catch (failure) { if (version === userSearchVersion) error.value = toError(failure) }
+  finally { if (version === userSearchVersion) userSearchLoading.value = false }
+}
 async function load() {
   loading.value = true; error.value = null
   try {
-    const values = await Promise.all([api.tickets(), api.environments(), api.users()])
-    tickets.value = itemsOf(values[0]); environments.value = itemsOf(values[1]); users.value = itemsOf(values[2])
-  } catch (failure) { tickets.value = []; error.value = failure }
+    const values = await Promise.all([loadTickets(), api.environments({ limit: 100 }), api.users({ limit: 100 })])
+    environments.value = itemsOf<Environment>(values[1]); users.value = itemsOf<User>(values[2]).filter(item => !item.disabled)
+  } catch (failure) { tickets.value = []; error.value = toError(failure) }
   finally { loading.value = false }
 }
 function openCreate() {
@@ -42,32 +67,33 @@ async function createTicket() {
   try {
     const value = await api.create('tickets', {
       ...form, delivery_note: form.delivery_note.trim(), description: form.description.trim(),
-      occurred_at: new Date(form.occurred_at).toISOString(), operator_user: form.operator_user.trim() || null,
+      occurred_at: new Date(form.occurred_at instanceof Date ? form.occurred_at.getTime() : form.occurred_at).toISOString(), operator_user: form.operator_user.trim() || null,
     })
     showCreate.value = false; await load(); ElMessage.success('工单已创建。')
     if (value?.id) emit('open', value.id)
-  } catch (failure) { saveError.value = failure }
+  } catch (failure) { saveError.value = toError(failure) }
   finally { saving.value = false }
 }
-async function changeOwner(ticket, value) {
+async function changeOwner(ticket: Ticket, value: string) {
   ownerSaving.value = ticket.id
   try { await api.update('tickets', ticket.id, { owner: value }, 'PATCH'); ElMessage.success('负责人已更新。'); await load() }
-  catch (failure) { error.value = failure; tickets.value = [] }
+  catch (failure) { error.value = toError(failure); tickets.value = [] }
   finally { ownerSaving.value = '' }
 }
 onMounted(load)
+watch(filters, reset)
 </script>
 
 <template>
   <section>
     <div class="page-heading"><div><h1>工单工作台</h1><p>选择客户环境，记录发货问题，跟进调查与复核。</p></div><el-button type="primary" :disabled="loading || !!error" @click="openCreate">新建工单</el-button></div>
-    <div class="summary-strip"><span>已读取 <strong>{{ tickets.length }}</strong> 个工单</span><span>未关闭 <strong>{{ openCount }}</strong> 个</span><span class="muted">仅展示当前账号获准访问的环境</span></div>
+    <div class="summary-strip"><span>符合条件 <strong>{{ pagination.total }}</strong> 个工单</span><span>本页未关闭 <strong>{{ openCount }}</strong> 个</span><span class="muted">仅展示当前账号获准访问的环境</span></div>
     <div class="panel">
       <div class="filter-bar">
         <el-input v-model="filters.q" clearable placeholder="搜索发货单号或问题描述" aria-label="搜索工单" />
-        <el-select v-model="filters.environment_id" clearable placeholder="全部环境" aria-label="环境筛选"><el-option v-for="item in environments" :key="item.id" :label="item.name" :value="item.id" /></el-select>
+        <el-select v-model="filters.environment_id" clearable filterable remote :remote-method="searchEnvironments" :loading="environmentSearchLoading" placeholder="全部环境（输入检索）" aria-label="环境筛选"><el-option v-for="item in environments" :key="item.id" :label="item.name" :value="item.id" /></el-select>
         <el-select v-model="filters.status" clearable placeholder="全部状态" aria-label="状态筛选"><el-option v-for="item in stateOptions" :key="item" :label="statusLabel(item)" :value="item" /></el-select>
-        <el-select v-model="filters.owner" clearable placeholder="全部负责人" aria-label="负责人筛选"><el-option v-for="item in users" :key="item.id" :label="item.username" :value="item.username" /></el-select>
+        <el-select v-model="filters.owner" clearable filterable remote :remote-method="searchUsers" :loading="userSearchLoading" placeholder="全部负责人（输入检索）" aria-label="负责人筛选"><el-option v-for="item in users" :key="item.id" :label="item.username" :value="item.username" /></el-select>
         <el-button :loading="loading" @click="load">刷新</el-button>
       </div>
       <StatePanel :loading="loading" :error="error" :empty="!rows.length" :empty-text="tickets.length ? '没有符合筛选条件的工单' : '还没有工单，请先新建一张发货问题工单'" @retry="load">
@@ -75,20 +101,21 @@ onMounted(load)
           <el-table-column label="发货问题" min-width="235"><template #default="{ row }"><el-button link type="primary" @click="emit('open', row.id)">{{ row.delivery_note }}</el-button><p class="table-description">{{ row.description }}</p><small class="muted">工单 {{ row.id }}</small></template></el-table-column>
           <el-table-column label="客户环境" min-width="135"><template #default="{ row }">{{ environmentName(row.environment_id) }}</template></el-table-column>
           <el-table-column label="状态" width="135"><template #default="{ row }"><StatusTag :value="row.status" /></template></el-table-column>
-          <el-table-column label="负责人" min-width="150"><template #default="{ row }"><el-select :model-value="row.owner || ''" size="small" placeholder="未分配" :disabled="ownerSaving === row.id || row.status === 'closed'" @change="(value) => changeOwner(row, value)"><el-option v-for="item in users" :key="item.id" :label="item.username" :value="item.username" /></el-select></template></el-table-column>
+          <el-table-column label="负责人" min-width="150"><template #default="{ row }"><el-select :model-value="row.owner || ''" size="small" filterable remote :remote-method="searchUsers" :loading="userSearchLoading" placeholder="未分配" :disabled="ownerSaving === row.id || row.status === 'closed'" @change="(value: string) => changeOwner(row, value)"><el-option v-for="item in users" :key="item.id" :label="item.username" :value="item.username" /></el-select></template></el-table-column>
           <el-table-column label="发生时间" min-width="165"><template #default="{ row }">{{ formatTime(row.occurred_at) }}</template></el-table-column>
           <el-table-column prop="submitter" label="提交人" width="110" />
           <el-table-column label="操作" width="100"><template #default="{ row }"><el-button link type="primary" @click="emit('open', row.id)">查看诊断</el-button></template></el-table-column>
         </el-table>
       </StatePanel>
+      <PageNavigation v-model:page="pagination.page" v-model:limit="pagination.limit" :total="pagination.total" :loading="loading" @change="loadTickets" />
     </div>
     <el-dialog v-model="showCreate" title="新建发货问题工单" width="620px" :close-on-click-modal="false">
-      <el-alert v-if="saveError" :title="saveError.status === 403 ? '权限不足：' + saveError.message : saveError.message" type="error" :closable="false" class="space-bottom" />
+      <ErrorNotice :error="saveError" />
       <el-form :model="form" label-position="top" @submit.prevent="createTicket">
-        <el-form-item label="客户环境" required><el-select v-model="form.environment_id" class="full-width" placeholder="选择已授权环境"><el-option v-for="item in environments" :key="item.id" :label="item.name" :value="item.id" /></el-select></el-form-item>
+        <el-form-item label="客户环境" required><el-select v-model="form.environment_id" class="full-width" filterable remote :remote-method="searchEnvironments" :loading="environmentSearchLoading" placeholder="选择已授权环境（输入检索）"><el-option v-for="item in environments" :key="item.id" :label="item.name" :value="item.id" /></el-select></el-form-item>
         <el-form-item label="Delivery Note 发货单号" required><el-input v-model="form.delivery_note" maxlength="140" placeholder="输入 ERPNext 中的真实发货单号" /></el-form-item>
         <el-form-item label="问题描述" required><el-input v-model="form.description" type="textarea" :rows="4" maxlength="3000" show-word-limit placeholder="记录实际错误、操作步骤及对业务的影响" /></el-form-item>
-        <div class="form-grid"><el-form-item label="发生时间（本地时间）" required><el-date-picker v-model="form.occurred_at" type="datetime" placeholder="选择故障发生时间" class="full-width" /></el-form-item><el-form-item label="负责人"><el-select v-model="form.owner" class="full-width"><el-option v-for="item in users" :key="item.id" :label="item.username" :value="item.username" /></el-select></el-form-item></div>
+        <div class="form-grid"><el-form-item label="发生时间（本地时间）" required><el-date-picker v-model="form.occurred_at" type="datetime" placeholder="选择故障发生时间" class="full-width" /></el-form-item><el-form-item label="负责人"><el-select v-model="form.owner" class="full-width" filterable remote :remote-method="searchUsers" :loading="userSearchLoading"><el-option v-for="item in users" :key="item.id" :label="item.username" :value="item.username" /></el-select></el-form-item></div>
         <el-form-item label="故障操作用户（ERPNext，可选）"><el-input v-model="form.operator_user" placeholder="诊断账号能读取，不代表此用户有提交权限" maxlength="140" /></el-form-item>
       </el-form>
       <template #footer><el-button @click="showCreate = false">取消</el-button><el-button type="primary" :loading="saving" @click="createTicket">创建工单</el-button></template>

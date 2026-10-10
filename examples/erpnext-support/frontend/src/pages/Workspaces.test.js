@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import ElementPlus, { ElFormItem, ElInput } from 'element-plus'
-import { api } from '../api.js'
+import { api } from '../api'
 import TicketsPage from './TicketsPage.vue'
 import CasesPage from './CasesPage.vue'
 import EnvironmentsPage from './EnvironmentsPage.vue'
 
 // HTTP is mocked only in these component tests. No fabricated data ships in the UI.
-vi.mock('../api.js', () => ({ itemsOf: value => Array.isArray(value?.items) ? value.items : [], api: { tickets: vi.fn(), environments: vi.fn(), users: vi.fn(), cases: vi.fn(), create: vi.fn(), update: vi.fn(), remove: vi.fn(), action: vi.fn() } }))
+vi.mock('../api', async importOriginal => ({ ...(await importOriginal()), itemsOf: value => Array.isArray(value?.items) ? value.items : [], api: { tickets: vi.fn(), environments: vi.fn(), users: vi.fn(), cases: vi.fn(), create: vi.fn(), update: vi.fn(), remove: vi.fn(), action: vi.fn() } }))
 const wrappers = []
 function create(component, role = 'admin') {
   const wrapper = mount(component, {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { resultView, evidenceId, latestReview, reviewPassed, taskIsActive } from './result.js'
-import { canReview, parseRoute } from './labels.js'
+import { resultView, evidenceId, latestReview, reviewPassed, taskIsActive } from './result'
+import { canReview, parseRoute } from './labels'
 
 describe('diagnostic result and workflow boundaries', () => {
   it('never creates evidence or facts when no result was returned', () => { const view = resultView(null); expect(view.facts).toEqual([]); expect(view.evidence).toEqual([]); expect(view.causes).toEqual([]); expect(view.summary).toBe('') })

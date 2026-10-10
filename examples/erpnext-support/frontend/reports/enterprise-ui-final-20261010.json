@@ -1,0 +1,109 @@
+{
+  "result": "passed",
+  "scope": "fresh_local_enterprise_workbench",
+  "mocks": false,
+  "browser": {
+    "channel": "msedge",
+    "version": "154.0.4258.62"
+  },
+  "browser_errors": 0,
+  "checks": [
+    "actual_admin_login",
+    "actual_account_create",
+    "actual_environment_grant",
+    "actual_role_edit",
+    "actual_password_reset",
+    "actual_reviewer_login",
+    "actual_admin_route_denied",
+    "actual_audit_403_request_id",
+    "actual_account_disable",
+    "actual_disabled_session_denied",
+    "actual_environment_grant_removed",
+    "actual_login_error_request_id_and_password_clear",
+    "actual_audit_query",
+    "actual_audit_detail_sanitized",
+    "actual_audit_api_pagination",
+    "actual_system_status",
+    "existing_four_pages_preserved",
+    "actual_fixture_ticket_create",
+    "actual_fixture_queue_partial_diagnosis",
+    "actual_fixture_failed_evidence_preserved",
+    "actual_fixture_human_record",
+    "actual_fixture_queue_review_incomplete",
+    "actual_fixture_manual_exception_close"
+  ],
+  "qa_account_id": "a1be0621dbbc491d9f99a380d2f8bc7a",
+  "qa_account_disabled": true,
+  "system_status": {
+    "version": "2.0.0",
+    "storage_backend": "postgresql",
+    "queue_backend": "celery",
+    "database_ready": true,
+    "broker_ready": true,
+    "worker_ready": true
+  },
+  "workflow": {
+    "scope": "reserved_invalid_unavailable_source_real_queue_only",
+    "ticket_id": "e9ef8e1b2cd34ca1af5cb794868d7d28",
+    "task_state": "partial",
+    "mode": "rules_degraded",
+    "classification": "runtime_unavailable",
+    "metrics": {
+      "elapsed_seconds": 1.2152237890004471,
+      "tool_calls": 4,
+      "successful_calls": 0,
+      "model": null,
+      "max_rounds": 4,
+      "tool_timeout_seconds": 8,
+      "tool_success_rate": 0
+    },
+    "evidence_count": 4,
+    "tool_calls": [
+      {
+        "tool_call_id": "tool_0f12569ec0b74e6e967e51421f1fd702",
+        "tool_name": "erp_capabilities",
+        "status": "error"
+      },
+      {
+        "tool_call_id": "tool_3c3df2d2321d4595ac7d66985ea513fc",
+        "tool_name": "erp_delivery_context",
+        "status": "error"
+      },
+      {
+        "tool_call_id": "tool_822ee52072ad42febcc44646c65463a2",
+        "tool_name": "erp_error_events",
+        "status": "error"
+      },
+      {
+        "tool_call_id": "tool_bc3d6f5d8efd4f2bb48a428b538e70fe",
+        "tool_name": "erp_delivery_context",
+        "status": "error"
+      }
+    ],
+    "review_state": "partial",
+    "review_business_complete": false,
+    "manually_closed": true,
+    "manual_override": true,
+    "actual_ERP_connected": false,
+    "actual_model_called": false
+  },
+  "elapsed_seconds": 31.527965299999995,
+  "artifacts": [
+    "enterprise-ui-users-20261010.png",
+    "enterprise-ui-audit-20261010.png",
+    "enterprise-ui-fixture-partial-20261010.png"
+  ],
+  "note": "Only this run newly created QA account was modified and left disabled without environment grants. Optional workflow is explicitly unavailable .invalid source real queue/partial/manual exception closure, not ERP diagnosis effectiveness. No production connections, real model calls, credentials, traces, HAR or sessions exported. Audit API paging is real; component tests separately verify next-page controls.",
+  "started_at": "2026-10-10T08:54:03.636Z",
+  "qa_account_environment_ids": [],
+  "visual_review": {
+    "reviewed_individually": true,
+    "visible_password_or_token_or_cookie": false,
+    "image_edited": false
+  },
+  "screenshot_stages": {
+    "enterprise-ui-users-20261010.png": "After role/grant edit and password reset, before this own QA account was disabled.",
+    "enterprise-ui-audit-20261010.png": "After own QA account disable/grant removal; resource-filtered persisted audit and live system status.",
+    "enterprise-ui-fixture-partial-20261010.png": "Partial diagnostic with failed sources, before human action/review/manual exception closure. JSON records the subsequent closure."
+  }
+}

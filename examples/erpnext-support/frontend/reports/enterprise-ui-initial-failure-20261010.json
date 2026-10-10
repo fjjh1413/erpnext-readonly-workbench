@@ -1,0 +1,31 @@
+{
+  "result": "failed",
+  "scope": "actual_local_enterprise_browser_without_API_mocks",
+  "started_at": "2026-10-10T08:18:35.954Z",
+  "elapsed_seconds": 17.997652300000002,
+  "stage": "audit_workspace",
+  "error_type": "AssertionError",
+  "completed_check_count": 12,
+  "completed_checks": [
+    "actual_admin_login",
+    "actual_account_create",
+    "actual_environment_grant",
+    "actual_role_edit",
+    "actual_password_reset",
+    "actual_reviewer_login",
+    "actual_admin_route_denied",
+    "actual_audit_403_request_id",
+    "actual_account_disable",
+    "actual_disabled_session_denied",
+    "actual_environment_grant_removed",
+    "actual_login_error_request_id_and_password_clear"
+  ],
+  "failure_reason_verified_in_source": "Audit q searched request_id/actor/action but not resource_id, so querying the new QA account ID returned no items.",
+  "qa_account_id": "df8e99303555492a88d8dd80fcb4d3fa",
+  "cleanup": "own_qa_account_disabled_without_grants",
+  "real_ERP_connected": false,
+  "real_model_called": false,
+  "workflow_started": false,
+  "raw_report": ".qa/enterprise-2026-10-10T08-18-35.954Z-e4e30638/failure.json",
+  "note": "This run failed and is not counted as a passing UI run. No credentials, sessions, traces or HAR are exported."
+}

@@ -1,16 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { api } from '../api.js'
-import { asText, canReview, formatTime, statusLabel } from '../labels.js'
-import { evidenceId, findingText, latestReview, referencesOf, resultView, reviewPassed, taskIsActive } from '../result.js'
+import { api, toError } from '../api'
+import type { ErrorState, Ticket, User } from '../types'
+import { asText, canReview, formatTime, statusLabel } from '../labels'
+import { evidenceId, findingText, latestReview, referencesOf, resultView, reviewPassed, taskIsActive } from '../result'
 import StatePanel from '../components/StatePanel.vue'
 import StatusTag from '../components/StatusTag.vue'
+import ErrorNotice from '../components/ErrorNotice.vue'
 
-const props = defineProps({ user: Object, ticketId: String })
+const props = defineProps<{ user: User; ticketId?: string }>()
 defineEmits(['back'])
-const loading = ref(false), error = ref(null), ticket = ref(null), acting = ref(''), actionError = ref(null)
-const expanded = ref([]), expandedTasks = ref([]), recordDescription = ref(''), closeDialog = ref(false)
+const loading = ref(false), error = ref<ErrorState | null>(null), ticket = ref<Ticket | null>(null), acting = ref(''), actionError = ref<ErrorState | null>(null)
+const expanded = ref<string[]>([]), expandedTasks = ref<string[]>([]), recordDescription = ref(''), closeDialog = ref(false)
 const closeForm = reactive({ confirmation: '', manual_override: false })
 const tasks = computed(() => Array.isArray(ticket.value?.tasks) ? ticket.value.tasks : [])
 const active = computed(() => tasks.value.some(taskIsActive))
@@ -19,7 +21,7 @@ const newestReview = computed(() => latestReview(tasks.value))
 const view = computed(() => resultView(ticket.value?.latest_result))
 const closed = computed(() => ticket.value?.status === 'closed')
 const reviewer = computed(() => canReview(props.user))
-let timer = null, requestVersion = 0, disposed = false
+let timer: ReturnType<typeof setTimeout> | null = null, requestVersion = 0, disposed = false
 function stopPolling() { if (timer) clearTimeout(timer); timer = null }
 function pollLater() {
   stopPolling()
@@ -37,10 +39,11 @@ async function load(quiet = false) {
     pollLater()
   } catch (failure) {
     if (version !== requestVersion || disposed) return
-    ticket.value = null; error.value = failure; stopPolling()
+    ticket.value = null; error.value = toError(failure); stopPolling()
   } finally { if (version === requestVersion) loading.value = false }
 }
-async function operate(name, body = {}) {
+async function operate(name: string, body: unknown = {}) {
+  if (!props.ticketId) return
   acting.value = name; actionError.value = null
   try {
     await api.action('tickets', props.ticketId, name, body)
@@ -48,7 +51,7 @@ async function operate(name, body = {}) {
     if (name === 'close') closeDialog.value = false
     await load(true)
     ElMessage.success(name === 'close' ? '工单已由人工确认关闭。' : name === 'actions' ? '处理记录已保存。' : '任务已创建，请查看执行进度。')
-  } catch (failure) { actionError.value = failure }
+  } catch (failure) { actionError.value = toError(failure) }
   finally { acting.value = '' }
 }
 function saveRecord() {
@@ -62,7 +65,7 @@ function confirmClose() {
   if (!reviewPassed(newestReview.value) && !closeForm.manual_override) { actionError.value = { message: '复核尚未完整通过；需要明确说明人工复核理由。' }; return }
   operate('close', { ...closeForm, confirmation: closeForm.confirmation.trim(), review_id: newestReview.value.id })
 }
-function openEvidence(id) {
+function openEvidence(id: string) {
   if (!expanded.value.includes(id)) expanded.value = [...expanded.value, id]
   document.getElementById('evidence-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
@@ -81,7 +84,7 @@ onBeforeUnmount(() => { disposed = true; requestVersion++; stopPolling() })
           <el-descriptions :column="3" border><el-descriptions-item label="环境">{{ ticket.environment_name || ticket.environment_id }}</el-descriptions-item><el-descriptions-item label="负责人">{{ ticket.owner || '未分配' }}</el-descriptions-item><el-descriptions-item label="提交人">{{ ticket.submitter }}</el-descriptions-item><el-descriptions-item label="发生时间">{{ formatTime(ticket.occurred_at) }}</el-descriptions-item><el-descriptions-item label="故障操作用户">{{ ticket.operator_user || '未提供；不能判断其提交权限' }}</el-descriptions-item><el-descriptions-item label="工单编号">{{ ticket.id }}</el-descriptions-item></el-descriptions>
           <div class="action-row"><el-button type="primary" :loading="acting === 'diagnose'" :disabled="active || closed || !!acting" @click="operate('diagnose')">{{ tasks.length ? '重新诊断' : '开始诊断' }}</el-button><el-button :loading="acting === 'review'" :disabled="active || closed || !!acting" @click="operate('review')">读取业务状态并复核</el-button><el-button :disabled="!reviewer || active || closed || !newestReview" @click="closeDialog = true; closeForm.confirmation = ''; closeForm.manual_override = false">人工确认关闭</el-button><small class="muted">关闭仅限审核员和管理员；所有处理建议均需人工执行。</small></div>
         </div>
-        <el-alert v-if="actionError" :title="actionError.status === 403 ? '权限不足：' + actionError.message : actionError.message" type="error" :closable="false" show-icon class="space-bottom" />
+        <ErrorNotice :error="actionError" />
         <el-alert v-if="newestTask?.state === 'interrupted'" title="诊断已中断" description="上次任务未完成，已有证据保留。确认环境可用后可重新执行，不能把中断结果当作完整诊断。" type="error" :closable="false" show-icon class="space-bottom" />
         <el-alert v-else-if="newestTask?.state === 'partial'" title="诊断部分完成" description="部分数据源或执行步骤未取得完整证据，请查看缺失信息和失败记录。" type="warning" :closable="false" show-icon class="space-bottom" />
         <el-alert v-else-if="newestTask?.state === 'failed'" title="诊断执行失败" :description="newestTask.error || '请核对环境、权限和数据源后重试。'" type="error" :closable="false" show-icon class="space-bottom" />
@@ -108,6 +111,6 @@ onBeforeUnmount(() => { disposed = true; requestVersion++; stopPolling() })
         <div class="detail-grid space-top"><div class="panel"><h2>人工处理记录</h2><p class="muted">只记录已实际执行的动作，不会向 ERP 发起修改。请不要填写密码或 Token。</p><el-input v-model="recordDescription" type="textarea" :rows="4" maxlength="3000" show-word-limit :disabled="closed" placeholder="记录处理人、实际动作、执行时间及结果" /><el-button class="space-top" type="primary" :loading="acting === 'actions'" :disabled="closed || active || !!acting" @click="saveRecord">保存处理记录</el-button><el-timeline class="space-top"><el-timeline-item v-for="(item, index) in ticket.actions || []" :key="item.id || index" :timestamp="formatTime(item.created_at)"><strong>{{ item.actor || item.username || item.created_by }}</strong><p>{{ item.description }}</p></el-timeline-item></el-timeline><p v-if="!ticket.actions?.length" class="muted">暂无人工处理记录。</p></div><div class="panel"><h2>复核与关闭</h2><p>记录人工处理后，重新读取发货单和库存相关业务状态。工单最终关闭须由审核人员确认。</p><el-alert v-if="newestReview" :title="'最近复核：' + newestReview.id" :type="reviewPassed(newestReview) ? 'success' : 'warning'" :closable="false"><p>{{ reviewPassed(newestReview) ? '服务端记录复核完整通过，仍需人员确认关闭。' : '复核尚未完整通过或结果不确定，请查看实际复核证据。' }}</p></el-alert><el-empty v-else description="尚未执行业务复核" /><div v-if="closed"><p class="muted">此工单已关闭，处理记录与诊断证据保留。</p><el-descriptions :column="1" border class="space-top"><el-descriptions-item label="人工关闭人">{{ ticket.closed_by || '未提供' }}</el-descriptions-item><el-descriptions-item label="关闭时间">{{ formatTime(ticket.closed_at) }}</el-descriptions-item><el-descriptions-item label="人工例外确认">{{ ticket.manual_override ? '是；请核对下方人工说明' : '否' }}</el-descriptions-item></el-descriptions><h3>人工关闭依据</h3><p>{{ ticket.close_confirmation || '未提供' }}</p></div><p v-if="!reviewer" class="muted">当前账号可调查和记录处理；关闭需由审核员或管理员确认。</p></div></div>
       </template>
     </StatePanel>
-    <el-dialog v-model="closeDialog" title="人工确认关闭工单" width="580px" :close-on-click-modal="false"><p>使用最近的复核任务 {{ newestReview?.id }}。此操作只关闭工作台工单。</p><el-alert v-if="actionError" :title="actionError.message" type="error" :closable="false" class="space-bottom" /><el-checkbox v-model="closeForm.manual_override">复核未完整通过，使用明确的人工复核说明</el-checkbox><el-alert v-if="closeForm.manual_override" title="请说明未通过项、补充验证和关闭依据，至少 20 个字。" type="warning" :closable="false" class="space-top" /><el-input v-model="closeForm.confirmation" type="textarea" :rows="4" class="space-top" maxlength="3000" show-word-limit placeholder="记录人工确认结论与关闭理由" /><template #footer><el-button @click="closeDialog = false">取消</el-button><el-button type="primary" :loading="acting === 'close'" @click="confirmClose">确认关闭工单</el-button></template></el-dialog>
+    <el-dialog v-model="closeDialog" title="人工确认关闭工单" width="580px" :close-on-click-modal="false"><p>使用最近的复核任务 {{ newestReview?.id }}。此操作只关闭工作台工单。</p><ErrorNotice :error="actionError" /><el-checkbox v-model="closeForm.manual_override">复核未完整通过，使用明确的人工复核说明</el-checkbox><el-alert v-if="closeForm.manual_override" title="请说明未通过项、补充验证和关闭依据，至少 20 个字。" type="warning" :closable="false" class="space-top" /><el-input v-model="closeForm.confirmation" type="textarea" :rows="4" class="space-top" maxlength="3000" show-word-limit placeholder="记录人工确认结论与关闭理由" /><template #footer><el-button @click="closeDialog = false">取消</el-button><el-button type="primary" :loading="acting === 'close'" @click="confirmClose">确认关闭工单</el-button></template></el-dialog>
   </section>
 </template>

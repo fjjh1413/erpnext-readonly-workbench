@@ -1,4 +1,5 @@
-export const statuses = {
+import type { PageName, User } from './types'
+export const statuses: Record<string, string> = {
   pending: '待诊断', investigating: '调查中', awaiting_action: '待人工处理',
   needs_information: '待补充信息', awaiting_review: '待复核', closed: '已关闭',
   queued: '排队中', running: '执行中', completed: '已完成', partial: '部分完成',
@@ -14,32 +15,33 @@ export const statuses = {
   unable_to_confirm: '无法确认原因', normal: '未发现规则故障',
 }
 
-export const statusLabel = (value) => statuses[value] || value || '未提供'
-export function statusType(value) {
+export const statusLabel = (value?: string) => value ? statuses[value] || value : '未提供'
+export function statusType(value?: string) {
+  if (!value) return 'info'
   if (['success', 'confirmed', 'closed', 'completed', 'approved', 'healthy', 'available', 'supported'].includes(value)) return 'success'
   if (['error', 'failed', 'rejected', 'interrupted', 'unavailable', 'unsupported', 'denied'].includes(value)) return 'danger'
   if (['partial', 'awaiting_action', 'needs_information', 'awaiting_review', 'degraded'].includes(value)) return 'warning'
   return 'info'
 }
 
-export function formatTime(value) {
+export function formatTime(value?: string | number | Date | null) {
   if (!value) return '未提供'
-  const date = new Date(value)
+  const date = new Date(value instanceof Date ? value.getTime() : value)
   return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString('zh-CN', { hour12: false })
 }
 
-export const asLines = (text) => String(text || '').split('\n').map((line) => line.trim()).filter(Boolean)
-export const asText = (value) => typeof value === 'string' ? value : JSON.stringify(value, null, 2)
+export const asLines = (text: unknown) => String(text || '').split('\n').map((line) => line.trim()).filter(Boolean)
+export const asText = (value: unknown) => typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? ''
 
-export function parseRoute(hash) {
+export function parseRoute(hash: string): { page: PageName; id: string } {
   const path = String(hash || '#/tickets').replace(/^#/, '')
   if (path.startsWith('/tickets/')) { try { return { page: 'detail', id: decodeURIComponent(path.slice(9)) } } catch { return { page: 'tickets', id: '' } } }
-  if (['/tickets', '/cases', '/environments', '/detail'].includes(path)) return { page: path.slice(1), id: '' }
+  if (['/tickets', '/cases', '/environments', '/detail', '/users', '/audit'].includes(path)) return { page: path.slice(1) as PageName, id: '' }
   return { page: 'tickets', id: '' }
 }
 
-export function canReview(user) { return ['admin', 'reviewer'].includes(user?.role) }
-const limitations = {
+export function canReview(user?: User | null) { return !!user && ['admin', 'reviewer'].includes(user.role) }
+const limitations: Record<string, string> = {
   operator_submit_permission_unknown: '尚未核验故障操作用户的提交权限',
   runtime_health_not_available: 'ERP API 未提供运行环境健康证据；如已配置独立采集器，请对照其结果',
   inventory_dimensions_not_adapted: '当前库存维度尚未适配',
@@ -49,4 +51,4 @@ const limitations = {
   batch_or_serial_stock_not_adapted: '批次或序列号的库存规则尚未适配',
   document_changed_during_collection: '采集期间单据已变化，证据时点不一致',
 }
-export const limitationText = value => limitations[value] ? `${limitations[value]}（${value}）` : value
+export const limitationText = (value: string) => limitations[value] ? `${limitations[value]}（${value}）` : value

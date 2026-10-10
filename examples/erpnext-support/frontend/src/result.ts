@@ -1,7 +1,8 @@
 // Normalize only fields actually returned by the backend; no synthetic evidence.
-import { limitationText } from './labels.js'
-const list = (value) => Array.isArray(value) ? value : []
-export function resultView(result) {
+import { limitationText } from './labels'
+import type { DiagnosticResult, Evidence, Finding, Task } from './types'
+const list = <T>(value?: T[]): T[] => Array.isArray(value) ? value : []
+export function resultView(result?: DiagnosticResult | null) {
   const source = result && typeof result === 'object' ? result : {}
   return {
     summary: source.summary || source.conclusion || '',
@@ -22,10 +23,10 @@ export function resultView(result) {
     cases: list(source.approved_case_references),
   }
 }
-export const findingText = (value) => typeof value === 'string' ? limitationText(value) : value?.text || value?.statement || value?.description || value?.reason || JSON.stringify(value)
-export const referencesOf = (value) => Array.isArray(value?.evidence_ids) ? value.evidence_ids : []
-export const evidenceId = (value, index) => value?.id || value?.evidence_id || value?.tool_call_id || `未提供编号 ${index + 1}`
-export const taskIsActive = (task) => ['queued', 'running'].includes(task?.state)
+export const findingText = (value: Finding | string) => typeof value === 'string' ? limitationText(value) : value?.text || value?.statement || value?.description || value?.reason || JSON.stringify(value)
+export const referencesOf = (value: Finding | string) => typeof value !== 'string' && Array.isArray(value?.evidence_ids) ? value.evidence_ids : []
+export const evidenceId = (value: Evidence, index: number) => value?.id || value?.evidence_id || value?.tool_call_id || `未提供编号 ${index + 1}`
+export const taskIsActive = (task?: Task | null) => !!task && ['queued', 'running'].includes(task.state)
 // API lists tasks in descending creation order.
-export function latestReview(tasks) { return (tasks || []).find((task) => task.kind === 'review') || null }
-export function reviewPassed(task) { return ['completed', 'partial'].includes(task?.state) && task.result?.review?.business_complete === true }
+export function latestReview(tasks?: Task[]) { return (tasks || []).find((task) => task.kind === 'review') || null }
+export function reviewPassed(task?: Task | null) { return !!task && ['completed', 'partial'].includes(task.state) && task.result?.review?.business_complete === true }

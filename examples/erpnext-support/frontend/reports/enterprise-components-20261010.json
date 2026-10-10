@@ -1,0 +1,85 @@
+{
+  "scope": "explicitly_mocked_frontend_components_and_API",
+  "mocks": true,
+  "real_ERP": false,
+  "real_model": false,
+  "runs": [
+    {
+      "kind": "failed_worker_start",
+      "source": "enterprise-components-83352d12b2db.json",
+      "started_at": "2026-10-10T07:13:07.782Z",
+      "success": true,
+      "passed": 39,
+      "failed": 0,
+      "pending": 0,
+      "files": [
+        {
+          "name": "src/api.test.js",
+          "status": "passed",
+          "checks": 14
+        },
+        {
+          "name": "src/result.test.js",
+          "status": "passed",
+          "checks": 6
+        },
+        {
+          "name": "src/components/StatePanel.test.js",
+          "status": "passed",
+          "checks": 4
+        },
+        {
+          "name": "src/pages/DetailPage.test.js",
+          "status": "passed",
+          "checks": 5
+        },
+        {
+          "name": "src/pages/EnterprisePages.test.js",
+          "status": "passed",
+          "checks": 10
+        }
+      ]
+    },
+    {
+      "kind": "completed_rerun",
+      "source": "enterprise-components-8a4c66d1873d.json",
+      "started_at": "2026-10-10T07:22:10.662Z",
+      "success": true,
+      "passed": 48,
+      "failed": 0,
+      "pending": 0,
+      "files": [
+        {
+          "name": "src/api.test.js",
+          "status": "passed",
+          "checks": 14
+        },
+        {
+          "name": "src/result.test.js",
+          "status": "passed",
+          "checks": 6
+        },
+        {
+          "name": "src/components/StatePanel.test.js",
+          "status": "passed",
+          "checks": 4
+        },
+        {
+          "name": "src/pages/DetailPage.test.js",
+          "status": "passed",
+          "checks": 5
+        },
+        {
+          "name": "src/pages/EnterprisePages.test.js",
+          "status": "passed",
+          "checks": 10
+        },
+        {
+          "name": "src/pages/Workspaces.test.js",
+          "status": "passed",
+          "checks": 9
+        }
+      ]
+    }
+  ]
+}

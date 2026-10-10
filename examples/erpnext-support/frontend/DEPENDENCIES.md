@@ -12,7 +12,9 @@
 | @vue/test-utils | 2.5.1 | `node_modules/@vue/test-utils/LICENSE` | MIT |
 | jsdom | 30.1.2 | `node_modules/jsdom/LICENSE.txt` | MIT |
 | Playwright（仅测试） | 1.63.0 | `node_modules/playwright/LICENSE` | Apache-2.0 |
+| TypeScript（仅开发） | 5.9.3 | `node_modules/typescript/LICENSE.txt` | Apache-2.0 |
+| vue-tsc（仅开发） | 3.3.12 | `node_modules/vue-tsc/LICENSE` | MIT |
 
-安装树共 131 个包；本次安装时 npm audit 报告 0 个已知漏洞，这只是当时的包审计结果，不代表完整生产安全审查。传递依赖使用锁文件复现，各包随安装保留自身许可证。分发前端构建或依赖包时须保留实际使用包的许可证与版权声明；本记录没有替代依赖中的完整许可文件。
+企业 TypeScript 升级的实际安装日期为 2026 年 10 月 10 日，保留原版本并新增上述两个开发依赖。npm 当次统计 141 个已审计包、0 个已知漏洞；这是当时的包审计结果，不代表完整生产安全审查。传递依赖使用锁文件复现，各包随安装保留自身许可证。分发前端构建或依赖包时须保留实际使用包的许可证与版权声明；本记录没有替代依赖中的完整许可文件。
 
 浏览器测试使用本机已安装的 Microsoft Edge 154.0.4258.53。未打包、复制或分发 Edge，也未下载或覆盖用户浏览器。测试使用临时隔离配置，不连接日常用户配置。

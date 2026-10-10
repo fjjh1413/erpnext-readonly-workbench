@@ -1,0 +1,43 @@
+{
+  "scope": "explicitly_mocked_frontend_components_and_API",
+  "mocks": true,
+  "real_ERP": false,
+  "real_model": false,
+  "source": "enterprise-final-7c4eb7c31ca1.json",
+  "started_at": "2026-10-10T07:39:56.173Z",
+  "success": true,
+  "passed": 49,
+  "failed": 0,
+  "files": [
+    {
+      "name": "src/api.test.js",
+      "status": "passed",
+      "checks": 15
+    },
+    {
+      "name": "src/result.test.js",
+      "status": "passed",
+      "checks": 6
+    },
+    {
+      "name": "src/components/StatePanel.test.js",
+      "status": "passed",
+      "checks": 4
+    },
+    {
+      "name": "src/pages/DetailPage.test.js",
+      "status": "passed",
+      "checks": 5
+    },
+    {
+      "name": "src/pages/EnterprisePages.test.js",
+      "status": "passed",
+      "checks": 10
+    },
+    {
+      "name": "src/pages/Workspaces.test.js",
+      "status": "passed",
+      "checks": 9
+    }
+  ]
+}

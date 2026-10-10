@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import ElementPlus from 'element-plus'
-import { api } from '../api.js'
+import { api } from '../api'
 import DetailPage from './DetailPage.vue'
-vi.mock('../api.js', () => ({ api: { ticket: vi.fn(), action: vi.fn() } }))
+vi.mock('../api', async importOriginal => ({ ...(await importOriginal()), api: { ticket: vi.fn(), action: vi.fn() } }))
 const wrappers = []
 const record = (state = 'partial') => ({ id: 't1', delivery_note: 'DN-真实测试', environment_id: 'env1', status: 'needs_information', description: '提交出现错误', tasks: [{ id: 'task1', kind: 'diagnose', state, steps: [], elapsed_seconds: 1.2 }], actions: [], latest_result: { summary: '证据不完整', confirmed_facts: [{ statement: '已读取单据', evidence_ids: ['e1'] }], supporting_evidence: [{ id: 'e1', source: 'Delivery Note', snippet: '<script>danger</script>', collected_at: '2026-10-05T10:00:00Z' }], missing_information: ['无故障用户的提交权限'], candidate_causes: [] } })
 function create(user = { role: 'analyst' }) { const wrapper = mount(DetailPage, { props: { user, ticketId: 't1' }, global: { plugins: [ElementPlus], stubs: { ElDescriptions: { template: '<div><slot /></div>' }, ElDescriptionsItem: { template: '<div><slot /></div>' } } } }); wrappers.push(wrapper); return wrapper }
