@@ -1,12 +1,14 @@
 # ERPNext 库存与发货异常诊断工作台
 
-本目录是基于 HolmesGPT 的新增单客户售后工作台。ERP 始终只读；工单、账号、证据和人工处理记录保存在工作台自己的 SQLite 中。四个中文页面使用 Vue3 + Element Plus，FastAPI 同源提供页面和 API。
+本目录是基于 HolmesGPT 的新增 **单企业内部多账号**库存售后工作台。当前 v2 使用 PostgreSQL / SQLAlchemy / Alembic 持久化、Celery / Valkey 独立任务队列、Vue 3 严格 TypeScript / Element Plus 页面、FastAPI、nginx 和可选 Prometheus。ERP 始终只读，工作台只修改自己的账号、工单、案例与人工记录；原 ToolExecutor / ToolCallingLLM 和 ERP 工具链继续复用。
+
+**v2 新部署入口为 `http://127.0.0.1:8875`**，步骤见 [企业部署说明](enterprise/README.md) 和 [升级与兼容边界](ENTERPRISE_UPGRADE.md)。原 SQLite / 8765 / 四页操作与下方首版安装步骤保留为 v1 历史说明；不能直接用新代码原地打开旧 schema。旧数据必须显式以只读复制方式迁入另一个空目标，源文件和既有 runtime 不覆盖。
 
 当前只验证 **ERPNext 15.85.1 / Frappe 15.87.0**。ERP 官方镜像使用自身的 Python 3.11；工作台与 HolmesGPT 使用独立 Python **3.12.10**。实验数据库是 MariaDB 10.6.22，不能用原首版 MySQL 示例替代 ERPNext 数据库。
 
-这是授权测试/试点版本，没有客户或生产审核。实际结果见 [测试报告](TEST_REPORT.md)，跨轮进度见 [PROGRESS.md](PROGRESS.md)。没有模型凭据时返回明确的 `rules_degraded`；原引擎的自动调查循环已用可控模型测试，但不把它写成真实模型效果。
+这是授权测试/试点版本，没有客户或生产审核；v2 还没有 OIDC、MFA 或 HA。v2 实际结果见 [企业升级测试报告](ENTERPRISE_TEST_REPORT.md)，首版历史结果保留在 [TEST_REPORT.md](TEST_REPORT.md)，跨轮进度见 [PROGRESS.md](PROGRESS.md)。没有模型凭据时返回明确的 `rules_degraded`；原引擎的自动调查循环已用可控模型测试，但尚未调用真实模型。企业队列的 `.invalid` 不可用数据源测试只验证调度、失败留痕与降级，不能称为真实 ERP 效果。
 
-## 当前本机打开方式
+## v1 历史本机打开方式
 
 - 工作台：[http://127.0.0.1:8765](http://127.0.0.1:8765)
 - 隔离 ERP：[http://127.0.0.1:8090](http://127.0.0.1:8090)
@@ -15,7 +17,13 @@
 
 ERP 是业务系统，8765 是新增售后工作台；服务启动耗时与业务任务耗时分别记录。访问 `/health` 仅证明工作台进程可用，不证明 ERP 业务完成。
 
-## 安装和首次部署
+## v1 安装记录与 v2 兼容安装说明
+
+v2 推荐按 [enterprise/README.md](enterprise/README.md) 创建新随机项目，镜像构建保留主 Poetry 锁，企业依赖仅从 `enterprise/requirements.txt` 补充固定版本；前端依赖由 `frontend/package-lock.json` 固定，`npm run build` 先执行严格 `vue-tsc` 检查。新部署目录、数据库、队列和 8875 网关都与旧项目分开，不能让以下旧 `run.ps1` 接管它们。
+
+若只在新的专用 Python 3.12 环境做本机开发，安装原主锁依赖后还需显式安装企业扩展依赖：`python -m pip install -r examples/erpnext-support/enterprise/requirements.txt`。不要为此无差别升级主依赖、重写 `poetry.lock` 或覆盖已有环境。SQLAlchemy 复用主锁中的现有版本；SQLite 仅用于新的本机测试 schema，旧数据复制迁移见 [持久层说明](../../holmes/erpnext_support/persistence/README.md)。
+
+以下步骤是 v1 历史复现记录；旧环境和文件已有时只能检查，不代表已经转换为 v2。
 
 先检查 Git 状态并保留现有文件。已有 `.venv`、runtime 和配置时直接检查，不覆盖、重建或升级它们。
 

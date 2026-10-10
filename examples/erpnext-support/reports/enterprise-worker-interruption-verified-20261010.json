@@ -1,0 +1,33 @@
+{
+  "layer": "real Docker/PostgreSQL/Celery worker interruption",
+  "erp_source": "slow GET-only local mock",
+  "mock_fixture_preflight": true,
+  "model_called": false,
+  "production_connected": false,
+  "checks": [
+    "owned_get_fixture_ready",
+    "authenticated_isolated_fixture",
+    "explicit_mock_source_registered",
+    "task_ticket_persisted",
+    "durable_message_accepted",
+    "real_worker_entered_mock_get",
+    "completed_mock_step_persisted_before_fault",
+    "expired_lease_marked_interrupted",
+    "ticket_released_from_investigating",
+    "completed_steps_preserved",
+    "restarted_worker_heartbeat_ready",
+    "only_owned_worker_restarted"
+  ],
+  "passed": 12,
+  "project": "holmes-enterprise-c63b69b8be5f",
+  "task_id": "ee1058f8ce43460fadb5fb89444ee08d",
+  "state": "interrupted",
+  "steps_preserved": 1,
+  "recovery_seconds": 59.77133299999696,
+  "completed_tool_calls": 1,
+  "completed_mock_tool_success_rate": 1.0,
+  "worker_restart_count": 0,
+  "test_operator_restart": true,
+  "note": "No automatic task replay or ERP repair; interrupted investigation can be retried explicitly.",
+  "elapsed_seconds": 62.177133699995466
+}

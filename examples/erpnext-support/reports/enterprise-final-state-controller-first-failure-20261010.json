@@ -1,0 +1,10 @@
+{
+  "layer": "final state read-only verification controller first attempt",
+  "status": "failed",
+  "failed_step": "monitor_probe_executable",
+  "docker_exec_exit_code": 127,
+  "attempted_executable": "python3 in the minimal prometheus image",
+  "correction": "Read the internal Prometheus API with the API container's existing Python runtime; service configuration unchanged",
+  "production_connected": false,
+  "model_called": false
+}

@@ -1,0 +1,17 @@
+# Only for a new isolated host integration-test project, never production.
+# Docker 29 internal networks do not publish host ports. This explicit override
+# makes only the owned test core a bridge and binds random ports to loopback.
+services:
+  db:
+    ports:
+      - target: 5432
+        published: "0"
+        host_ip: 127.0.0.1
+  queue:
+    ports:
+      - target: 6379
+        published: "0"
+        host_ip: 127.0.0.1
+networks:
+  core:
+    internal: false

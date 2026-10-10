@@ -1,0 +1,13 @@
+{
+  "layer": "real owned Docker metrics scrape",
+  "project": "holmes-enterprise-c63b69b8be5f",
+  "status": "failed",
+  "first_scrape_status": 400,
+  "cause_first": "TrustedHost rejects internal api service name",
+  "deployment_fix": "private unexposed gateway9091 GET-only relay preserving Bearer authentication and fixed Host localhost",
+  "after_relay_status": 503,
+  "authenticated_api_direct_status": 503,
+  "public_metrics_status": 404,
+  "model_called": false,
+  "api_worker_restarted": false
+}

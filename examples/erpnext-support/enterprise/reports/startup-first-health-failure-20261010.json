@@ -1,0 +1,21 @@
+{
+  "layer": "real owned Docker startup attempt",
+  "project": "holmes-enterprise-3245c40bfcca",
+  "image": "holmes-erp-enterprise:20261010-8570ef014271",
+  "status": "failed",
+  "error_type": "DeploymentError",
+  "observed_worker_check": "Health check exceeded timeout (10s)",
+  "ready_endpoint_observed": {
+    "status": 200,
+    "database_ready": true,
+    "broker_ready": true,
+    "worker_ready": true
+  },
+  "direct_module_exec_timeout_seconds": 60,
+  "cause": "Settings/security package import triggers upstream toolset imports; this repeatedly exceeded the container health deadline.",
+  "fix": "stdlib fixed internal /ready JSON check; no Agent import; 3-second deadline, no proxy or redirect",
+  "only_owned_resources_removed": true,
+  "private_runtime_preserved": true,
+  "model_called": false,
+  "erp_connected": false
+}

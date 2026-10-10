@@ -1,0 +1,121 @@
+{
+  "layer": "real owned Docker read-only deployment verification",
+  "model_called": false,
+  "erp_connected": false,
+  "project": "holmes-enterprise-c63b69b8be5f",
+  "image": "holmes-erp-enterprise:20261010-39edc000881c",
+  "checks": [
+    {
+      "name": "health_200",
+      "passed": true
+    },
+    {
+      "name": "ready_200",
+      "passed": true
+    },
+    {
+      "name": "public_metrics_denied",
+      "passed": true
+    },
+    {
+      "name": "frontend_index_and_assets",
+      "passed": true
+    },
+    {
+      "name": "compiled_assets_200",
+      "passed": true
+    },
+    {
+      "name": "queue_management_acl_denied",
+      "passed": true
+    },
+    {
+      "name": "app_role_no_superuser_or_ddl",
+      "passed": true
+    },
+    {
+      "name": "audit_append_permissions_only",
+      "passed": true
+    },
+    {
+      "name": "api_worker_have_no_bootstrap_or_migration_secret",
+      "passed": true
+    },
+    {
+      "name": "prometheus_authenticated_scrape",
+      "passed": true
+    },
+    {
+      "name": "prometheus_persisted_task_gauge",
+      "passed": true
+    },
+    {
+      "name": "internal_metrics_auth_required",
+      "passed": true
+    },
+    {
+      "name": "internal_relay_get_requires_token",
+      "passed": true
+    },
+    {
+      "name": "internal_relay_rejects_non_get",
+      "passed": true
+    },
+    {
+      "name": "migration_completed",
+      "passed": true
+    },
+    {
+      "name": "six_services_healthy",
+      "passed": true
+    },
+    {
+      "name": "container_source_matches_build_context",
+      "passed": true
+    },
+    {
+      "name": "frozen_python_source_matches_workspace",
+      "passed": true
+    },
+    {
+      "name": "frozen_frontend_matches_workspace",
+      "passed": true
+    }
+  ],
+  "passed": 19,
+  "versions": {
+    "python": "3.12.10",
+    "celery": "5.6.3",
+    "redis": "6.4.0",
+    "alembic": "1.18.4",
+    "prometheus-client": "0.26.0",
+    "SQLAlchemy": "2.0.51",
+    "pg8000": "1.31.5",
+    "tzdata": "2026.5"
+  },
+  "assets": [
+    "/assets/index-DlF5ZcXA.js",
+    "/assets/index-BINmu7Ub.css"
+  ],
+  "internal_relay_status": {
+    "GET": 403,
+    "POST": 403
+  },
+  "task_gauge_states": [
+    "completed",
+    "failed",
+    "interrupted",
+    "partial",
+    "queued",
+    "running"
+  ],
+  "migration": {
+    "status": "exited",
+    "exit_code": 0,
+    "historical_container_health": null
+  },
+  "source_manifest_files": 312,
+  "python_runtime_files": 225,
+  "frontend_build_inputs": 29,
+  "elapsed_seconds": 18.065586700002314
+}

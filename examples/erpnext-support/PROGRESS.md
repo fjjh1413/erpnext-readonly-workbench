@@ -37,3 +37,21 @@
 - 没有未适配Holmes/真实模型对照或客户效果数据，没有生产/客户审核。
 - 完整历史批次/序列号分配、定制工作流/库存维度、当前版本真实软件缺陷复现与客户运行collector未验收，均明确限制，不猜测。
 - 演示ERP与客户模板分开；已有本机服务与文件保持，工作台只写自己的SQLite，Agent从未提交/修改ERP或重启服务。
+
+## 企业版 v2（2026-10-10，北京时间）
+
+升级目标已按用户确认采用单企业内部、多账号协作。复用原 Holmes 工具执行链路、ERP 只读适配器、规则和工作台，不新增 ERP 写工具。工作台自己的持久层、调度、网页与部署完成企业版升级。
+
+- 当前网页：`http://127.0.0.1:8875`，独立项目 `holmes-enterprise-c63b69b8be5f`。
+- 当前管理配置：`enterprise/.runtime/holmes-enterprise-c63b69b8be5f/config-version-7fd288c93ab6.json`。停止/检查/后续更新必须使用这份新版本配置，原 `config.json` 保留用于回溯。
+- 当前初始登录文件：`enterprise/.runtime/holmes-enterprise-c63b69b8be5f/state/initial-login.json`。随机密码保存在私有文件，不写进文档或 Git。
+- 当前镜像：`holmes-erp-enterprise:20261010-39edc000881c`，manifest `sha256:6863aa62c947b0bba735fb5c87acad3116a151041154f51c3a928d087908eb8a`。
+- 技术栈：Python 3.12/FastAPI、Vue 3/Element Plus/严格 TypeScript、PostgreSQL 17.11/SQLAlchemy 2/Alembic、Celery 5.6.3/Valkey 8.1.10、nginx 1.30.5、Prometheus 3.13.4 LTS。
+- 新增：共享账号与会话、角色和环境授权、撤销会话、数据库分页、追加审计与请求编号、数据库租约/持久待发队列/重复任务保护、独立 Worker、最小数据库权限、内部监控及受控备份恢复/镜像更新。
+- 实测：核心/API/jobs 68 项，原链路/规则/运行工具 89 项；跨数据库存储组合 64 项，审计/指标定向同 7 场景分别在 SQLite/真实 PostgreSQL 各通过；前端 49 mock 测试、真实浏览器 23 检查点；部署策略 52 mock 测试、真实部署 19、备份恢复 9、保留数据更新 12 检查点。不同轮次存在重叠，完整结果不累计为独立场景总数。
+- 实际队列故障 12/12 通过：断连时任务持久化，恢复后 13.206 秒消费同一任务；不可用数据源诊断 2.350 秒、4 次调用/0%成功，明确部分结果及缺失信息。Worker 中断最终 12/12 通过：保留 1 条完成的 Mock 调用，旧任务正确中断，测试控制器显式恢复同一 Worker，59.771 秒重新就绪；诊断 Agent 没有自动修复能力。
+- 分模块签名本地提交：`cb7716da9` 企业后端、`e51bd9cfd` 实栈发现的审计/指标修复、`d554bfe74` TypeScript/账号/审计网页；部署、演练与中文交付的提交可通过当前分支 `codex/enterprise-workbench-v2` 的 `git log` 核对。未推送。
+
+旧许可证、主 `pyproject.toml`/`poetry.lock`、旧运行目录与用户原有 manual 报告保留；1547 个已有 v1 运行文件通过哈希核对。企业版使用新 PostgreSQL 库，没有自动导入用户旧 SQLite；显式只读复制能力已在合成旧库与全新测试 PostgreSQL 中验证。
+
+当前验证没有真实模型、没有重新执行真实 ERP v1 场景，也没有 OIDC/MFA、跨机高可用或生产规模压测。故障控制器仅中断/恢复所属隔离测试容器，诊断 Agent 不执行 ERP 或基础设施自动修复。完整实际结果、失败与边界见 [ENTERPRISE_TEST_REPORT.md](ENTERPRISE_TEST_REPORT.md)，中文启动/检查/停止/升级/备份恢复见 [enterprise/README.md](enterprise/README.md)。

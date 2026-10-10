@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "error_type": "AssertionError",
+  "layer": "enterprise_broker_outage",
+  "model_called": false,
+  "failed_check": "postgres_retained_queued_task",
+  "elapsed_seconds": 15.447192799998447
+}

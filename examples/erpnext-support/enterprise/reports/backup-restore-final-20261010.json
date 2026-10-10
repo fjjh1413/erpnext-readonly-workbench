@@ -1,0 +1,28 @@
+{
+  "layer": "real PostgreSQL pg_dump/fresh empty restore",
+  "model_called": false,
+  "source_project": "holmes-enterprise-c63b69b8be5f",
+  "target_project": "holmes-enterprise-77a924d84c78",
+  "checks": {
+    "fresh_target_only": true,
+    "source_backup_unchanged": true,
+    "business_record_count_preserved": true,
+    "audit_record_count_preserved": true,
+    "account_records_and_password_hashes_preserved": true,
+    "restored_sessions_revoked": true,
+    "source_sessions_preserved": true,
+    "other_existing_runtime_files_unchanged": true,
+    "source_private_files_unchanged": true
+  },
+  "passed": 9,
+  "records": 8,
+  "audit": 29,
+  "accounts": 3,
+  "source_sessions": 2,
+  "restored_sessions": 0,
+  "other_runtime_files_checked": 1547,
+  "contains_erp_database": false,
+  "contains_sensitive_business_evidence": true,
+  "sessions_revoked": true,
+  "elapsed_seconds": 79.90027259998897
+}

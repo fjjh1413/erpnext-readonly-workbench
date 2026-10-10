@@ -1,0 +1,289 @@
+{
+  "layer": "real owned Docker/API/PostgreSQL/Celery",
+  "erp_fixture": "unavailable .invalid domain; not real ERP",
+  "model_called": false,
+  "project": "holmes-enterprise-c63b69b8be5f",
+  "checks": [
+    "liveness",
+    "postgres_broker_worker_ready",
+    "real_admin_login",
+    "enterprise_backends",
+    "create_account",
+    "real_reviewer_login",
+    "reviewer_audit_denied",
+    "disable_account",
+    "old_session_revoked",
+    "password_reset",
+    "register_unavailable_fixture",
+    "persisted_ticket",
+    "durable_task_accepted",
+    "real_celery_consumed_task",
+    "missing_source_explicit",
+    "actual_tool_calls_retained",
+    "duplicate_did_not_repeat",
+    "human_record_only",
+    "recheck_enqueued",
+    "recheck_preserves_missing_business_proof",
+    "cannot_claim_business_complete",
+    "explicit_test_exception_close",
+    "referenced_environment_not_deleted",
+    "real_audit_filter_and_pagination",
+    "metrics_not_public"
+  ],
+  "passed": 25,
+  "task_id": "2948ac61666e4141b352f3c718cf7d28",
+  "task_state": "partial",
+  "task_elapsed_seconds": 2.7965642039998784,
+  "tool_call_count": 4,
+  "tool_success_rate": 0.0,
+  "diagnostic_result": {
+    "mode": "rules_degraded",
+    "confirmed_facts": [],
+    "candidate_causes": [
+      {
+        "code": "runtime_unavailable",
+        "status": "candidate",
+        "text": "ERP API 读取不可用；单次读取故障不能确认数据库、Redis或容器根因。",
+        "evidence_ids": [
+          "E001"
+        ]
+      }
+    ],
+    "supporting_evidence": [
+      {
+        "id": "E001",
+        "tool_call_id": "tool_b0412f0aa84d4bd8b9e8ac8f44d8c2b7",
+        "tool_name": "erp_capabilities",
+        "status": "error",
+        "source": "erp_capabilities",
+        "query": {},
+        "collected_at": "2026-10-10T08:11:07.689475Z",
+        "business_at": null,
+        "payload": {
+          "failure": {
+            "code": "source_unavailable",
+            "source": "/api/method/holmes_readonly.api.capabilities"
+          }
+        },
+        "limitations": [],
+        "elapsed_seconds": 0.4620356559753418
+      },
+      {
+        "id": "E002",
+        "tool_call_id": "tool_e6e79512c9084e54ab8b212292ad97ca",
+        "tool_name": "erp_delivery_context",
+        "status": "error",
+        "source": "erp_delivery_context",
+        "query": {},
+        "collected_at": "2026-10-10T08:11:08.156420Z",
+        "business_at": null,
+        "payload": {
+          "failure": {
+            "code": "source_unavailable",
+            "source": "/api/method/holmes_readonly.api.capabilities"
+          }
+        },
+        "limitations": [],
+        "elapsed_seconds": 0.2975637912750244
+      },
+      {
+        "id": "E003",
+        "tool_call_id": "tool_d6ccaafb327a4a118393c1fd5da2afe8",
+        "tool_name": "erp_error_events",
+        "status": "error",
+        "source": "erp_error_events",
+        "query": {},
+        "collected_at": "2026-10-10T08:11:08.564005Z",
+        "business_at": null,
+        "payload": {
+          "failure": {
+            "code": "source_unavailable",
+            "source": "/api/method/holmes_readonly.api.capabilities"
+          }
+        },
+        "limitations": [],
+        "elapsed_seconds": 0.29961276054382324
+      },
+      {
+        "id": "E004",
+        "tool_call_id": "tool_5f3361e2d0e548cc9c56336371aa87f2",
+        "tool_name": "erp_delivery_context",
+        "status": "error",
+        "source": "erp_delivery_context",
+        "query": {},
+        "collected_at": "2026-10-10T08:11:09.357818Z",
+        "business_at": null,
+        "payload": {
+          "failure": {
+            "code": "source_unavailable",
+            "source": "/api/method/holmes_readonly.api.capabilities"
+          }
+        },
+        "limitations": [],
+        "elapsed_seconds": 0.5948622226715088
+      }
+    ],
+    "missing_information": [
+      "erp_capabilities 未取得可用证据：source_unavailable。",
+      "erp_delivery_context 未取得可用证据：source_unavailable。",
+      "erp_error_events 未取得可用证据：source_unavailable。",
+      "没有成功核验受支持的固定 ERPNext/Frappe 组合，业务根因无法确认。",
+      "未以故障操作用户验证提交权限、工作流角色及原始请求上下文。",
+      "未读取到发货单，无法检查业务状态和明细。"
+    ],
+    "next_steps": [
+      "由授权实施顾问核对引用证据及原错误，不执行自动修复。",
+      "按结论核查实际库存与过账时点、关联单据、预留仓库或批次条件；必要处理在 ERP 中由授权人员完成。"
+    ],
+    "tool_calls": [
+      {
+        "tool_call_id": "tool_b0412f0aa84d4bd8b9e8ac8f44d8c2b7",
+        "tool_name": "erp_capabilities",
+        "description": "erp_capabilities",
+        "result": {
+          "schema_version": "robusta:v1.0.0",
+          "status": "error",
+          "error": "source_unavailable",
+          "return_code": null,
+          "data": {
+            "source": "erp_capabilities",
+            "query": {},
+            "collected_at": "2026-10-10T08:11:07.689475Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": []
+          },
+          "images": null,
+          "url": null,
+          "invocation": "ERPNext authorized read (capabilities; bounded task scope)",
+          "params": {},
+          "icon_url": null,
+          "elapsed_seconds": 0.4620356559753418
+        },
+        "size": null,
+        "toolset_name": "erpnext/support-readonly"
+      },
+      {
+        "tool_call_id": "tool_e6e79512c9084e54ab8b212292ad97ca",
+        "tool_name": "erp_delivery_context",
+        "description": "erp_delivery_context",
+        "result": {
+          "schema_version": "robusta:v1.0.0",
+          "status": "error",
+          "error": "source_unavailable",
+          "return_code": null,
+          "data": {
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": "2026-10-10T08:11:08.156420Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": []
+          },
+          "images": null,
+          "url": null,
+          "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+          "params": {},
+          "icon_url": null,
+          "elapsed_seconds": 0.2975637912750244
+        },
+        "size": null,
+        "toolset_name": "erpnext/support-readonly"
+      },
+      {
+        "tool_call_id": "tool_d6ccaafb327a4a118393c1fd5da2afe8",
+        "tool_name": "erp_error_events",
+        "description": "erp_error_events",
+        "result": {
+          "schema_version": "robusta:v1.0.0",
+          "status": "error",
+          "error": "source_unavailable",
+          "return_code": null,
+          "data": {
+            "source": "erp_error_events",
+            "query": {},
+            "collected_at": "2026-10-10T08:11:08.564005Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": []
+          },
+          "images": null,
+          "url": null,
+          "invocation": "ERPNext authorized read (error_events; bounded task scope)",
+          "params": {},
+          "icon_url": null,
+          "elapsed_seconds": 0.29961276054382324
+        },
+        "size": null,
+        "toolset_name": "erpnext/support-readonly"
+      },
+      {
+        "tool_call_id": "tool_5f3361e2d0e548cc9c56336371aa87f2",
+        "tool_name": "erp_delivery_context",
+        "description": "erp_delivery_context",
+        "result": {
+          "schema_version": "robusta:v1.0.0",
+          "status": "error",
+          "error": "source_unavailable",
+          "return_code": null,
+          "data": {
+            "source": "erp_delivery_context",
+            "query": {},
+            "collected_at": "2026-10-10T08:11:09.357818Z",
+            "business_at": null,
+            "payload": {
+              "failure": {
+                "code": "source_unavailable",
+                "source": "/api/method/holmes_readonly.api.capabilities"
+              }
+            },
+            "limitations": []
+          },
+          "images": null,
+          "url": null,
+          "invocation": "ERPNext authorized read (delivery_context; bounded task scope)",
+          "params": {},
+          "icon_url": null,
+          "elapsed_seconds": 0.5948622226715088
+        },
+        "size": null,
+        "toolset_name": "erpnext/support-readonly"
+      }
+    ],
+    "metrics": {
+      "elapsed_seconds": 2.379059990999849,
+      "tool_calls": 4,
+      "successful_calls": 0,
+      "model": null,
+      "max_rounds": 4,
+      "tool_timeout_seconds": 8,
+      "tool_success_rate": 0.0
+    }
+  },
+  "ticket_id": "25e9de2ce8d446ed9de0082c8673645a",
+  "environment_id": "1bc57cf29aef4285a5b8f6398eef4ef0",
+  "software": {
+    "version": "2.0.0",
+    "storage_backend": "postgresql",
+    "queue_backend": "celery",
+    "database_ready": true,
+    "broker_ready": true,
+    "worker_ready": true
+  },
+  "elapsed_seconds": 86.21865009999601
+}

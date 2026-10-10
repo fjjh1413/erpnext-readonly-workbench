@@ -1,0 +1,15 @@
+{
+  "layer": "real Docker verification controller first run",
+  "status": "failed",
+  "failure": "controller expected exactly POST 405 but nginx deny-all returned safe 403",
+  "internal_relay_status": {
+    "GET": 403,
+    "POST": 403,
+    "HEAD": 405
+  },
+  "prometheus_authenticated_scrape_passed_before_failure": true,
+  "persisted_task_gauge_passed_before_failure": true,
+  "correction": "accept explicit non-GET denial 403 or 405; no service policy relaxed",
+  "model_called": false,
+  "erp_connected": false
+}

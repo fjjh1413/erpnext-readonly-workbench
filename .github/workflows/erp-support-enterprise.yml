@@ -1,0 +1,145 @@
+name: ERP support enterprise contracts
+
+# These jobs use local SQLite and mocked ERP/model/HTTP boundaries only.
+# Real ERP, Docker and PostgreSQL verification remains a separate opt-in lab run.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/erp-support-enterprise.yml'
+      - 'holmes/erpnext_support/**'
+      - 'holmes/plugins/toolsets/erpnext_support/**'
+      - 'holmes/plugins/toolsets/docker_readonly/**'
+      - 'holmes/plugins/toolsets/__init__.py'
+      - 'holmes/core/**'
+      - 'holmes/config.py'
+      - 'tests/erpnext_support/**'
+      - 'examples/erpnext-support/**'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+  push:
+    paths:
+      - '.github/workflows/erp-support-enterprise.yml'
+      - 'holmes/erpnext_support/**'
+      - 'holmes/plugins/toolsets/erpnext_support/**'
+      - 'holmes/plugins/toolsets/docker_readonly/**'
+      - 'holmes/plugins/toolsets/__init__.py'
+      - 'holmes/core/**'
+      - 'holmes/config.py'
+      - 'tests/erpnext_support/**'
+      - 'examples/erpnext-support/**'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: erp-support-enterprise-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-contracts:
+    name: Python 3.12 SQLite and mocked backend contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: .
+      LITELLM_LOCAL_MODEL_COST_MAP: 'True'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      # Never bind a CI test to a developer's opt-in database credentials.
+      ERP_SUPPORT_STORE_TEST_URL_FILE: ''
+      ERP_SUPPORT_STORE_MIGRATION_URL_FILE: ''
+      ERP_SUPPORT_COPY_TEST_URL_FILE: ''
+      ERP_SUPPORT_COPY_TEST_MIGRATION_URL_FILE: ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.10'
+      - name: Install original locked runtime and enterprise test dependencies
+        run: |
+          python -m pip install 'poetry==1.8.5'
+          poetry config virtualenvs.in-project true
+          poetry install --only main --no-root --no-interaction --no-ansi
+          poetry run python -m pip install \
+            -r examples/erpnext-support/enterprise/requirements.txt \
+            -r tests/erpnext_support/requirements-test.txt
+          poetry run python -m pip check
+      - name: Verify core, API, jobs, rules and original Agent loop contracts
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/reports/erp-support-enterprise"
+          poetry run python -m pytest \
+            -c tests/erpnext_support/pytest.ini \
+            --confcutdir=tests/erpnext_support \
+            tests/erpnext_support/test_workbench_core.py \
+            tests/erpnext_support/test_workbench_api.py \
+            tests/erpnext_support/test_enterprise_api_and_jobs.py \
+            tests/erpnext_support/test_engine_reuse.py \
+            tests/erpnext_support/test_rules_verified.py \
+            tests/erpnext_support/test_runtime_contract.py \
+            -q --junitxml=reports/erp-support-enterprise/backend-contracts.xml
+      - name: Verify SQLite storage, Alembic and source-preserving migration dry-run
+        run: |
+          poetry run python -m pytest \
+            -c tests/erpnext_support/pytest.ini \
+            --confcutdir=tests/erpnext_support \
+            tests/erpnext_support/test_enterprise_storage.py \
+            tests/erpnext_support/test_migration_enterprise.py \
+            -k 'not postgresql' \
+            -q --junitxml=reports/erp-support-enterprise/sqlite-storage-migration.xml
+      - name: Verify isolated deployment ownership and build policies without Docker
+        run: |
+          poetry run python -m pytest \
+            -c tests/erpnext_support/pytest.ini --noconftest \
+            examples/erpnext-support/enterprise/tests \
+            -q --junitxml=reports/erp-support-enterprise/deployment-policy.xml
+      - name: Upload bounded backend JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: erp-support-enterprise-backend-junit
+          path: |
+            reports/erp-support-enterprise/backend-contracts.xml
+            reports/erp-support-enterprise/sqlite-storage-migration.xml
+            reports/erp-support-enterprise/deployment-policy.xml
+          if-no-files-found: warn
+          retention-days: 14
+
+  frontend-contracts:
+    name: Node 24 frontend type, build and mocked components
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: examples/erpnext-support/frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+          cache: npm
+          cache-dependency-path: examples/erpnext-support/frontend/package-lock.json
+      - name: Install exact frontend lock
+        run: npm ci --no-audit --no-fund
+      - name: Type check
+        run: npm run typecheck
+      - name: Build frontend
+        run: npm run build
+      - name: Verify all API and component mocks
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/reports/erp-support-enterprise"
+          npm test -- --reporter=default --reporter=junit \
+            --outputFile="$GITHUB_WORKSPACE/reports/erp-support-enterprise/frontend.xml"
+      - name: Upload bounded frontend JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: erp-support-enterprise-frontend-junit
+          path: reports/erp-support-enterprise/frontend.xml
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,43 @@
+{
+  "project": "holmes-enterprise-c63b69b8be5f",
+  "mode": "enterprise",
+  "config": "E:\\ai\\holmesgpt\\examples\\erpnext-support\\enterprise\\.runtime\\holmes-enterprise-c63b69b8be5f\\config.json",
+  "services": [
+    {
+      "service": "worker",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "gateway",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "prometheus",
+      "status": "running",
+      "health": "starting"
+    },
+    {
+      "service": "api",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "migrate",
+      "status": "exited",
+      "health": "unhealthy"
+    },
+    {
+      "service": "db",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "queue",
+      "status": "running",
+      "health": "healthy"
+    }
+  ],
+  "elapsed_seconds": 259.8070318999962
+}

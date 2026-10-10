@@ -1,0 +1,13 @@
+{
+  "delivery_files_checked": 132,
+  "private_values_checked": 86,
+  "matching_files": [],
+  "status": "passed",
+  "scope": "changed/new nonignored delivery files against original v1; available owned runtime credential values",
+  "upstream_license_and_main_dependency_files_unchanged": true,
+  "original_user_manual_report_unchanged": true,
+  "original_user_manual_sha256": "5684EE61973C12822ED6FB0C0B0B508DF1E2F335A7372C565C69CD672C7007A4",
+  "screenshot_visual_review": "3 screenshots independently reviewed; no password/token/cookie visible",
+  "other_v1_runtime_hash_verification_files": 1547,
+  "private_runtime_backups_credentials_exported": false
+}

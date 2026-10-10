@@ -1,0 +1,38 @@
+{
+  "layer": "final read-only state after fault exercises",
+  "project": "holmes-enterprise-c63b69b8be5f",
+  "image": "holmes-erp-enterprise:20261010-39edc000881c",
+  "health": {
+    "status": "ok",
+    "product": "erpnext-support",
+    "version": "2.0.0",
+    "erp_write_tools": false
+  },
+  "readiness": {
+    "ready": true,
+    "version": "2.0.0",
+    "storage_backend": "postgresql",
+    "queue_backend": "celery",
+    "database_ready": true,
+    "broker_ready": true,
+    "worker_ready": true
+  },
+  "six_resident_services_healthy": true,
+  "migration_exit_code": 0,
+  "owned_resource_guard_passed": true,
+  "task_state_gauges": {
+    "queued": 0.0,
+    "running": 0.0,
+    "completed": 0.0,
+    "partial": 6.0,
+    "failed": 0.0,
+    "interrupted": 2.0
+  },
+  "prometheus": {
+    "targets_up": 1,
+    "target_count": 1
+  },
+  "production_connected": false,
+  "model_called": false,
+  "elapsed_seconds": 1.2577089999977034
+}

@@ -1,0 +1,29 @@
+{
+  "layer": "real Docker/PostgreSQL/Valkey/Celery broker outage",
+  "erp_fixture": "unavailable .invalid; not real ERP",
+  "model_called": false,
+  "production_connected": false,
+  "checks": [
+    "authenticated_before_broker_outage",
+    "dependencies_ready_before_fault",
+    "unavailable_fixture_registered",
+    "ticket_created_before_fault",
+    "readiness_detected_broker_fault",
+    "api_liveness_survived_fault",
+    "task_accepted_without_broker",
+    "postgres_retained_queued_task",
+    "outbox_republished_and_worker_consumed",
+    "same_persisted_task_not_duplicated",
+    "dependency_readiness_restored",
+    "failure_evidence_preserved"
+  ],
+  "passed": 12,
+  "project": "holmes-enterprise-c63b69b8be5f",
+  "task_id": "d990077dcd8742c8a382168732b01d80",
+  "task_state": "partial",
+  "recovery_seconds": 13.206042899997556,
+  "task_elapsed_seconds": 2.349518515999989,
+  "tool_calls": 4,
+  "tool_success_rate": 0.0,
+  "elapsed_seconds": 28.505864799997653
+}

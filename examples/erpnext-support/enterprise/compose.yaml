@@ -1,0 +1,222 @@
+x-restricted: &restricted
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  restart: unless-stopped
+  labels:
+    io.holmes.enterprise: ${ENTERPRISE_INSTANCE_ID:?prepare a new owned runtime}
+  logging:
+    driver: json-file
+    options: {max-size: "5m", max-file: "3"}
+
+x-application: &application
+  <<: *restricted
+  image: ${ENTERPRISE_IMAGE:?set the exact built enterprise image}
+  user: 10001:10001
+  environment: &application_environment
+    ERP_SUPPORT_SETTINGS: /state/settings.json
+    ERP_SUPPORT_DATABASE_URL_FILE: /run/secrets/database_url
+    ERP_SUPPORT_BROKER_URL_FILE: /run/secrets/broker_url
+    ERP_SUPPORT_METRICS_TOKEN_FILE: /run/secrets/metrics_token
+    ERP_SUPPORT_MODEL_API_KEY: ${ERP_SUPPORT_MODEL_API_KEY:-}
+    LITELLM_LOCAL_MODEL_COST_MAP: "True"
+    FORWARDED_ALLOW_IPS: ""
+    HOME: /tmp
+  secrets: [database_url, broker_url, metrics_token]
+  volumes:
+    - type: bind
+      source: ${ENTERPRISE_STATE_DIR:?private state directory}
+      target: /state
+    - type: bind
+      source: ${ENTERPRISE_STATE_DIR:?private state directory}/settings.json
+      target: /state/settings.json
+      read_only: true
+    - type: bind
+      source: ${ENTERPRISE_STATE_DIR:?private state directory}/initial-login.json
+      target: /state/initial-login.json
+      read_only: true
+    - type: bind
+      source: ${ENTERPRISE_STATE_DIR:?private state directory}/credentials
+      target: /state/credentials
+      read_only: true
+    - type: bind
+      source: ${ENTERPRISE_STATE_DIR:?private state directory}/collectors
+      target: /state/collectors
+      read_only: true
+  tmpfs: ['/tmp:size=128m,mode=1777']
+  networks: [core, egress]
+
+services:
+  db:
+    <<: *restricted
+    image: postgres:17.11-bookworm@sha256:3645570cccdfa447589da9f57dd740faa29b30938e861289a5574b6ca6b03826
+    user: 999:999
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_root_password
+      POSTGRES_INITDB_ARGS: --auth-local=scram-sha-256 --auth-host=scram-sha-256
+      PGDATA: /var/lib/postgresql/data/pgdata
+    secrets: [postgres_root_password, postgres_app_password, postgres_migration_password]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - type: bind
+        source: ${ENTERPRISE_SECRET_DIR:?private secrets directory}/postgres-init.sql
+        target: /docker-entrypoint-initdb.d/10-holmes.sql
+        read_only: true
+      - type: bind
+        source: ./scripts/db-export.sh
+        target: /opt/enterprise/db-export.sh
+        read_only: true
+      - type: bind
+        source: ./scripts/db-restore.sh
+        target: /opt/enterprise/db-restore.sh
+        read_only: true
+    tmpfs: ['/tmp:size=32m,mode=1777', '/var/run/postgresql:size=16m,mode=1777']
+    healthcheck:
+      test: [CMD, pg_isready, --username, workbench_app, --dbname, holmes]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    mem_limit: 384m
+    cpus: 0.75
+    networks: [core]
+  queue:
+    <<: *restricted
+    image: valkey/valkey:8.1.10-alpine@sha256:081c2f5cb575efc901aa80ff9cdbd1ec6a301682fd35e1ebb4b0990a4a4a8507
+    user: 999:999
+    command: [valkey-server, /etc/valkey/enterprise.conf]
+    secrets: [queue_acl, queue_password]
+    volumes:
+      - queue_data:/data
+      - type: bind
+        source: ./config/valkey.conf
+        target: /etc/valkey/enterprise.conf
+        read_only: true
+    tmpfs: ['/tmp:size=16m,mode=1777']
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH=$$(cat /run/secrets/queue_password) VALKEYCLI_AUTH=$$(cat /run/secrets/queue_password) valkey-cli --user default ping | grep -qx PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 192m
+    cpus: 0.5
+    networks: [core]
+  migrate:
+    <<: *application
+    restart: "no"
+    healthcheck:
+      disable: true
+    environment:
+      <<: *application_environment
+      ERP_SUPPORT_MIGRATION_DATABASE_URL_FILE: /run/secrets/migration_database_url
+    secrets: [database_url, migration_database_url, broker_url, metrics_token]
+    command: [python, -m, holmes.erpnext_support, migrate, --settings, /state/settings.json]
+    depends_on:
+      db: {condition: service_healthy}
+      queue: {condition: service_healthy}
+    mem_limit: 768m
+    cpus: 1.0
+    networks: [core]
+  api:
+    <<: *application
+    command: [python, -m, holmes.erpnext_support, serve, --settings, /state/settings.json, --host, 0.0.0.0, --port, "8765"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, python, /app/enterprise/health.py, api]
+      interval: 15s
+      timeout: 8s
+      retries: 10
+      start_period: 90s
+    mem_limit: 1024m
+    cpus: 1.0
+  worker:
+    <<: *application
+    command: [python, -m, celery, -A, 'holmes.erpnext_support.worker:celery_app', worker, --pool=prefork, --concurrency=1, --loglevel=WARNING]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, python, /app/enterprise/health.py, worker]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+    mem_limit: 1536m
+    cpus: 1.0
+  gateway:
+    <<: *restricted
+    image: nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94
+    user: 101:101
+    entrypoint: [nginx, -c, /etc/nginx/enterprise.conf, -g, 'daemon off;']
+    ports:
+      - target: 8080
+        published: "8875"
+        host_ip: 127.0.0.1
+    volumes:
+      - type: bind
+        source: ./config/nginx.conf
+        target: /etc/nginx/enterprise.conf
+        read_only: true
+    tmpfs: ['/tmp:size=32m,mode=1777']
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8080/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    mem_limit: 64m
+    cpus: 0.25
+    networks: [core, edge]
+  prometheus:
+    <<: *restricted
+    image: prom/prometheus:v3.13.4@sha256:87861b8cf91579109319ebc300f3f1060e6da9c05d6ae8ad15a20c879e84e32e
+    user: 65534:65534
+    profiles: [monitoring]
+    command: [--config.file=/etc/prometheus/enterprise.yaml, --storage.tsdb.path=/prometheus, --storage.tsdb.retention.time=7d, --storage.tsdb.retention.size=256MB]
+    secrets: [metrics_token]
+    volumes:
+      - prometheus_data:/prometheus
+      - type: bind
+        source: ./config/prometheus.yaml
+        target: /etc/prometheus/enterprise.yaml
+        read_only: true
+    tmpfs: ['/tmp:size=16m,mode=1777']
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:9090/-/healthy']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      api: {condition: service_healthy}
+    mem_limit: 256m
+    cpus: 0.5
+    networks: [core]
+
+networks:
+  core:
+    internal: true
+    labels: {io.holmes.enterprise: '${ENTERPRISE_INSTANCE_ID:?prepare runtime}'}
+  egress:
+    labels: {io.holmes.enterprise: '${ENTERPRISE_INSTANCE_ID:?prepare runtime}'}
+  edge:
+    labels: {io.holmes.enterprise: '${ENTERPRISE_INSTANCE_ID:?prepare runtime}'}
+volumes:
+  postgres_data:
+    labels: {io.holmes.enterprise: '${ENTERPRISE_INSTANCE_ID:?prepare runtime}'}
+  queue_data:
+    labels: {io.holmes.enterprise: '${ENTERPRISE_INSTANCE_ID:?prepare runtime}'}
+  prometheus_data:
+    labels: {io.holmes.enterprise: '${ENTERPRISE_INSTANCE_ID:?prepare runtime}'}
+secrets:
+  postgres_root_password: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/postgres_root_password'}
+  postgres_app_password: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/postgres_app_password'}
+  postgres_migration_password: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/postgres_migration_password'}
+  database_url: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/database_url'}
+  migration_database_url: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/migration_database_url'}
+  broker_url: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/broker_url'}
+  queue_acl: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/queue_acl'}
+  queue_password: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/queue_password'}
+  metrics_token: {file: '${ENTERPRISE_SECRET_DIR:?prepare runtime}/metrics_token'}
