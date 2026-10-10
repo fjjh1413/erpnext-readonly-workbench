@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable, Iterator
 
-from sqlalchemy import create_engine, delete, event, func, inspect, insert, or_, select, update
+from sqlalchemy import String, cast, create_engine, delete, event, func, inspect, insert, or_, select, update
 from sqlalchemy.engine import Connection, make_url
 from sqlalchemy.exc import IntegrityError
 
@@ -387,7 +387,17 @@ class Store:
         conditions = []
         for key, value in (filters or {}).items():
             if key == "q":
-                conditions.append(or_(*(audit_events.c[field].contains(str(value)[:140], autoescape=True) for field in ("request_id", "actor", "action"))))
+                query = str(value)[:140]
+                matches = [audit_events.c[field].contains(query, autoescape=True)
+                           for field in ("request_id", "actor", "action", "resource_id", "resource_kind")]
+                detail = cast(audit_events.c.detail, String())
+                matches.append(detail.contains(query, autoescape=True))
+                # JSON may retain escaped Unicode in either database. Search
+                # both representations of the already sanitized stored detail.
+                encoded = json.dumps(query, ensure_ascii=True)[1:-1]
+                if encoded != query:
+                    matches.append(detail.contains(encoded, autoescape=True))
+                conditions.append(or_(*matches))
             elif key in ("actor", "action", "outcome", "resource_kind"):
                 conditions.append(audit_events.c[key] == value)
             else:

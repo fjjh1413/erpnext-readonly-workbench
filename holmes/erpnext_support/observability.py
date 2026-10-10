@@ -51,9 +51,11 @@ class Metrics:
         return generate_latest(self.registry)
 
     def collect_tasks(self, store) -> None:
-        state = records.c.payload["state"].as_string()
+        state = records.c.payload["state"].as_string().label("task_state")
         with store.transaction() as db:
-            counts = dict(db.execute(select(state, func.count()).where(records.c.kind == "task").group_by(state)).all())
+            # A repeated JSON expression becomes distinct positional binds in
+            # pg8000. Group by the selected label to keep one key parameter.
+            counts = dict(db.execute(select(state, func.count()).where(records.c.kind == "task").group_by("task_state")).all())
         for value in ("queued", "running", "completed", "partial", "failed", "interrupted"):
             self.tasks.labels(value).set(counts.get(value, 0))
 

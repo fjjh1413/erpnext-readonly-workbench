@@ -12,7 +12,7 @@ import pytest
 from sqlalchemy import delete, update
 from sqlalchemy.engine import make_url
 
-from holmes.erpnext_support.observability import request_id_context
+from holmes.erpnext_support.observability import Metrics, request_id_context
 from holmes.erpnext_support.persistence.migrate import grant_application, initialize_database
 from holmes.erpnext_support.persistence.schema import job_leases, records
 from holmes.erpnext_support.storage import AdminInvariant, Store, TaskConflict, UserUnique, VersionConflict
@@ -212,6 +212,74 @@ def test_audit_filters_correlation_and_detail_redaction(store):
     assert result["items"][0]["request_id"] == request
     assert "do-not-save" not in json.dumps(result) and "13800138000" not in json.dumps(result)
     assert store.readiness()["ready"]
+
+
+@pytest.mark.parametrize("field", ["resource_id", "resource_kind", "detail", "detail_unicode"])
+def test_audit_free_text_search_covers_resources_and_sanitized_nested_json(store, field):
+    prefix = ("仅隔离诊断-" if field == "detail_unicode" else "audit-detail-") + os.urandom(6).hex()
+    needle = prefix + "_%_"
+
+    def write(value, outcome):
+        resource_id, resource_kind = "safe-resource", "ticket"
+        detail = {"nested": {"note": "safe detail"}, "password": "never-output-password"}
+        if field == "resource_id":
+            resource_id = value
+        elif field == "resource_kind":
+            resource_kind = value
+        else:
+            detail["nested"]["note"] = value
+        store.audit("reviewer", "view", resource_id=resource_id, resource_kind=resource_kind,
+                    outcome=outcome, detail=detail)
+
+    write(needle, "success")
+    write(needle, "error")
+    # This would also match if % and _ were treated as SQL wildcards.
+    write(prefix + "XX", "success")
+    page = store.list_audit(filters={"q": needle}, limit=1)
+    following = store.list_audit(filters={"q": needle}, limit=1, offset=1)
+    assert page["total"] == following["total"] == 2
+    assert len(page["items"]) == len(following["items"]) == 1
+    assert page["items"][0]["id"] != following["items"][0]["id"]
+    assert store.list_audit(filters={"q": needle, "outcome": "success"})["total"] == 1
+    assert "never-output-password" not in json.dumps(page)
+
+
+def test_audit_search_does_not_match_raw_redacted_resource_or_detail(store):
+    private_contact = "private-" + os.urandom(6).hex() + "@example.invalid"
+    private_password = "audit-private-" + os.urandom(6).hex()
+    marker = "sanitized-" + os.urandom(6).hex()
+    store.audit("reviewer", "view", resource_id=private_contact, resource_kind="ticket",
+                detail={"password": private_password, "contact": "联系13800138000", "note": marker})
+    assert store.list_audit(filters={"q": private_contact})["total"] == 0
+    assert store.list_audit(filters={"q": private_password})["total"] == 0
+    assert store.list_audit(filters={"q": "13800138000"})["total"] == 0
+    page = store.list_audit(filters={"q": marker})
+    assert page["total"] == 1
+    text = json.dumps(page, ensure_ascii=False)
+    assert private_contact not in text and private_password not in text and "13800138000" not in text
+
+
+def test_metrics_groups_persisted_json_states_and_clears_stale_gauges(store):
+    task(store)
+    task(store)
+    note, running = task(store)
+    assert store.claim_task(running["id"], "metrics-owner")
+    completed = store.add("task", {"state": "completed", "delivery_note": "private-business-marker"})
+    store.add("task", {"state": "private-unknown-state"})
+    store.add("ticket", {"state": "running"})
+    metrics = Metrics()
+    metrics.collect_tasks(store)
+
+    def values():
+        return {sample.labels["state"]: sample.value for family in metrics.tasks.collect() for sample in family.samples}
+
+    assert values() == {"queued": 2, "running": 1, "completed": 1, "partial": 0, "failed": 0, "interrupted": 0}
+    assert store.finish_task(running["id"], note["id"], {"state": "completed"}, "awaiting_review", worker_id="metrics-owner")
+    metrics.collect_tasks(store)
+    assert values() == {"queued": 2, "running": 0, "completed": 2, "partial": 0, "failed": 0, "interrupted": 0}
+    rendered = metrics.render().decode("utf-8")
+    for private_value in ("private-business-marker", "private-unknown-state", completed["id"], running["id"]):
+        assert private_value not in rendered
 
 
 def test_wrong_ticket_cannot_publish_task_completion(store):
