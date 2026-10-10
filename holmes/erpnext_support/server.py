@@ -6,13 +6,14 @@ import json
 import secrets
 import threading
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from typing import Callable
 from urllib.parse import urlsplit
 
-from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
@@ -20,10 +21,12 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from holmes.erpnext_support.engine import diagnose
 from holmes.erpnext_support.models import (ActionInput, ApprovalInput, CaseInput, CloseInput,
-                                         EnvironmentInput, Login, TicketEdit, TicketInput, UserInput)
+                                         EnvironmentInput, Login, TicketEdit, TicketInput, UserInput, UserEdit, PasswordChange)
+from holmes.erpnext_support.jobs import allow_login, broker_ready, can_access as job_access, dispatch, dispatch_pending, run_task, worker_ready
+from holmes.erpnext_support.observability import Metrics, event, request_id, request_id_context
 from holmes.erpnext_support.security import password_hash, sanitize, token_hash, verify_password
 from holmes.erpnext_support.settings import Settings, origin
-from holmes.erpnext_support.storage import Store, utc_now
+from holmes.erpnext_support.storage import AdminInvariant, Store, TaskConflict, UserUnique, utc_now
 from holmes.erpnext_support.runtime_tool import RuntimeTool
 from holmes.core.docker_diagnosis import EvidenceContextLLM
 from holmes.core.tools import ToolInvokeContext
@@ -34,24 +37,37 @@ COOKIE = "erp_support_session"
 
 
 def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_check: Callable | None = None) -> FastAPI:
-    store = Store(settings.database)
+    store = Store(settings.storage_target)
+    metrics = Metrics()
     workers = ThreadPoolExecutor(max_workers=1, thread_name_prefix="erp-support")
     login_attempts: dict[str, list[float]] = {}
     login_lock = threading.Lock()
-    task_lock = threading.Lock()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        store.recover_interrupted()
+        if settings.queue_backend == "inline":
+            store.recover_interrupted()
+        else:
+            store.reconcile_expired()
         store.expire_evidence(settings.evidence_retention_days)
         async def maintenance():
+            last_expiry = time.monotonic()
             while True:
-                await asyncio.sleep(3600)
-                await asyncio.to_thread(store.expire_evidence, settings.evidence_retention_days)
+                await asyncio.sleep(5 if settings.queue_backend == "celery" else 3600)
+                try:
+                    if settings.queue_backend == "celery":
+                        await asyncio.to_thread(dispatch_pending, settings, store)
+                    if time.monotonic() - last_expiry >= 3600:
+                        await asyncio.to_thread(store.expire_evidence, settings.evidence_retention_days)
+                        last_expiry = time.monotonic()
+                except Exception as exc:
+                    event("maintenance_unavailable", error_type=type(exc).__name__)
         cleanup = asyncio.create_task(maintenance())
-        yield
-        cleanup.cancel()
-        workers.shutdown(wait=False, cancel_futures=True)
+        try:
+            yield
+        finally:
+            cleanup.cancel()
+            workers.shutdown(wait=False, cancel_futures=True)
 
     app = FastAPI(title="ERPNext 库存与发货异常诊断工作台", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.store, app.state.settings = store, settings
@@ -61,20 +77,66 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
     async def validation_error(request: Request, exc: RequestValidationError):
         # Pydantic's default error body includes the supplied password/input.
         fields = [".".join(str(v) for v in error["loc"]) for error in exc.errors()]
-        return JSONResponse({"detail": "请求字段无效：" + "、".join(fields)}, status_code=422)
+        return JSONResponse({"detail": "请求字段无效：" + "、".join(fields), "request_id": request_id_context.get()}, status_code=422)
+
+    @app.exception_handler(HTTPException)
+    async def http_error(request: Request, exc: HTTPException):
+        return JSONResponse({"detail": exc.detail, "request_id": request_id_context.get()}, status_code=exc.status_code, headers=exc.headers)
+
+    @app.exception_handler(TaskConflict)
+    @app.exception_handler(UserUnique)
+    @app.exception_handler(AdminInvariant)
+    async def conflict_error(request: Request, exc: Exception):
+        detail = "该工单已有活动任务或队列已满，请检查后重试。" if isinstance(exc, TaskConflict) else "账号已存在或必须保留有效管理员。"
+        if isinstance(exc, TaskConflict) and request.url.path.startswith("/api/environments/"):
+            detail = "已有工单引用此环境，不能删除。"
+        elif isinstance(exc, TaskConflict) and request.url.path.endswith("/close"):
+            detail = "需要最新有效的业务复核；证据不完整时必须明确记录人工例外依据。"
+        elif isinstance(exc, TaskConflict) and request.url.path.endswith("/actions"):
+            detail = "调查中或已关闭的工单不能记录处理动作。"
+        return JSONResponse({"detail": detail, "request_id": request_id_context.get()}, status_code=409)
+
+    async def tracing(request: Request, call_next):
+        identifier = request_id(request.headers.get("x-request-id"))
+        request.state.request_id = identifier
+        token = request_id_context.set(identifier)
+        start = time.perf_counter()
+        try:
+            try:
+                response = await call_next(request)
+            except Exception as exc:
+                event("http_error", request_id=identifier, error_type=type(exc).__name__)
+                response = JSONResponse({"detail": "服务暂时无法完成请求，请凭请求编号排查。", "request_id": identifier}, status_code=503)
+            response.headers["X-Request-ID"] = identifier
+            response.headers.setdefault("X-Content-Type-Options", "nosniff")
+            response.headers.setdefault("Referrer-Policy", "no-referrer")
+            if request.url.path.startswith("/api/"):
+                response.headers["Cache-Control"] = "no-store"
+            route = getattr(request.scope.get("route"), "path", "unmatched")
+            elapsed = time.perf_counter() - start
+            metrics.observe(request.method, route, response.status_code, elapsed)
+            event("http_request", request_id=identifier, method=request.method, route=route, status=response.status_code, elapsed_seconds=round(elapsed, 6))
+            if response.status_code in (401, 403) and request.url.path.startswith("/api/"):
+                try:
+                    store.audit(getattr(request.state, "actor", "anonymous"), "access_denied", route, resource_kind="http", outcome="denied", request_id=identifier)
+                except Exception as exc:
+                    event("audit_unavailable", request_id=identifier, error_type=type(exc).__name__)
+            return response
+        finally:
+            request_id_context.reset(token)
 
     @app.middleware("http")
     async def boundaries(request: Request, call_next):
         if request.method not in ("GET", "HEAD", "OPTIONS"):
             request_origin = request.headers.get("origin")
             if request_origin and request_origin not in settings.workbench_origins:
-                return Response('{"detail":"请求来源未授权"}', status_code=403, media_type="application/json")
+                return JSONResponse({"detail": "请求来源未授权", "request_id": request_id_context.get()}, status_code=403)
         if request.method not in ("GET", "HEAD", "OPTIONS") and request.url.path.startswith("/api/"):
             chunks, size = [], 0
             async for chunk in request.stream():
                 size += len(chunk)
                 if size > 65536:
-                    return JSONResponse({"detail": "请求超过大小限制"}, status_code=413)
+                    return JSONResponse({"detail": "请求超过大小限制", "request_id": request_id_context.get()}, status_code=413)
                 chunks.append(chunk)
             request._body = b"".join(chunks)
         response = await call_next(request)
@@ -85,20 +147,22 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
             response.headers["Cache-Control"] = "no-store"
         return response
 
+    app.middleware("http")(tracing)
+
     def public_user(user: dict) -> dict:
-        return {k: user[k] for k in ("id", "username", "role", "environment_ids")}
+        return {**{k: user[k] for k in ("id", "username", "role", "environment_ids")}, "disabled": bool(user.get("disabled"))}
 
     def session(request: Request) -> tuple[dict, str]:
         token = request.cookies.get(COOKIE, "")
         if not token:
             raise HTTPException(401, "请先登录工作台")
-        with store.connect() as db:
-            row = db.execute("SELECT * FROM sessions WHERE token_hash=? AND expires_at>?", (token_hash(token), utc_now())).fetchone()
+        row = store.get_session(token_hash(token))
         if not row:
             raise HTTPException(401, "登录已失效，请重新登录")
         user = store.get("user", row["user_id"])
         if not user or user.get("disabled"):
             raise HTTPException(401, "账户不可用")
+        request.state.actor = user["username"]
         if request.method not in ("GET", "HEAD", "OPTIONS") and not hmac.compare_digest(request.headers.get("x-csrf-token", ""), row["csrf"]):
             raise HTTPException(403, "请求校验失败，请刷新登录状态")
         return user, row["csrf"]
@@ -134,25 +198,60 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "product": "erpnext-support", "erp_write_tools": False}
+        return {"status": "ok", "product": "erpnext-support", "version": "2.0.0", "erp_write_tools": False}
+
+    def system_status() -> dict:
+        database_ready = bool(store.readiness().get("ready"))
+        queue_ready = broker_ready(settings)
+        workers_ready = worker_ready(store) if settings.queue_backend == "celery" else True
+        return {"version": "2.0.0", "storage_backend": "postgresql" if settings.database_url else "sqlite",
+                "queue_backend": settings.queue_backend, "database_ready": database_ready,
+                "broker_ready": queue_ready, "worker_ready": workers_ready}
+
+    @app.get("/ready")
+    def readiness(response: Response):
+        try:
+            state = system_status()
+            ready = state["database_ready"] and state["broker_ready"] and state["worker_ready"]
+        except Exception:
+            state, ready = {"database_ready": False, "broker_ready": False, "worker_ready": False}, False
+        response.status_code = 200 if ready else 503
+        return {"ready": ready, **state}
+
+    @app.get("/api/system/status")
+    def status(current=Depends(session)):
+        role(current[0], ("admin",))
+        return system_status()
+
+    @app.get("/metrics")
+    def prometheus(request: Request):
+        supplied = request.headers.get("authorization", "")
+        if not settings.metrics_token or not hmac.compare_digest(supplied, "Bearer " + settings.metrics_token):
+            raise HTTPException(403, "指标访问需要专用凭据")
+        metrics.collect_tasks(store)
+        return Response(metrics.render(), media_type="text/plain; version=0.0.4; charset=utf-8")
 
     @app.post("/api/session")
     def login(payload: Login, request: Request, response: Response):
         address = request.client.host if request.client else "unknown"
+        if settings.queue_backend == "celery":
+            try:
+                allowed = allow_login(settings, token_hash(address + "|" + payload.username.casefold()))
+            except Exception:
+                raise HTTPException(503, "登录安全检查暂时不可用，请稍后重试")
+            if not allowed:
+                raise HTTPException(429, "登录尝试过多，请稍后重试")
         with login_lock:
             attempts = [v for v in login_attempts.get(address, []) if v > time.monotonic() - 60]
             if len(attempts) >= 15:
                 raise HTTPException(429, "登录尝试过多，请稍后重试")
             login_attempts[address] = attempts + [time.monotonic()]
-        user = next((u for u in store.list("user") if u["username"] == payload.username), None)
+        user = store.find_user(payload.username)
         if not user or user.get("disabled") or not verify_password(payload.password, user["password_hash"]):
             raise HTTPException(401, "账户或密码错误")
         token, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(24)
-        with store.connect() as db:
-            db.execute("DELETE FROM sessions WHERE expires_at<=?", (utc_now(),))
-            db.execute("INSERT INTO sessions VALUES(?,?,?,?)", (token_hash(token), user["id"], csrf,
-                       (datetime.now(timezone.utc) + timedelta(hours=8)).isoformat()))
-        response.set_cookie(COOKIE, token, httponly=True, samesite="strict", secure=request.url.scheme == "https", max_age=28800)
+        store.create_session(token_hash(token), user["id"], csrf, (datetime.now(timezone.utc) + timedelta(hours=settings.session_hours)).isoformat())
+        response.set_cookie(COOKIE, token, httponly=True, samesite="strict", secure=settings.secure_cookies or request.url.scheme == "https", max_age=settings.session_hours * 3600)
         store.audit(user["username"], "login", user["id"])
         return {"user": public_user(user), "csrf_token": csrf}
 
@@ -162,27 +261,67 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
 
     @app.delete("/api/session")
     def logout(request: Request, response: Response, current=Depends(session)):
-        with store.connect() as db:
-            db.execute("DELETE FROM sessions WHERE token_hash=?", (token_hash(request.cookies.get(COOKIE, "")),))
+        store.delete_session(token_hash(request.cookies.get(COOKIE, "")))
         response.delete_cookie(COOKIE)
+        store.audit(current[0]["username"], "logout", current[0]["id"], resource_kind="user")
         return {"ok": True}
 
     @app.get("/api/users")
-    def users(current=Depends(session)):
-        return {"items": [public_user(u) for u in store.list("user") if not u.get("disabled")]}
+    def users(q: str = "", role: str | None = None, disabled: bool | None = None,
+              limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0, le=100000), current=Depends(session)):
+        filters = {"q": q[:140], **({"role": role} if role else {})}
+        if current[0]["role"] != "admin":
+            filters["disabled"] = False
+        elif disabled is not None:
+            filters["disabled"] = disabled
+        result = store.page("user", limit, offset, filters=filters)
+        return {**result, "items": [public_user(u) for u in result["items"]]}
 
     @app.post("/api/users")
     def add_user(payload: UserInput, current=Depends(session)):
         role(current[0], ("admin",))
-        if any(u["username"] == payload.username for u in store.list("user")):
+        if store.find_user(payload.username):
             raise HTTPException(409, "账号已存在")
         for identifier in payload.environment_ids:
             authorized(current[0], identifier)
         values = payload.model_dump(exclude={"password"})
         values["password_hash"] = password_hash(payload.password)
-        obj = store.add("user", values)
+        obj = store.create_user_unique(values)
         store.audit(current[0]["username"], "create_user", obj["id"])
         return public_user(obj)
+
+    @app.patch("/api/users/{identifier}")
+    def edit_user(identifier: str, payload: UserEdit, current=Depends(session)):
+        role(current[0], ("admin",))
+        if not store.get("user", identifier):
+            raise HTTPException(404, "账号不存在")
+        values = payload.model_dump(exclude_unset=True)
+        for env_id in values.get("environment_ids", []):
+            authorized(current[0], env_id)
+        if identifier == current[0]["id"] and (values.get("disabled") is True or values.get("role", "admin") != "admin"):
+            raise HTTPException(409, "不能停用或降级当前管理员账号")
+        obj = store.update_user_admin_guard(identifier, values)
+        store.revoke_user_sessions(identifier)
+        store.audit(current[0]["username"], "edit_user", identifier, resource_kind="user", detail={"fields": sorted(values)})
+        return public_user(obj)
+
+    @app.post("/api/users/{identifier}/password")
+    def reset_password(identifier: str, payload: PasswordChange, current=Depends(session)):
+        role(current[0], ("admin",))
+        if not store.get("user", identifier):
+            raise HTTPException(404, "账号不存在")
+        store.update("user", identifier, lambda u: u.update(password_hash=password_hash(payload.password)))
+        store.revoke_user_sessions(identifier)
+        store.audit(current[0]["username"], "reset_password", identifier, resource_kind="user")
+        return {"ok": True}
+
+    @app.get("/api/audit")
+    def audit(q: str = "", actor: str | None = None, action: str | None = None, outcome: str | None = None,
+              resource_kind: str | None = None, limit: int = Query(50, ge=1, le=100),
+              offset: int = Query(0, ge=0, le=100000), current=Depends(session)):
+        role(current[0], ("admin",))
+        filters = {"q": q[:140], **{k: v[:100] for k, v in {"actor": actor, "action": action, "outcome": outcome, "resource_kind": resource_kind}.items() if v}}
+        return store.list_audit(limit, offset, filters=filters)
 
     @app.put("/api/users/{identifier}/environments")
     def grant_user(identifier: str, payload: UserInput, current=Depends(session)):
@@ -191,14 +330,18 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
             raise HTTPException(404, "账号不存在")
         for env_id in payload.environment_ids:
             authorized(current[0], env_id)
-        obj = store.update("user", identifier, lambda u: u.update(environment_ids=payload.environment_ids, role=payload.role))
+        if identifier == current[0]["id"] and payload.role != "admin":
+            raise HTTPException(409, "不能降级当前管理员账号")
+        obj = store.update_user_admin_guard(identifier, {"environment_ids": payload.environment_ids, "role": payload.role})
+        store.revoke_user_sessions(identifier)
         store.audit(current[0]["username"], "change_grants", identifier)
         return public_user(obj)
 
     @app.get("/api/environments")
-    def environments(current=Depends(session)):
+    def environments(q: str = "", limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0, le=100000), current=Depends(session)):
         user = current[0]
-        return {"items": [view_environment(e) for e in store.list("environment") if user["role"] == "admin" or e["id"] in user["environment_ids"]]}
+        result = store.page("environment", limit, offset, filters={"q": q[:140]}, environment_ids=None if user["role"] == "admin" else user["environment_ids"])
+        return {**result, "items": [view_environment(e) for e in result["items"]]}
 
     def validate_environment(payload: EnvironmentInput) -> dict:
         try:
@@ -235,9 +378,7 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
     def delete_environment(identifier: str, current=Depends(session)):
         role(current[0], ("admin",))
         authorized(current[0], identifier)
-        if any(t["environment_id"] == identifier for t in store.list("ticket")):
-            raise HTTPException(409, "已有工单引用此环境，不能删除")
-        store.delete("environment", identifier)
+        store.delete_environment_guarded(identifier)
         store.audit(current[0]["username"], "delete_environment", identifier)
         return {"ok": True}
 
@@ -274,14 +415,13 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
         return result
 
     @app.get("/api/tickets")
-    def tickets(status: str | None = None, environment_id: str | None = None, q: str = "", current=Depends(session)):
+    def tickets(status: str | None = None, environment_id: str | None = None, owner: str | None = None,
+                q: str = "", limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0, le=100000), current=Depends(session)):
         user = current[0]
         if environment_id:
             authorized(user, environment_id)
-        values = [t for t in store.list("ticket") if (user["role"] == "admin" or t["environment_id"] in user["environment_ids"])
-                  and (not status or t["status"] == status) and (not environment_id or t["environment_id"] == environment_id)
-                  and (not q or q[:140] in t["delivery_note"] or q[:140] in t["description"])]
-        return {"items": values}
+        filters = {"q": q[:140], **{k: v for k, v in {"status": status, "environment_id": environment_id, "owner": owner}.items() if v}}
+        return store.page("ticket", limit, offset, filters=filters, environment_ids=None if user["role"] == "admin" else user["environment_ids"])
 
     @app.post("/api/tickets")
     def add_ticket(payload: TicketInput, current=Depends(session)):
@@ -307,52 +447,21 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
     def edit_ticket(identifier: str, payload: TicketEdit, current=Depends(session)):
         role(current[0], ("admin", "analyst", "reviewer"))
         obj = ticket_for(current[0], identifier)
-        if obj["status"] == "closed":
-            raise HTTPException(409, "已关闭工单不能修改")
+        if obj["status"] in ("closed", "investigating"):
+            raise HTTPException(409, "已关闭或调查中的工单不能修改")
         values = payload.model_dump(exclude_unset=True)
         if values.get("description"):
             values["description"] = sanitize(values["description"])
-        result = store.update("ticket", identifier, lambda t: t.update(values))
+        def apply_edit(ticket: dict):
+            if ticket["status"] in ("closed", "investigating"):
+                raise HTTPException(409, "当前工单状态不能修改")
+            ticket.update(values)
+        result = store.update("ticket", identifier, apply_edit)
         store.audit(current[0]["username"], "edit_ticket", identifier)
         return result
 
     def can_access(user: dict, environment: dict) -> bool:
-        current = store.get("user", user["id"])
-        live = store.get("environment", environment["id"])
-        return bool(current and live and not current.get("disabled") and
-                    (current["role"] == "admin" or environment["id"] in current["environment_ids"]) and
-                    all(live.get(k) == environment.get(k) for k in ("base_url", "credential_ref", "collector_ref", "allowed_services", "erpnext_version", "frappe_version", "model_consent")))
-
-    def run_task(task: dict, user: dict, env: dict, ticket: dict) -> None:
-        start = time.perf_counter()
-        store.update("task", task["id"], lambda t: t.update(state="running", started_at=utc_now()))
-        try:
-            if not can_access(user, env):
-                raise PermissionError("Authorization changed")
-            creds = credentials(env)
-            cases = [c for c in store.list("case") if c["status"] == "approved"]
-            result = diagnostic(settings, env, ticket, creds, lambda: can_access(user, env),
-                                lambda step: store.update("task", task["id"], lambda t: t["steps"].append(step)), cases)
-            if not can_access(user, env):
-                raise PermissionError("Authorization revoked")
-            if task["kind"] == "review":
-                state = result.get("business_state", {})
-                blocking = [c for c in result.get("causes", []) if c.get("code") not in ("known_issue_reference",)]
-                complete = state.get("business_complete") is True and result.get("evidence_consistent", True) and not blocking
-                previous = next((t for t in store.list("task", ticket["id"]) if t["kind"] == "diagnosis" and t.get("result")), None)
-                result["review"] = {"business_complete": complete, "requires_human_confirmation": True,
-                                    "previous_task_id": previous["id"] if previous else None,
-                                    "subtype_checks": [{"code": c["code"], "present_after_handling": any(x["code"] == c["code"] for x in blocking)}
-                                                       for c in previous.get("result", {}).get("causes", [])] if previous else [],
-                                    "limit": "业务完成必须读取发货单提交状态；接口可用不等于发货完成，状态变化不证明原候选原因正确。"}
-            partial = bool(result.get("missing")) or result.get("metrics", {}).get("tool_success_rate", 0) < 1
-            next_status = "awaiting_review" if task["kind"] == "review" else "needs_information" if partial else "awaiting_action"
-            store.finish_task(task["id"], ticket["id"], {"state": "partial" if partial else "completed", "result": result,
-                              "completed_at": utc_now(), "elapsed_seconds": time.perf_counter() - start}, next_status)
-        except Exception as exc:
-            store.finish_task(task["id"], ticket["id"], {"state": "failed", "completed_at": utc_now(),
-                              "elapsed_seconds": time.perf_counter() - start,
-                              "error": f"任务未完成 ({type(exc).__name__})；已完成步骤保留，允许重新执行。"}, "needs_information")
+        return job_access(store, user, environment)
 
     def schedule(identifier: str, user: dict, kind: str) -> dict:
         role(user, ("admin", "analyst", "reviewer"))
@@ -361,19 +470,16 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
             raise HTTPException(409, "已关闭工单不能重新执行")
         if kind == "review" and not store.list("action", identifier):
             raise HTTPException(409, "请先记录实际人工处理动作，再复核")
-        with task_lock:
-            active = [t for t in store.list("task") if t["state"] in ("queued", "running")]
-            if any(t["ticket_id"] == identifier for t in active):
-                raise HTTPException(409, "该工单已有执行中的任务")
-            if len(active) >= 10:
-                raise HTTPException(429, "任务队列已满，请稍后重试")
-            env = authorized(user, ticket["environment_id"])
-            credentials(env)
-            task = store.add("task", {"ticket_id": identifier, "environment_id": env["id"], "kind": kind,
-                            "state": "queued", "steps": [], "result": None, "error": None, "elapsed_seconds": None,
-                            "requested_by": user["username"]}, environment_id=env["id"], parent_id=identifier)
-            store.update("ticket", identifier, lambda t: t.update(status="investigating"))
-            workers.submit(run_task, task, user, env, ticket)
+        env = authorized(user, ticket["environment_id"])
+        credentials(env)
+        task = store.create_task(identifier, {"ticket_id": identifier, "environment_id": env["id"], "kind": kind,
+            "state": "queued", "steps": [], "result": None, "error": None, "elapsed_seconds": None,
+            "requested_by": user["username"], "request_user_id": user["id"], "environment_snapshot": env,
+            "ticket_snapshot": ticket, "request_id": request_id_context.get()}, active_limit=settings.task_capacity)
+        if settings.queue_backend == "celery":
+            dispatch(settings, store, task["id"])
+        else:
+            workers.submit(run_task, settings, store, task["id"], diagnostic)
         store.audit(user["username"], "start_" + kind, task["id"])
         return {"task": task}
 
@@ -387,9 +493,7 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
         ticket = ticket_for(current[0], identifier)
         if ticket["status"] in ("closed", "investigating"):
             raise HTTPException(409, "当前工单状态不能记录处理动作")
-        obj = store.add("action", {"actor": current[0]["username"], "description": sanitize(payload.description)},
-                        environment_id=ticket["environment_id"], parent_id=identifier)
-        store.update("ticket", identifier, lambda t: t.update(status="awaiting_review"))
+        obj = store.add_action(identifier, {"actor": current[0]["username"], "description": sanitize(payload.description)})
         store.audit(current[0]["username"], "record_human_action", identifier)
         return obj
 
@@ -412,15 +516,15 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
         verified = latest.get("result", {}).get("review", {}).get("business_complete", False)
         if not verified and (not payload.manual_override or len(payload.confirmation) < 20):
             raise HTTPException(409, "业务尚未完整通过复核；人工例外关闭须显式确认并记录至少20字的依据")
-        obj = store.update("ticket", identifier, lambda t: t.update(status="closed", closed_by=current[0]["username"],
-                           closed_at=utc_now(), close_confirmation=sanitize(payload.confirmation),
-                           review_id=payload.review_id, manual_override=payload.manual_override))
+        obj = store.close_ticket(identifier, payload.review_id, sanitize(payload.confirmation), current[0]["username"], payload.manual_override)
         store.audit(current[0]["username"], "manual_close", identifier)
         return obj
 
     @app.get("/api/cases")
-    def cases(q: str = "", current=Depends(session)):
-        return {"items": [c for c in store.list("case") if not q or q[:140] in c["title"] or q[:140] in c["symptom"]]}
+    def cases(q: str = "", status: str | None = None, erpnext_version: str | None = None,
+              limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0, le=100000), current=Depends(session)):
+        filters = {"q": q[:140], **{k: v for k, v in {"status": status, "erpnext_version": erpnext_version}.items() if v}}
+        return store.page("case", limit, offset, filters=filters)
 
     @app.post("/api/cases")
     def add_case(payload: CaseInput, current=Depends(session)):
@@ -437,7 +541,12 @@ def create_app(settings: Settings, diagnostic: Callable = diagnose, connection_c
             raise HTTPException(404, "案例不存在")
         if current[0]["role"] == "analyst" and (existing["created_by"] != current[0]["username"] or existing["status"] != "draft"):
             raise HTTPException(403, "只能编辑本人未审核的案例")
-        obj = store.update("case", identifier, lambda c: c.update(**sanitize(payload.model_dump()), status="draft", approved_by=None))
+        def apply_edit(case: dict):
+            # Review may have changed since the initial authorization read.
+            if current[0]["role"] == "analyst" and (case["created_by"] != current[0]["username"] or case["status"] != "draft"):
+                raise HTTPException(403, "只能编辑本人未审核的案例")
+            case.update(**sanitize(payload.model_dump()), status="draft", approved_by=None)
+        obj = store.update("case", identifier, apply_edit)
         store.audit(current[0]["username"], "edit_case_revoke_approval", identifier)
         return obj
 

@@ -95,6 +95,22 @@ class UserInput(RequestModel):
     environment_ids: list[str] = Field(default_factory=list, max_length=30)
 
 
+class UserEdit(RequestModel):
+    role: Literal["admin", "analyst", "reviewer"] | None = None
+    environment_ids: list[str] | None = Field(default=None, max_length=30)
+    disabled: bool | None = None
+
+    @model_validator(mode="after")
+    def meaningful(self):
+        if not self.model_fields_set or any(getattr(self, k) is None for k in self.model_fields_set):
+            raise ValueError("至少提供一项有效的账号修改")
+        return self
+
+
+class PasswordChange(RequestModel):
+    password: str = Field(min_length=12, max_length=256)
+
+
 class Finding(BaseModel):
     text: str
     evidence_ids: list[str] = Field(min_length=1)

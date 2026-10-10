@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="47" time="110.523" timestamp="2026-10-10T15:18:05.602140+08:00" hostname="DESKTOP-32HLNT8"><testcase classname="test_workbench_api" name="test_login_required_for_workbench_data[/api/session]" time="1.765" /><testcase classname="test_workbench_api" name="test_login_required_for_workbench_data[/api/tickets]" time="1.039" /><testcase classname="test_workbench_api" name="test_login_required_for_workbench_data[/api/environments]" time="1.055" /><testcase classname="test_workbench_api" name="test_login_required_for_workbench_data[/api/cases]" time="1.038" /><testcase classname="test_workbench_api" name="test_login_required_for_workbench_data[/api/users]" time="1.172" /><testcase classname="test_workbench_api" name="test_cookie_is_http_only_and_session_never_returns_password" time="1.455" /><testcase classname="test_workbench_api" name="test_mutation_needs_csrf_and_untrusted_origin_is_rejected" time="1.486" /><testcase classname="test_workbench_api" name="test_validation_does_not_echo_password_or_large_request" time="1.054" /><testcase classname="test_workbench_api" name="test_admin_environment_whitelist_and_secret_alias_boundary" time="1.614" /><testcase classname="test_workbench_api" name="test_cross_environment_read_task_and_configuration_are_denied" time="2.029" /><testcase classname="test_workbench_api" name="test_mock_diagnosis_human_action_review_and_manual_closure" time="2.367" /><testcase classname="test_workbench_api" name="test_only_latest_same_ticket_review_can_close" time="1.617" /><testcase classname="test_workbench_api" name="test_case_requires_human_review_and_edit_revokes_approval" time="1.939" /><testcase classname="test_workbench_api" name="test_missing_credentials_gives_explicit_setup_error" time="1.474" /><testcase classname="test_workbench_api" name="test_environment_with_tickets_cannot_be_deleted" time="1.522" /><testcase classname="test_workbench_api" name="test_ticket_state_and_environment_cannot_be_changed_by_patch" time="1.573" /><testcase classname="test_workbench_api" name="test_logout_invalidates_server_session" time="1.563" /><testcase classname="test_workbench_api" name="test_unknown_read_only_role_cannot_mutate[patch_ticket]" time="1.645"><failure message="assert 401 == 403&#10; +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code">workbench = (&lt;starlette.testclient.TestClient object at 0x0000022CD4E7D2E0&gt;, &lt;holmes.erpnext_support.storage.Store object at 0x000...e1c8fec86281f2a4a7a5103d07cc5ed6421f62d12baffd4cc9d4c7a6b85116ce4bef8da8835c071dfc80fb6ec938fe4cfcf039a478562c5', ...})
+operation = 'patch_ticket'
+
+    @pytest.mark.parametrize("operation", ["patch_ticket", "diagnose", "action", "create_case", "edit_case"])
+    def test_unknown_read_only_role_cannot_mutate(workbench, operation):
+        client, store, settings, admin, analyst = workbench
+        sign_in(client)
+        env = environment(client)
+        obj = ticket(client, env)
+        case = client.post("/api/cases", json=case_values()).json()
+        store.update("user", admin["id"], lambda u: u.update(role="viewer", environment_ids=[env["id"]]))
+        if operation == "patch_ticket":
+            response = client.patch("/api/tickets/" + obj["id"], json={"description": "读取角色不可以修改"})
+        elif operation == "diagnose":
+            response = client.post("/api/tickets/" + obj["id"] + "/diagnose")
+        elif operation == "action":
+            response = client.post("/api/tickets/" + obj["id"] + "/actions", json={"description": "读取角色不可以写记录"})
+        elif operation == "create_case":
+            response = client.post("/api/cases", json=case_values())
+        else:
+            response = client.put("/api/cases/" + case["id"], json=case_values())
+&gt;       assert response.status_code == 403
+E       assert 401 == 403
+E        +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code
+
+tests\erpnext_support\test_workbench_api.py:218: AssertionError</failure></testcase><testcase classname="test_workbench_api" name="test_unknown_read_only_role_cannot_mutate[diagnose]" time="1.629"><failure message="assert 401 == 403&#10; +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code">workbench = (&lt;starlette.testclient.TestClient object at 0x0000022CD4EE9250&gt;, &lt;holmes.erpnext_support.storage.Store object at 0x000...32df98c61ee15f2deca82078ac6b4816d3e93ace5470a9c6d267402e1e570182905eff283ffca31258e82970b43948a4bb9913d615501ea', ...})
+operation = 'diagnose'
+
+    @pytest.mark.parametrize("operation", ["patch_ticket", "diagnose", "action", "create_case", "edit_case"])
+    def test_unknown_read_only_role_cannot_mutate(workbench, operation):
+        client, store, settings, admin, analyst = workbench
+        sign_in(client)
+        env = environment(client)
+        obj = ticket(client, env)
+        case = client.post("/api/cases", json=case_values()).json()
+        store.update("user", admin["id"], lambda u: u.update(role="viewer", environment_ids=[env["id"]]))
+        if operation == "patch_ticket":
+            response = client.patch("/api/tickets/" + obj["id"], json={"description": "读取角色不可以修改"})
+        elif operation == "diagnose":
+            response = client.post("/api/tickets/" + obj["id"] + "/diagnose")
+        elif operation == "action":
+            response = client.post("/api/tickets/" + obj["id"] + "/actions", json={"description": "读取角色不可以写记录"})
+        elif operation == "create_case":
+            response = client.post("/api/cases", json=case_values())
+        else:
+            response = client.put("/api/cases/" + case["id"], json=case_values())
+&gt;       assert response.status_code == 403
+E       assert 401 == 403
+E        +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code
+
+tests\erpnext_support\test_workbench_api.py:218: AssertionError</failure></testcase><testcase classname="test_workbench_api" name="test_unknown_read_only_role_cannot_mutate[action]" time="1.623"><failure message="assert 401 == 403&#10; +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code">workbench = (&lt;starlette.testclient.TestClient object at 0x0000022CD5067D10&gt;, &lt;holmes.erpnext_support.storage.Store object at 0x000...6b3e1a454570b4edfdab7cd4a7494774656bc4400d43a1e02a1beb622421bd6447272a707175c3e9e3ca2d300dfd821f9c0851bb78b3134', ...})
+operation = 'action'
+
+    @pytest.mark.parametrize("operation", ["patch_ticket", "diagnose", "action", "create_case", "edit_case"])
+    def test_unknown_read_only_role_cannot_mutate(workbench, operation):
+        client, store, settings, admin, analyst = workbench
+        sign_in(client)
+        env = environment(client)
+        obj = ticket(client, env)
+        case = client.post("/api/cases", json=case_values()).json()
+        store.update("user", admin["id"], lambda u: u.update(role="viewer", environment_ids=[env["id"]]))
+        if operation == "patch_ticket":
+            response = client.patch("/api/tickets/" + obj["id"], json={"description": "读取角色不可以修改"})
+        elif operation == "diagnose":
+            response = client.post("/api/tickets/" + obj["id"] + "/diagnose")
+        elif operation == "action":
+            response = client.post("/api/tickets/" + obj["id"] + "/actions", json={"description": "读取角色不可以写记录"})
+        elif operation == "create_case":
+            response = client.post("/api/cases", json=case_values())
+        else:
+            response = client.put("/api/cases/" + case["id"], json=case_values())
+&gt;       assert response.status_code == 403
+E       assert 401 == 403
+E        +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code
+
+tests\erpnext_support\test_workbench_api.py:218: AssertionError</failure></testcase><testcase classname="test_workbench_api" name="test_unknown_read_only_role_cannot_mutate[create_case]" time="1.614"><failure message="assert 401 == 403&#10; +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code">workbench = (&lt;starlette.testclient.TestClient object at 0x0000022CD4F0D820&gt;, &lt;holmes.erpnext_support.storage.Store object at 0x000...9f183f940db0e33b48c208b8386d84b96b4ccdb566b11ad6af72cd9650c4a2c9304479e6327a6cd50174be8427467aa41823c5d54d85487', ...})
+operation = 'create_case'
+
+    @pytest.mark.parametrize("operation", ["patch_ticket", "diagnose", "action", "create_case", "edit_case"])
+    def test_unknown_read_only_role_cannot_mutate(workbench, operation):
+        client, store, settings, admin, analyst = workbench
+        sign_in(client)
+        env = environment(client)
+        obj = ticket(client, env)
+        case = client.post("/api/cases", json=case_values()).json()
+        store.update("user", admin["id"], lambda u: u.update(role="viewer", environment_ids=[env["id"]]))
+        if operation == "patch_ticket":
+            response = client.patch("/api/tickets/" + obj["id"], json={"description": "读取角色不可以修改"})
+        elif operation == "diagnose":
+            response = client.post("/api/tickets/" + obj["id"] + "/diagnose")
+        elif operation == "action":
+            response = client.post("/api/tickets/" + obj["id"] + "/actions", json={"description": "读取角色不可以写记录"})
+        elif operation == "create_case":
+            response = client.post("/api/cases", json=case_values())
+        else:
+            response = client.put("/api/cases/" + case["id"], json=case_values())
+&gt;       assert response.status_code == 403
+E       assert 401 == 403
+E        +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code
+
+tests\erpnext_support\test_workbench_api.py:218: AssertionError</failure></testcase><testcase classname="test_workbench_api" name="test_unknown_read_only_role_cannot_mutate[edit_case]" time="2.194"><failure message="assert 401 == 403&#10; +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code">workbench = (&lt;starlette.testclient.TestClient object at 0x0000022CD526E5D0&gt;, &lt;holmes.erpnext_support.storage.Store object at 0x000...bd72dd4e44d90e9c57df7d109cfaa7552560d50f7c3f9c91219f36296f339d62291660eb8ea2e3ca107d641699c6fb3b70de532b8a25b35', ...})
+operation = 'edit_case'
+
+    @pytest.mark.parametrize("operation", ["patch_ticket", "diagnose", "action", "create_case", "edit_case"])
+    def test_unknown_read_only_role_cannot_mutate(workbench, operation):
+        client, store, settings, admin, analyst = workbench
+        sign_in(client)
+        env = environment(client)
+        obj = ticket(client, env)
+        case = client.post("/api/cases", json=case_values()).json()
+        store.update("user", admin["id"], lambda u: u.update(role="viewer", environment_ids=[env["id"]]))
+        if operation == "patch_ticket":
+            response = client.patch("/api/tickets/" + obj["id"], json={"description": "读取角色不可以修改"})
+        elif operation == "diagnose":
+            response = client.post("/api/tickets/" + obj["id"] + "/diagnose")
+        elif operation == "action":
+            response = client.post("/api/tickets/" + obj["id"] + "/actions", json={"description": "读取角色不可以写记录"})
+        elif operation == "create_case":
+            response = client.post("/api/cases", json=case_values())
+        else:
+            response = client.put("/api/cases/" + case["id"], json=case_values())
+&gt;       assert response.status_code == 403
+E       assert 401 == 403
+E        +  where 401 = &lt;Response [401 Unauthorized]&gt;.status_code
+
+tests\erpnext_support\test_workbench_api.py:218: AssertionError</failure></testcase><testcase classname="test_enterprise_api_and_jobs" name="test_users_pagination_count_and_search_are_not_truncated" time="2.264" /><testcase classname="test_enterprise_api_and_jobs" name="test_account_disable_revokes_existing_session_and_lists_disabled" time="2.274" /><testcase classname="test_enterprise_api_and_jobs" name="test_password_reset_revokes_tokens_and_does_not_enter_audit" time="3.629" /><testcase classname="test_enterprise_api_and_jobs" name="test_current_admin_cannot_disable_demote_or_send_invalid_edit[patch0]" time="1.882" /><testcase classname="test_enterprise_api_and_jobs" name="test_current_admin_cannot_disable_demote_or_send_invalid_edit[patch1]" time="1.428" /><testcase classname="test_enterprise_api_and_jobs" name="test_current_admin_cannot_disable_demote_or_send_invalid_edit[patch2]" time="1.374" /><testcase classname="test_enterprise_api_and_jobs" name="test_current_admin_cannot_disable_demote_or_send_invalid_edit[patch3]" time="1.727" /><testcase classname="test_enterprise_api_and_jobs" name="test_current_admin_cannot_disable_demote_or_send_invalid_edit[patch4]" time="1.210" /><testcase classname="test_enterprise_api_and_jobs" name="test_enterprise_admin_data_is_not_accessible_to_reviewer[/api/audit]" time="2.034" /><testcase classname="test_enterprise_api_and_jobs" name="test_enterprise_admin_data_is_not_accessible_to_reviewer[/api/system/status]" time="2.068" /><testcase classname="test_enterprise_api_and_jobs" name="test_request_id_correlates_mutation_and_audit" time="1.470" /><testcase classname="test_enterprise_api_and_jobs" name="test_validation_and_boundary_errors_have_safe_request_id[kwargs0-422]" time="1.095" /><testcase classname="test_enterprise_api_and_jobs" name="test_validation_and_boundary_errors_have_safe_request_id[kwargs1-403]" time="1.066" /><testcase classname="test_enterprise_api_and_jobs" name="test_metrics_requires_dedicated_token_and_has_no_business_labels" time="1.102" /><testcase classname="test_enterprise_api_and_jobs" name="test_liveness_and_dependency_readiness_are_distinct" time="1.069" /><testcase classname="test_enterprise_api_and_jobs" name="test_duplicate_worker_message_does_not_repeat_diagnosis" time="1.223" /><testcase classname="test_enterprise_api_and_jobs" name="test_permission_revoked_after_enqueue_stops_all_erp_calls" time="1.241" /><testcase classname="test_enterprise_api_and_jobs" name="test_broker_publish_failure_retains_durable_task_for_outbox" time="1.704" /><testcase classname="test_enterprise_api_and_jobs" name="test_invalid_message_id_is_not_a_database_or_tool_query" time="1.108" /><testcase classname="test_enterprise_api_and_jobs" name="test_worker_readiness_uses_recent_persisted_heartbeat" time="1.095" /><testcase classname="test_enterprise_api_and_jobs" name="test_enterprise_settings_fail_closed[values0]" time="0.018" /><testcase classname="test_enterprise_api_and_jobs" name="test_enterprise_settings_fail_closed[values1]" time="0.018" /><testcase classname="test_enterprise_api_and_jobs" name="test_enterprise_settings_fail_closed[values2]" time="0.018" /><testcase classname="test_enterprise_api_and_jobs" name="test_enterprise_settings_fail_closed[values3]" time="0.017" /><testcase classname="test_enterprise_api_and_jobs" name="test_enterprise_settings_fail_closed[values4]" time="0.021" /></testsuite></testsuites>

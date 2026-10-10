@@ -42,6 +42,14 @@ class Settings:
     model_api_key: str | None = field(default=None, repr=False)
     max_model_tokens: int = 2048
     frontend: Path = field(default_factory=lambda: EXAMPLE / "frontend" / "dist")
+    database_url: str | None = field(default=None, repr=False)
+    broker_url: str | None = field(default=None, repr=False)
+    queue_backend: str = "inline"
+    task_capacity: int = 100
+    task_lease_seconds: int = 60
+    metrics_token: str | None = field(default=None, repr=False)
+    session_hours: int = 8
+    secure_cookies: bool = False
 
     def __post_init__(self) -> None:
         self.runtime = self.runtime.absolute()
@@ -62,6 +70,28 @@ class Settings:
                 raise ValueError("模型请求目标无效")
             if parsed.scheme == "http" and parsed.hostname not in ("127.0.0.1", "localhost", "::1"):
                 raise ValueError("外部模型请求必须使用 HTTPS")
+        if self.queue_backend not in ("inline", "celery"):
+            raise ValueError("后台任务方式无效")
+        if not 1 <= self.task_capacity <= 100 or not 30 <= self.task_lease_seconds <= 120 or not 1 <= self.session_hours <= 24:
+            raise ValueError("任务容量、租约或登录有效期超出范围")
+        if self.database_url:
+            if not self.database_url.startswith("postgresql+pg8000://"):
+                raise ValueError("企业数据库只支持明确配置的 PostgreSQL pg8000 连接")
+            parsed = urlsplit(self.database_url)
+            if not parsed.hostname or not parsed.path.strip("/") or parsed.fragment:
+                raise ValueError("企业数据库配置无效")
+        if self.broker_url:
+            parsed = urlsplit(self.broker_url)
+            if parsed.scheme not in ("redis", "rediss") or not parsed.hostname or parsed.fragment or parsed.query:
+                raise ValueError("消息队列配置无效")
+        if self.queue_backend == "celery" and (not self.database_url or not self.broker_url):
+            raise ValueError("独立任务模式必须配置 PostgreSQL 与消息队列")
+        if self.metrics_token and not 32 <= len(self.metrics_token) <= 256:
+            raise ValueError("指标访问凭据长度无效")
+
+    @property
+    def storage_target(self) -> Path | str:
+        return self.database_url or self.database
 
     @property
     def database(self) -> Path:
@@ -100,6 +130,16 @@ class Settings:
         values.pop("runtime", None)
         values["runtime"] = path.parent
         values["model_api_key"] = os.environ.get("ERP_SUPPORT_MODEL_API_KEY")
+        for key, variable in (("database_url", "ERP_SUPPORT_DATABASE_URL_FILE"),
+                              ("broker_url", "ERP_SUPPORT_BROKER_URL_FILE"),
+                              ("metrics_token", "ERP_SUPPORT_METRICS_TOKEN_FILE")):
+            file_name = os.environ.get(variable)
+            if file_name:
+                file_path = Path(file_name).absolute()
+                safe_path(file_path.parent, file_path)
+                if not file_path.is_file() or file_path.stat().st_size > 4096:
+                    raise ValueError("私有配置文件无效")
+                values[key] = file_path.read_text(encoding="utf-8-sig").strip()
         return cls(**values)
 
 

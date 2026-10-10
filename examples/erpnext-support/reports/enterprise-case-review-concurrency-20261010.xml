@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="49.433" timestamp="2026-10-10T16:00:12.158654+08:00" hostname="DESKTOP-32HLNT8"><testcase classname="test_workbench_api" name="test_case_requires_human_review_and_edit_revokes_approval" time="2.374" /><testcase classname="test_workbench_api" name="test_analyst_edit_cannot_override_concurrent_case_review" time="1.872"><failure message="AssertionError: assert 200 == 403&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code&#10; +    where &lt;Response [200 OK]&gt; = put(('/api/cases/' + 'a7c325e0f6a24928bb1ec20e465ad569'), json={'title': '标准库存历史时点排查', 'erpnext_version': '15.85.1', 'frappe_version': '15.87.0', 'symptom': '当前库存够但过账时点不足', ...})&#10; +      where put = &lt;starlette.testclient.TestClient object at 0x00000262CFEECBC0&gt;.put&#10; +      and   {'title': '标准库存历史时点排查', 'erpnext_version': '15.85.1', 'frappe_version': '15.87.0', 'symptom': '当前库存够但过账时点不足', ...} = case_values()">workbench = (&lt;starlette.testclient.TestClient object at 0x00000262CFEECBC0&gt;, &lt;holmes.erpnext_support.storage.Store object at 0x000...13bfab2e28314e4478c8883a1252391188431919fc375cfe412bb8115d66a1e57d65b633b1c045614c35005f3fca773e732ee3102579a9e', ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x00000262D0500260&gt;
+
+    def test_analyst_edit_cannot_override_concurrent_case_review(workbench, monkeypatch):
+        client, store, *_ = workbench
+        sign_in(client, "analyst", "test-analyst-password")
+        case = client.post("/api/cases", json=case_values()).json()
+        request_store = client.app.state.store
+        original_get = request_store.get
+        changed = False
+    
+        def reviewed_after_read(kind, identifier):
+            nonlocal changed
+            value = original_get(kind, identifier)
+            if kind == "case" and identifier == case["id"] and not changed:
+                changed = True
+                store.update("case", identifier, lambda row: row.update(status="approved", approved_by="admin"))
+            return value
+    
+        # A second request commits its approval between the read and locked update.
+&gt;       monkeypatch.setattr(request_store, "get", reviewed_after_read)
+E       AssertionError: assert 200 == 403
+E        +  where 200 = &lt;Response [200 OK]&gt;.status_code
+E        +    where &lt;Response [200 OK]&gt; = put(('/api/cases/' + 'a7c325e0f6a24928bb1ec20e465ad569'), json={'title': '标准库存历史时点排查', 'erpnext_version': '15.85.1', 'frappe_version': '15.87.0', 'symptom': '当前库存够但过账时点不足', ...})
+E        +      where put = &lt;starlette.testclient.TestClient object at 0x00000262CFEECBC0&gt;.put
+E        +      and   {'title': '标准库存历史时点排查', 'erpnext_version': '15.85.1', 'frappe_version': '15.87.0', 'symptom': '当前库存够但过账时点不足', ...} = case_values()
+
+tests\erpnext_support\test_workbench_api.py:187: AssertionError</failure></testcase></testsuite></testsuites>

@@ -167,6 +167,29 @@ def test_case_requires_human_review_and_edit_revokes_approval(workbench):
     assert client.post("/api/cases/" + obj["id"] + "/approve", json={"decision": "approved", "note": "不能审核"}).status_code == 403
 
 
+def test_analyst_edit_cannot_override_concurrent_case_review(workbench, monkeypatch):
+    client, store, *_ = workbench
+    sign_in(client, "analyst", "test-analyst-password")
+    case = client.post("/api/cases", json=case_values()).json()
+    request_store = client.app.state.store
+    original_get = request_store.get
+    changed = False
+
+    def reviewed_after_read(kind, identifier):
+        nonlocal changed
+        value = original_get(kind, identifier)
+        if kind == "case" and identifier == case["id"] and not changed:
+            changed = True
+            store.update("case", identifier, lambda row: row.update(status="approved", approved_by="admin"))
+        return value
+
+    # A second request commits its approval between the read and locked update.
+    monkeypatch.setattr(request_store, "get", reviewed_after_read)
+    assert client.put("/api/cases/" + case["id"], json=case_values()).status_code == 403
+    assert original_get("case", case["id"])["status"] == "approved"
+    assert original_get("case", case["id"])["approved_by"] == "admin"
+
+
 def test_missing_credentials_gives_explicit_setup_error(workbench):
     client = workbench[0]
     sign_in(client)
@@ -205,6 +228,9 @@ def test_unknown_read_only_role_cannot_mutate(workbench, operation):
     obj = ticket(client, env)
     case = client.post("/api/cases", json=case_values()).json()
     store.update("user", admin["id"], lambda u: u.update(role="viewer", environment_ids=[env["id"]]))
+    # Enterprise permissions revoke old sessions. Authenticate again so this
+    # assertion tests the role gate independently of session invalidation.
+    sign_in(client)
     if operation == "patch_ticket":
         response = client.patch("/api/tickets/" + obj["id"], json={"description": "读取角色不可以修改"})
     elif operation == "diagnose":
