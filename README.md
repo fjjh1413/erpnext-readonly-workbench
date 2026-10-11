@@ -62,7 +62,7 @@
 $ErrorActionPreference = 'Stop'
 $taskRepo = Join-Path (Get-Location) 'erpnext-readonly-workbench'
 if (Test-Path -LiteralPath $taskRepo) { throw '目录已存在，请先检查文件与 Git 状态。' }
-git clone https://github.com/fjjh1413/erpnext-readonly-workbench.git $taskRepo
+git clone --depth 1 https://github.com/fjjh1413/erpnext-readonly-workbench.git $taskRepo
 if ($LASTEXITCODE -ne 0) { throw '克隆失败。' }
 Set-Location $taskRepo
 
